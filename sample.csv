@@ -1,0 +1,5 @@
+task_id,task_name,task_level,task_status,duration_days,start_date,end_date,dependencies,owner,resources,percent_complete,notes,priority,milestone
+1,Test Project,project,in_progress,30,2025-01-06,2025-02-04,,Alice,,50,,high,false
+1.1,Phase 1,group1,completed,14,2025-01-06,2025-01-19,,Alice,,100,,high,false
+1.1.1,Task A,task,completed,5,2025-01-06,2025-01-10,,Bob,"Bob,Carol",100,,medium,false
+1.1.2,Task B,task,in_progress,5,2025-01-13,2025-01-17,1.1.1,Alice,,60,,high,false

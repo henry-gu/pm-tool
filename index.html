@@ -1,0 +1,4906 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A local CSV-based project planning application.">
+  <title>ProjectPlan</title>
+  <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="%231A1F2E"/><rect x="12" y="16" width="30" height="8" rx="3" fill="%2360A5FA"/><rect x="20" y="30" width="32" height="8" rx="3" fill="%2316A34A"/><rect x="12" y="44" width="22" height="8" rx="3" fill="%23F59E0B"/></svg>'>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-navy-950: #1A1F2E;
+      --color-navy-900: #22293A;
+      --color-navy-800: #2E374D;
+      --color-white: #FFFFFF;
+      --color-surface: #F7F8FA;
+      --color-surface-muted: #F0F2F5;
+      --color-border: #E2E5EB;
+      --color-border-strong: #CBD1DC;
+      --color-text: #1F2937;
+      --color-text-muted: #6B7280;
+      --color-text-subtle: #9CA3AF;
+      --color-primary: #2563EB;
+      --color-primary-hover: #1D4ED8;
+      --color-primary-soft: #EAF1FF;
+      --color-success: #16A34A;
+      --color-warning: #D97706;
+      --color-danger: #DC2626;
+      --color-focus: #60A5FA;
+
+      --status-not-started: #6B7280;
+      --status-not-started-bg: #F3F4F6;
+      --status-in-progress: #2563EB;
+      --status-in-progress-bg: #DBEAFE;
+      --status-completed: #16A34A;
+      --status-completed-bg: #DCFCE7;
+      --status-blocked: #DC2626;
+      --status-blocked-bg: #FEE2E2;
+      --status-on-hold: #D97706;
+      --status-on-hold-bg: #FEF3C7;
+      --status-cancelled: #64748B;
+      --status-cancelled-bg: #E2E8F0;
+
+      --priority-low: #14B8A6;
+      --priority-low-bg: #CCFBF1;
+      --priority-medium: #F59E0B;
+      --priority-medium-bg: #FEF3C7;
+      --priority-high: #F97316;
+      --priority-high-bg: #FFEDD5;
+      --priority-critical: #EF4444;
+      --priority-critical-bg: #FEE2E2;
+
+      --font-family-base: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-size-2xs: 10px;
+      --font-size-xs: 11px;
+      --font-size-sm: 12px;
+      --font-size-md: 13px;
+      --font-size-base: 14px;
+      --font-size-lg: 16px;
+      --font-size-xl: 20px;
+      --line-height-tight: 1.2;
+      --line-height-base: 1.45;
+      --font-weight-normal: 400;
+      --font-weight-medium: 500;
+      --font-weight-semibold: 600;
+      --font-weight-bold: 700;
+
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+
+      --topbar-height: 48px;
+      --toolbar-height: 40px;
+      --statusbar-height: 28px;
+      --control-height: 28px;
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 8px;
+      --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.08);
+      --shadow-md: 0 8px 20px rgba(16, 24, 40, 0.12);
+      --z-toast: 50;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      color: var(--color-text);
+      background: var(--color-surface);
+      font-family: var(--font-family-base);
+      font-size: var(--font-size-base);
+      line-height: var(--line-height-base);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    button:disabled,
+    input:disabled,
+    select:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: 2px;
+    }
+
+    .app-shell {
+      display: grid;
+      grid-template-rows: var(--topbar-height) var(--toolbar-height) minmax(0, 1fr) var(--statusbar-height);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      height: var(--topbar-height);
+      padding: 0 var(--space-4);
+      color: var(--color-white);
+      background: var(--color-navy-950);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      min-width: 176px;
+      font-weight: var(--font-weight-bold);
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 24px;
+      height: 24px;
+      place-items: center;
+      border-radius: var(--radius-sm);
+      color: var(--color-navy-950);
+      background: var(--color-white);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-bold);
+    }
+
+    .project-title {
+      min-width: 0;
+      flex: 1;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      overflow: hidden;
+      text-align: center;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .top-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .top-button {
+      height: var(--control-height);
+      padding: 0 var(--space-3);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: var(--radius-md);
+      color: var(--color-white);
+      background: rgba(255, 255, 255, 0.08);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .top-button:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      height: var(--toolbar-height);
+      padding: 0 var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-white);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .view-toggle {
+      display: inline-flex;
+      align-items: center;
+      height: 30px;
+      padding: 2px;
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      background: var(--color-surface-muted);
+      white-space: nowrap;
+    }
+
+    .view-button {
+      height: 24px;
+      padding: 0 var(--space-3);
+      border-radius: 999px;
+      color: var(--color-text-muted);
+      background: transparent;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .view-button:hover {
+      color: var(--color-text);
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .view-button[aria-pressed="true"] {
+      color: var(--color-white);
+      background: var(--color-primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .toolbar-spacer {
+      flex: 1;
+    }
+
+    .search {
+      width: min(280px, 28vw);
+      min-width: 180px;
+      height: var(--control-height);
+      padding: 0 var(--space-3);
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--radius-md);
+      color: var(--color-text);
+      background: var(--color-white);
+      font-size: var(--font-size-sm);
+    }
+
+    .search::placeholder {
+      color: var(--color-text-subtle);
+    }
+
+    .toolbar-button,
+    .primary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      height: var(--control-height);
+      padding: 0 var(--space-3);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      white-space: nowrap;
+    }
+
+    .toolbar-button {
+      border: 1px solid var(--color-border-strong);
+      color: var(--color-text);
+      background: var(--color-white);
+    }
+
+    .toolbar-button:hover {
+      background: var(--color-surface);
+    }
+
+    .primary-button {
+      color: var(--color-white);
+      background: var(--color-primary);
+    }
+
+    .primary-button:hover {
+      background: var(--color-primary-hover);
+    }
+
+    .badge {
+      display: inline-flex;
+      min-width: 16px;
+      height: 16px;
+      align-items: center;
+      justify-content: center;
+      padding: 0 5px;
+      border-radius: 999px;
+      color: var(--color-white);
+      background: var(--color-primary);
+      font-size: var(--font-size-2xs);
+      font-weight: var(--font-weight-bold);
+      line-height: 1;
+    }
+
+    #main-content {
+      min-height: 0;
+      overflow: auto;
+      background:
+        linear-gradient(var(--color-border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--color-border) 1px, transparent 1px),
+        var(--color-surface);
+      background-size: 32px 32px;
+    }
+
+    .empty-view {
+      display: grid;
+      height: 100%;
+      min-height: 320px;
+      place-items: center;
+      padding: var(--space-8);
+    }
+
+    .empty-panel {
+      width: min(920px, 100%);
+      padding: var(--space-6);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+    }
+
+    .empty-title {
+      margin: 0 0 var(--space-2);
+      color: var(--color-text);
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-tight);
+    }
+
+    .empty-copy {
+      margin: 0;
+      color: var(--color-text-muted);
+      font-size: var(--font-size-sm);
+    }
+
+    .sample-csv-preview {
+      margin-top: var(--space-5);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-white);
+      text-align: left;
+    }
+
+    .sample-csv-preview summary {
+      padding: var(--space-3) var(--space-4);
+      color: var(--color-text);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+    }
+
+    .sample-csv-preview pre {
+      max-height: 220px;
+      margin: 0;
+      padding: var(--space-4);
+      border-top: 1px solid var(--color-border);
+      overflow: auto;
+      color: var(--color-text);
+      background: var(--color-surface);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: var(--font-size-xs);
+      line-height: 1.5;
+      white-space: pre;
+    }
+
+    .table-view {
+      height: 100%;
+      min-height: 0;
+      padding: var(--space-4);
+      background: var(--color-surface);
+    }
+
+    .table-frame {
+      height: 100%;
+      min-height: 0;
+      overflow: auto;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-white);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .task-table {
+      width: 100%;
+      min-width: 1360px;
+      border-collapse: separate;
+      border-spacing: 0;
+      color: var(--color-text);
+      font-size: var(--font-size-sm);
+    }
+
+    .task-table th,
+    .task-table td {
+      height: 36px;
+      padding: 0 var(--space-3);
+      border-right: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--color-border);
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .task-table th:last-child,
+    .task-table td:last-child {
+      border-right: 0;
+    }
+
+    .task-table th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      color: var(--color-text-muted);
+      background: var(--color-white);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      text-align: left;
+      box-shadow: 0 1px 0 var(--color-border);
+    }
+
+    .task-table tbody tr:nth-child(odd) {
+      background: #F7F8FA;
+    }
+
+    .task-table tbody tr:nth-child(even) {
+      background: #FFFFFF;
+    }
+
+    .task-table tbody tr:hover {
+      background: var(--color-primary-soft);
+    }
+
+    .task-table tbody tr.is-selected {
+      background: #DBEAFE;
+      box-shadow: inset 3px 0 0 var(--color-primary);
+    }
+
+    .task-table tbody tr.is-critical {
+      box-shadow: inset 3px 0 0 var(--color-danger);
+    }
+
+    .task-table tbody tr.is-selected.is-critical {
+      box-shadow:
+        inset 3px 0 0 var(--color-danger),
+        inset 6px 0 0 var(--color-primary);
+    }
+
+    .task-table td {
+      max-width: 260px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .task-table td[data-editable="true"] {
+      cursor: cell;
+    }
+
+    .task-table td[data-editable="true"]:hover {
+      box-shadow: inset 0 0 0 1px var(--color-primary-soft);
+    }
+
+    .task-table td.is-editing {
+      padding: 0 var(--space-1);
+      overflow: visible;
+    }
+
+    .task-table .col-task-id {
+      width: 96px;
+      color: var(--color-text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .task-table .col-task-name {
+      min-width: 260px;
+      max-width: 360px;
+    }
+
+    .task-table .col-notes {
+      min-width: 240px;
+      white-space: normal;
+    }
+
+    .table-sort-button {
+      display: inline-flex;
+      width: 100%;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-2);
+      padding: 0;
+      color: inherit;
+      background: transparent;
+      font-size: inherit;
+      font-weight: inherit;
+      text-align: left;
+    }
+
+    .sort-indicator {
+      color: var(--color-text-subtle);
+      font-size: var(--font-size-2xs);
+    }
+
+    .task-name-content {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      gap: var(--space-1);
+      padding-left: calc(var(--task-depth, 0) * 20px);
+    }
+
+    .task-name-text {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .task-toggle,
+    .task-toggle-spacer {
+      display: inline-grid;
+      width: 18px;
+      height: 18px;
+      flex: 0 0 18px;
+      place-items: center;
+    }
+
+    .task-toggle {
+      border-radius: var(--radius-sm);
+      color: var(--color-text-muted);
+      background: transparent;
+      font-size: var(--font-size-xs);
+      line-height: 1;
+    }
+
+    .task-toggle:hover {
+      color: var(--color-text);
+      background: var(--color-surface-muted);
+    }
+
+    .table-empty {
+      height: 320px;
+      min-height: 320px;
+      padding: var(--space-8);
+      color: var(--color-text-muted);
+      text-align: center;
+    }
+
+    .table-edit-input {
+      width: 100%;
+      height: 28px;
+      padding: 0 var(--space-2);
+      border: 1px solid var(--color-primary);
+      border-radius: var(--radius-sm);
+      color: var(--color-text);
+      background: var(--color-white);
+      font-size: var(--font-size-sm);
+    }
+
+    .table-edit-input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      padding: 0;
+    }
+
+    .milestone-mark {
+      color: var(--priority-critical);
+      font-size: var(--font-size-lg);
+      line-height: 1;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      height: var(--statusbar-height);
+      padding: 0 var(--space-4);
+      border-top: 1px solid var(--color-border);
+      color: var(--color-text-muted);
+      background: var(--color-surface-muted);
+      font-size: var(--font-size-xs);
+      white-space: nowrap;
+    }
+
+    .status-left,
+    .status-right {
+      display: inline-flex;
+      min-width: 0;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .status-item {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .dirty-indicator {
+      color: var(--color-warning);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .status-separator {
+      width: 1px;
+      height: 14px;
+      background: var(--color-border-strong);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      padding: 2px var(--space-2);
+      border-radius: 999px;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      line-height: 1.2;
+    }
+
+    .status-pill.not-started {
+      color: var(--status-not-started);
+      background: var(--status-not-started-bg);
+    }
+
+    .status-pill.in-progress {
+      color: var(--status-in-progress);
+      background: var(--status-in-progress-bg);
+    }
+
+    .status-pill.completed {
+      color: var(--status-completed);
+      background: var(--status-completed-bg);
+    }
+
+    .status-pill.blocked {
+      color: var(--status-blocked);
+      background: var(--status-blocked-bg);
+    }
+
+    .status-pill.on-hold {
+      color: var(--status-on-hold);
+      background: var(--status-on-hold-bg);
+    }
+
+    .status-pill.cancelled {
+      color: var(--status-cancelled);
+      background: var(--status-cancelled-bg);
+    }
+
+    .priority-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      vertical-align: middle;
+    }
+
+    .priority-dot.low {
+      background: var(--priority-low);
+    }
+
+    .priority-dot.medium {
+      background: var(--priority-medium);
+    }
+
+    .priority-dot.high {
+      background: var(--priority-high);
+    }
+
+    .priority-dot.critical {
+      background: var(--priority-critical);
+    }
+
+    .priority-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      padding: 2px var(--space-2);
+      border-radius: 999px;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      line-height: 1.2;
+    }
+
+    .priority-badge.low {
+      color: var(--priority-low);
+      background: var(--priority-low-bg);
+    }
+
+    .priority-badge.medium {
+      color: var(--priority-medium);
+      background: var(--priority-medium-bg);
+    }
+
+    .priority-badge.high {
+      color: var(--priority-high);
+      background: var(--priority-high-bg);
+    }
+
+    .priority-badge.critical {
+      color: var(--priority-critical);
+      background: var(--priority-critical-bg);
+    }
+
+    .priority-cell {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      text-transform: capitalize;
+    }
+
+    .task-editor-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 39;
+      background: rgba(15, 23, 42, 0.28);
+    }
+
+    .task-editor-overlay[hidden] {
+      display: none;
+    }
+
+    .task-editor-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      z-index: 40;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      width: min(380px, 100vw);
+      height: 100vh;
+      border-left: 1px solid var(--color-border);
+      background: var(--color-white);
+      box-shadow: var(--shadow-md);
+      transform: translateX(100%);
+      transition: transform 200ms ease;
+    }
+
+    .task-editor-panel.open {
+      transform: translateX(0);
+    }
+
+    .task-editor-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .task-editor-title {
+      display: grid;
+      gap: var(--space-1);
+      min-width: 0;
+    }
+
+    .task-editor-title h2 {
+      margin: 0;
+      color: var(--color-text);
+      font-size: var(--font-size-lg);
+      line-height: var(--line-height-tight);
+    }
+
+    .task-editor-title span {
+      color: var(--color-text-muted);
+      font-size: var(--font-size-xs);
+    }
+
+    .task-editor-close {
+      display: inline-grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text-muted);
+      background: var(--color-white);
+      font-size: var(--font-size-lg);
+      line-height: 1;
+    }
+
+    .task-editor-close:hover {
+      color: var(--color-text);
+      background: var(--color-surface);
+    }
+
+    .task-editor-body {
+      display: grid;
+      align-content: start;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      overflow: auto;
+    }
+
+    .task-editor-field {
+      display: grid;
+      gap: var(--space-1);
+      padding-bottom: var(--space-3);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .task-editor-field label {
+      color: var(--color-text-muted);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      text-transform: uppercase;
+    }
+
+    .task-editor-field div {
+      min-height: 20px;
+      color: var(--color-text);
+      font-size: var(--font-size-sm);
+      word-break: break-word;
+    }
+
+    .view-controls {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .segmented-control {
+      display: inline-flex;
+      height: 28px;
+      padding: 2px;
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      background: var(--color-surface-muted);
+    }
+
+    .segmented-control button {
+      height: 22px;
+      padding: 0 var(--space-2);
+      border-radius: 999px;
+      color: var(--color-text-muted);
+      background: transparent;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .segmented-control button[aria-pressed="true"] {
+      color: var(--color-white);
+      background: var(--color-primary);
+    }
+
+    .filter-panel {
+      position: fixed;
+      top: calc(var(--topbar-height) + var(--toolbar-height) + 8px);
+      right: var(--space-4);
+      z-index: 35;
+      display: grid;
+      width: min(420px, calc(100vw - 32px));
+      max-height: min(640px, calc(100vh - 120px));
+      gap: var(--space-4);
+      padding: var(--space-4);
+      overflow: auto;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-white);
+      box-shadow: var(--shadow-md);
+    }
+
+    .filter-panel[hidden] {
+      display: none;
+    }
+
+    .filter-section {
+      display: grid;
+      gap: var(--space-2);
+    }
+
+    .filter-section-title {
+      margin: 0;
+      color: var(--color-text-muted);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+    }
+
+    .filter-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-2);
+    }
+
+    .filter-option,
+    .checkbox-row {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      color: var(--color-text);
+      font-size: var(--font-size-sm);
+    }
+
+    .date-filter-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2);
+    }
+
+    .date-filter-grid label {
+      display: grid;
+      gap: var(--space-1);
+      color: var(--color-text-muted);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .date-filter-grid input,
+    .task-editor-input,
+    .task-editor-select,
+    .task-editor-textarea {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--radius-md);
+      color: var(--color-text);
+      background: var(--color-white);
+      font-size: var(--font-size-sm);
+    }
+
+    .date-filter-grid input,
+    .task-editor-input,
+    .task-editor-select {
+      height: 32px;
+      padding: 0 var(--space-2);
+    }
+
+    .task-editor-textarea {
+      min-height: 88px;
+      padding: var(--space-2);
+      resize: vertical;
+    }
+
+    .filter-clear {
+      justify-self: start;
+      padding: 0;
+      color: var(--color-primary);
+      background: transparent;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .task-editor-field input[type="range"] {
+      width: 100%;
+    }
+
+    .task-editor-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-1);
+    }
+
+    .tag-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 20px;
+      padding: 0 var(--space-2);
+      border-radius: 999px;
+      color: var(--color-text-muted);
+      background: var(--color-surface-muted);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .task-editor-actions {
+      display: flex;
+      gap: var(--space-2);
+      padding-top: var(--space-2);
+    }
+
+    .danger-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: var(--control-height);
+      padding: 0 var(--space-3);
+      border: 1px solid var(--color-danger);
+      border-radius: var(--radius-md);
+      color: var(--color-danger);
+      background: var(--color-white);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .danger-button:hover {
+      background: #FEF2F2;
+    }
+
+    .computed-summary {
+      padding: var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text-muted);
+      background: var(--color-surface);
+      font-size: var(--font-size-sm);
+    }
+
+    .empty-action {
+      margin-top: var(--space-4);
+      height: 36px;
+      padding: 0 var(--space-4);
+      border-radius: var(--radius-md);
+      color: var(--color-white);
+      background: var(--color-primary);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .loading-view {
+      display: grid;
+      min-height: 320px;
+      place-items: center;
+      color: var(--color-text-muted);
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .gantt-view,
+    .timeline-view,
+    .board-view,
+    .dashboard-view {
+      height: 100%;
+      min-height: 0;
+      padding: var(--space-4);
+      background: var(--color-surface);
+    }
+
+    .gantt-shell {
+      display: grid;
+      grid-template-columns: 380px minmax(0, 1fr);
+      height: 100%;
+      min-height: 0;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--color-white);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .gantt-left,
+    .gantt-right {
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .gantt-left {
+      border-right: 1px solid var(--color-border);
+    }
+
+    .gantt-left-header,
+    .gantt-left-row {
+      display: grid;
+      grid-template-columns: 60px minmax(150px, 1fr) 60px 80px 80px 80px 40px;
+      align-items: center;
+      min-width: 560px;
+    }
+
+    .gantt-left-header {
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      height: 48px;
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-white);
+      color: var(--color-text-muted);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .gantt-left-header span,
+    .gantt-left-row span {
+      min-width: 0;
+      padding: 0 var(--space-2);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .gantt-left-body,
+    .gantt-right-scroll {
+      height: calc(100% - 48px);
+      overflow: auto;
+    }
+
+    .gantt-left-row {
+      height: 32px;
+      border-bottom: 1px solid var(--color-border);
+      font-size: var(--font-size-sm);
+      cursor: pointer;
+    }
+
+    .gantt-left-row:nth-child(odd),
+    .timeline-lane:nth-child(odd) {
+      background: #F7F8FA;
+    }
+
+    .gantt-left-row:nth-child(even),
+    .timeline-lane:nth-child(even) {
+      background: #FFFFFF;
+    }
+
+    .gantt-task-name {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      min-width: 0;
+      padding-left: calc(var(--task-depth, 0) * 16px);
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--status-not-started);
+    }
+
+    .status-dot.not-started {
+      background: var(--status-not-started);
+    }
+
+    .status-dot.in-progress {
+      background: var(--status-in-progress);
+    }
+
+    .status-dot.completed {
+      background: var(--status-completed);
+    }
+
+    .status-dot.blocked {
+      background: var(--status-blocked);
+    }
+
+    .status-dot.on-hold {
+      background: var(--status-on-hold);
+    }
+
+    .status-dot.cancelled {
+      background: var(--status-cancelled);
+    }
+
+    .gantt-right {
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .time-axis {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      height: 48px;
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-white);
+    }
+
+    .time-cell {
+      display: grid;
+      flex: 0 0 auto;
+      place-items: center;
+      border-right: 1px solid var(--color-border);
+      color: var(--color-text-muted);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      text-align: center;
+    }
+
+    .gantt-chart-area,
+    .timeline-chart-area {
+      position: relative;
+      min-height: 100%;
+      background:
+        linear-gradient(var(--color-border) 1px, transparent 1px),
+        var(--color-white);
+      background-size: 100% 32px;
+    }
+
+    .gantt-bar,
+    .timeline-bar {
+      position: absolute;
+      display: block;
+      height: 18px;
+      border-radius: 3px;
+      overflow: hidden;
+      color: var(--color-white);
+      background: var(--status-not-started);
+      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.08);
+      cursor: pointer;
+    }
+
+    .gantt-bar.is-group {
+      opacity: 0.78;
+      filter: saturate(0.9);
+    }
+
+    .gantt-bar.is-critical {
+      outline: 2px solid var(--priority-critical);
+      outline-offset: 1px;
+    }
+
+    .bar-progress {
+      height: 100%;
+      background: rgba(15, 23, 42, 0.25);
+    }
+
+    .milestone-diamond {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      transform: rotate(45deg);
+      border-radius: 2px;
+      background: var(--priority-critical);
+      cursor: pointer;
+    }
+
+    .today-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--color-danger);
+      opacity: 0.85;
+      pointer-events: none;
+    }
+
+    .dependency-svg {
+      position: absolute;
+      inset: 0;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    .board-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+    }
+
+    .owner-filter-pill {
+      height: 26px;
+      padding: 0 var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      color: var(--color-text-muted);
+      background: var(--color-white);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .owner-filter-pill[aria-pressed="true"] {
+      color: var(--color-white);
+      border-color: var(--color-primary);
+      background: var(--color-primary);
+    }
+
+    .board-columns {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(220px, 1fr));
+      gap: var(--space-3);
+      height: calc(100% - 40px);
+      min-height: 0;
+      overflow-x: auto;
+    }
+
+    .board-column {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      min-width: 220px;
+      min-height: 0;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--color-white);
+    }
+
+    .board-column.drag-over {
+      outline: 2px solid var(--color-primary);
+      outline-offset: -2px;
+    }
+
+    .board-column-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3);
+      border-bottom: 1px solid var(--color-border);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .board-card-list {
+      display: grid;
+      align-content: start;
+      gap: var(--space-2);
+      padding: var(--space-3);
+      overflow: auto;
+    }
+
+    .task-card {
+      display: grid;
+      gap: var(--space-2);
+      padding: var(--space-3);
+      border: 1px solid var(--color-border);
+      border-left-width: 4px;
+      border-radius: var(--radius-lg);
+      background: var(--color-white);
+      box-shadow: var(--shadow-sm);
+      cursor: grab;
+    }
+
+    .task-card:active {
+      cursor: grabbing;
+    }
+
+    .task-card-id,
+    .task-card-owner {
+      color: var(--color-text-muted);
+      font-size: var(--font-size-xs);
+    }
+
+    .task-card-title {
+      color: var(--color-text);
+      font-size: var(--font-size-md);
+      font-weight: var(--font-weight-bold);
+      line-height: var(--line-height-tight);
+    }
+
+    .progress-track {
+      height: 4px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--color-surface-muted);
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: var(--color-success);
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-2);
+    }
+
+    .timeline-shell {
+      display: grid;
+      grid-template-columns: 160px minmax(0, 1fr);
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-white);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .timeline-left-header,
+    .timeline-lane-label {
+      display: grid;
+      align-items: center;
+      padding: 0 var(--space-3);
+      border-right: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--color-border);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .timeline-left-header {
+      height: 48px;
+      color: var(--color-text-muted);
+      background: var(--color-white);
+    }
+
+    .timeline-left-body,
+    .timeline-right-scroll {
+      height: calc(100% - 48px);
+      overflow: auto;
+    }
+
+    .timeline-lane {
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .timeline-bar {
+      height: 14px;
+      border-radius: 999px;
+    }
+
+    .dashboard-view {
+      overflow: auto;
+    }
+
+    .dashboard-section {
+      display: grid;
+      gap: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+
+    .summary-grid {
+      grid-template-columns: repeat(5, minmax(140px, 1fr));
+    }
+
+    .stats-grid,
+    .charts-grid,
+    .tables-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .metric-card,
+    .dashboard-panel {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-white);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .metric-card {
+      display: grid;
+      gap: var(--space-1);
+      padding: var(--space-4);
+      border-left: 4px solid var(--color-primary);
+    }
+
+    .metric-value {
+      color: var(--color-text);
+      font-size: 28px;
+      font-weight: var(--font-weight-bold);
+      line-height: 1;
+    }
+
+    .metric-label {
+      color: var(--color-text-muted);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .dashboard-panel {
+      padding: var(--space-4);
+    }
+
+    .dashboard-panel h2 {
+      margin: 0 0 var(--space-3);
+      font-size: var(--font-size-lg);
+    }
+
+    .chart-canvas {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      aspect-ratio: 2 / 1;
+      height: auto;
+    }
+
+    .dashboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--font-size-sm);
+    }
+
+    .dashboard-table th,
+    .dashboard-table td {
+      padding: var(--space-2);
+      border-bottom: 1px solid var(--color-border);
+      text-align: left;
+    }
+
+    .dashboard-table th {
+      color: var(--color-text-muted);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+    }
+
+    .inline-progress {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    #toast-container {
+      position: fixed;
+      right: var(--space-4);
+      bottom: calc(var(--statusbar-height) + var(--space-4));
+      z-index: var(--z-toast);
+      display: grid;
+      width: min(360px, calc(100vw - 32px));
+      gap: var(--space-2);
+      pointer-events: none;
+    }
+
+    .toast {
+      padding: var(--space-3) var(--space-4);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-white);
+      box-shadow: var(--shadow-md);
+      color: var(--color-text);
+      font-size: var(--font-size-sm);
+    }
+
+    .toast.success {
+      border-left: 4px solid var(--color-success);
+    }
+
+    .toast.warning {
+      border-left: 4px solid var(--color-warning);
+    }
+
+    .toast.error {
+      border-left: 4px solid var(--color-danger);
+    }
+
+    @media (max-width: 900px) {
+      .top-bar {
+        gap: var(--space-3);
+      }
+
+      .brand {
+        min-width: auto;
+      }
+
+      .project-title {
+        text-align: left;
+      }
+
+      .toolbar {
+        height: auto;
+        min-height: var(--toolbar-height);
+        flex-wrap: wrap;
+        padding: var(--space-2) var(--space-3);
+      }
+
+      .app-shell {
+        grid-template-rows: var(--topbar-height) auto minmax(0, 1fr) var(--statusbar-height);
+      }
+
+      .toolbar-spacer {
+        display: none;
+      }
+
+      .search {
+        flex: 1 1 220px;
+        width: auto;
+        min-width: 0;
+      }
+
+      .gantt-shell {
+        grid-template-columns: 280px minmax(0, 1fr);
+      }
+
+      .gantt-left-header,
+      .gantt-left-row {
+        grid-template-columns: 54px minmax(130px, 1fr) 56px 72px 72px;
+        min-width: 384px;
+      }
+
+      .gantt-left-header span:nth-child(n+6),
+      .gantt-left-row span:nth-child(n+6) {
+        display: none;
+      }
+
+      .summary-grid,
+      .stats-grid,
+      .charts-grid,
+      .tables-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .top-actions {
+        gap: var(--space-1);
+      }
+
+      .top-button {
+        padding: 0 var(--space-2);
+      }
+
+      .project-title {
+        display: none;
+      }
+
+      .view-toggle {
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      .view-button {
+        flex: 1 0 auto;
+      }
+
+      .status-bar {
+        gap: var(--space-2);
+        padding: 0 var(--space-3);
+      }
+
+      .status-right {
+        display: none;
+      }
+    }
+
+    @media print {
+      .top-bar,
+      .toolbar,
+      .status-bar,
+      #toast-container,
+      .task-editor-overlay,
+      .task-editor-panel,
+      .filter-panel {
+        display: none !important;
+      }
+
+      .app-shell {
+        display: block;
+        min-height: auto;
+      }
+
+      #main-content {
+        overflow: visible;
+        background: var(--color-white);
+      }
+
+      .table-view,
+      .gantt-view,
+      .timeline-view,
+      .board-view,
+      .dashboard-view {
+        height: auto;
+        padding: 0;
+        background: var(--color-white);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="top-bar" aria-label="Application bar">
+      <div class="brand" aria-label="ProjectPlan">
+        <span class="brand-mark" aria-hidden="true">P</span>
+        <span>ProjectPlan</span>
+      </div>
+      <div class="project-title" aria-live="polite">Untitled Project</div>
+      <div class="top-actions" aria-label="File actions">
+        <button class="top-button" id="open-file-button" type="button">Open</button>
+        <button class="top-button" id="save-file-button" type="button">Save</button>
+        <button class="top-button" id="save-as-file-button" type="button">Save As</button>
+      </div>
+    </header>
+
+    <nav class="toolbar" aria-label="Project tools">
+      <div class="view-toggle" role="group" aria-label="View selector">
+        <button class="view-button" type="button" data-view="gantt" aria-pressed="true">Gantt</button>
+        <button class="view-button" type="button" data-view="table" aria-pressed="false">Table</button>
+        <button class="view-button" type="button" data-view="board" aria-pressed="false">Board</button>
+        <button class="view-button" type="button" data-view="timeline" aria-pressed="false">Timeline</button>
+        <button class="view-button" type="button" data-view="dashboard" aria-pressed="false">Dashboard</button>
+      </div>
+      <div class="toolbar-spacer" aria-hidden="true"></div>
+      <input class="search" type="search" placeholder="Search tasks" aria-label="Search tasks">
+      <button class="toolbar-button" id="filter-button" type="button">
+        <span>⚙ Filter ▾</span>
+        <span class="badge" aria-label="0 active filters">0</span>
+      </button>
+      <div class="view-controls" id="view-controls" aria-label="View controls"></div>
+      <button class="primary-button" id="add-task-button" type="button">+ Add Task</button>
+    </nav>
+
+    <main id="main-content" tabindex="-1">
+      <section class="empty-view" aria-label="Project workspace">
+        <div class="empty-panel">
+          <h1 class="empty-title">Gantt view</h1>
+          <p class="empty-copy">Open a CSV project file or add tasks to begin planning.</p>
+          <details class="sample-csv-preview" open>
+            <summary>Sample CSV</summary>
+            <pre id="sample-csv-source">task_id,task_name,task_level,task_status,duration_days,start_date,end_date,dependencies,owner,resources,percent_complete,notes,priority,milestone
+1,Test Project,project,in_progress,30,2025-01-06,2025-02-04,,Alice,,50,,high,false
+1.1,Phase 1,group1,completed,14,2025-01-06,2025-01-19,,Alice,,100,,high,false
+1.1.1,Task A,task,completed,5,2025-01-06,2025-01-10,,Bob,"Bob,Carol",100,,medium,false
+1.1.2,Task B,task,in_progress,5,2025-01-13,2025-01-17,1.1.1,Alice,,60,,high,false</pre>
+          </details>
+        </div>
+      </section>
+    </main>
+
+    <footer class="status-bar" aria-label="Project status">
+      <div class="status-left">
+        <span class="status-item" id="task-count-status">Tasks: 0</span>
+        <span class="status-separator" aria-hidden="true"></span>
+        <span class="status-item" id="completed-count-status">Completed: 0</span>
+        <span class="status-separator" aria-hidden="true"></span>
+        <span class="status-item" id="visible-count-status">Visible: 0</span>
+        <span class="status-separator dirty-status-separator" aria-hidden="true" hidden></span>
+        <span class="status-item dirty-indicator" id="dirty-status" hidden>● Unsaved changes</span>
+      </div>
+      <div class="status-right">
+        <span class="status-item" id="filename-status">Filename: Untitled project.csv</span>
+      </div>
+    </footer>
+  </div>
+
+  <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <script type="module">
+    const CSV_COLUMNS = [
+      "task_id",
+      "task_name",
+      "task_level",
+      "task_status",
+      "duration_days",
+      "start_date",
+      "end_date",
+      "dependencies",
+      "owner",
+      "resources",
+      "percent_complete",
+      "notes",
+      "priority",
+      "milestone"
+    ];
+
+    const COMPUTED_COLUMNS = new Set(["_depth", "_isGroup", "_children", "_parent"]);
+    const LIST_COLUMNS = new Set(["dependencies", "resources"]);
+    const INTEGER_COLUMNS = new Set(["duration_days", "percent_complete"]);
+    const STATUS_OPTIONS = ["not_started", "in_progress", "blocked", "completed", "on_hold", "cancelled"];
+    const PRIORITY_OPTIONS = ["low", "medium", "high", "critical"];
+    const TASK_LEVEL_OPTIONS = ["project", "group1", "group2", "group3", "task"];
+    const ZOOM_OPTIONS = ["week", "month", "quarter", "year"];
+    const TIMELINE_GROUP_OPTIONS = ["owner", "level"];
+    const TABLE_COLUMNS = [
+      { field: "task_id", label: "Task ID", className: "col-task-id", editable: false },
+      { field: "task_name", label: "Task Name", className: "col-task-name", editable: true },
+      { field: "task_level", label: "Level", editable: true },
+      { field: "task_status", label: "Status", editable: true },
+      { field: "duration_days", label: "Duration", editable: true },
+      { field: "start_date", label: "Start Date", editable: true },
+      { field: "end_date", label: "End Date", editable: true },
+      { field: "dependencies", label: "Dependencies", editable: true },
+      { field: "owner", label: "Owner", editable: true },
+      { field: "resources", label: "Resources", editable: true },
+      { field: "percent_complete", label: "% Done", editable: true },
+      { field: "priority", label: "Priority", editable: true },
+      { field: "milestone", label: "Milestone", editable: true },
+      { field: "notes", label: "Notes", className: "col-notes", editable: true }
+    ];
+
+    const state = {
+      project: {
+        tasks: [],
+        columns: [...CSV_COLUMNS],
+        filename: "Untitled project.csv",
+        fileHandle: null,
+        isDirty: false,
+        lastSavedText: ""
+      },
+      ui: {
+        currentView: "gantt",
+        role: "project_manager",
+        selectedTaskId: null,
+        searchTerm: "",
+        sort: {
+          column: null,
+          direction: "asc"
+        },
+        filters: {
+          search: "",
+          status: new Set(),
+          owner: new Set(),
+          priority: new Set(),
+          milestone: false,
+          dateFrom: "",
+          dateTo: ""
+        },
+        collapsedTaskIds: new Set(),
+        filterPanelOpen: false,
+        boardOwnerFilter: "",
+        timelineGroupBy: "owner",
+        ganttZoom: "week",
+        zoom: "week",
+        criticalPathTaskIds: new Set(),
+        lastCriticalPathError: "",
+        validationMessages: []
+      }
+    };
+
+    const SAMPLE_CSV = document.getElementById("sample-csv-source").textContent.trim();
+    let dashboardResizeObservers = [];
+
+    function parseCSV(text) {
+      const rows = parseCSVRows(text);
+
+      if (rows.length === 0) {
+        state.project.columns = [...CSV_COLUMNS];
+        return [];
+      }
+
+      const headers = rows[0].map((header) => header.trim()).filter(Boolean);
+      state.project.columns = mergeColumns(headers);
+
+      const tasks = rows
+        .slice(1)
+        .filter((row) => row.some((value) => value.trim() !== ""))
+        .map((row) => createTaskFromRow(headers, row));
+
+      return buildTree(tasks);
+    }
+
+    function serialiseCSV(tasks) {
+      const columns = getExportColumns(tasks);
+      const header = columns.map(quoteCSVValue).join(",");
+      const rows = tasks.map((task) => {
+        return columns
+          .map((column) => quoteCSVValue(formatCSVCell(task[column], column)))
+          .join(",");
+      });
+
+      return [header, ...rows].join("\n");
+    }
+
+    function buildTree(tasks) {
+      const taskById = new Map();
+
+      tasks.forEach((task) => {
+        refreshComputedFields(task);
+        task._children = [];
+        task._parent = null;
+
+        if (task.task_id) {
+          taskById.set(task.task_id, task);
+        }
+      });
+
+      tasks.forEach((task) => {
+        const parentId = getParentTaskId(task.task_id);
+        const parent = parentId ? taskById.get(parentId) : null;
+
+        if (parent) {
+          task._parent = parent.task_id;
+          parent._children.push(task);
+        }
+      });
+
+      return tasks;
+    }
+
+    function parseCSVRows(text) {
+      const rows = [];
+      let row = [];
+      let value = "";
+      let insideQuotes = false;
+      let rowNumber = 1;
+
+      for (let index = 0; index < text.length; index += 1) {
+        const char = text[index];
+        const nextChar = text[index + 1];
+
+        if (char === "\"") {
+          if (insideQuotes && nextChar === "\"") {
+            value += "\"";
+            index += 1;
+          } else {
+            insideQuotes = !insideQuotes;
+          }
+          continue;
+        }
+
+        if (char === "," && !insideQuotes) {
+          row.push(value);
+          value = "";
+          continue;
+        }
+
+        if ((char === "\n" || char === "\r") && !insideQuotes) {
+          if (char === "\r" && nextChar === "\n") {
+            index += 1;
+          }
+
+          row.push(value);
+          rows.push(row);
+          row = [];
+          value = "";
+          rowNumber += 1;
+          continue;
+        }
+
+        value += char;
+      }
+
+      if (value !== "" || row.length > 0) {
+        row.push(value);
+        rows.push(row);
+      }
+
+      if (insideQuotes) {
+        const error = new Error(`CSV parse error at row ${rowNumber}: unclosed quoted field.`);
+        error.rowNumber = rowNumber;
+        throw error;
+      }
+
+      return rows;
+    }
+
+    function createTaskFromRow(headers, row) {
+      const task = {};
+
+      headers.forEach((header, index) => {
+        task[header] = row[index] ?? "";
+      });
+
+      CSV_COLUMNS.forEach((column) => {
+        if (!(column in task)) {
+          task[column] = defaultValueForColumn(column);
+        }
+      });
+
+      task.dependencies = parseListValue(task.dependencies);
+      task.resources = parseListValue(task.resources);
+      task.duration_days = parseIntegerValue(task.duration_days);
+      task.percent_complete = parseIntegerValue(task.percent_complete);
+      task.milestone = parseBooleanValue(task.milestone);
+
+      refreshComputedFields(task);
+
+      return task;
+    }
+
+    function refreshComputedFields(task) {
+      const taskId = String(task.task_id ?? "").trim();
+      const taskLevel = String(task.task_level ?? "").trim();
+
+      task.task_id = taskId;
+      task._depth = taskId === "" ? 0 : (taskId.match(/\./g) || []).length;
+      task._isGroup = taskLevel !== "task";
+    }
+
+    function parseListValue(value) {
+      if (Array.isArray(value)) {
+        return value.map((item) => String(item).trim()).filter(Boolean);
+      }
+
+      return String(value ?? "")
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean);
+    }
+
+    function parseIntegerValue(value) {
+      if (value === "" || value === null || value === undefined) {
+        return 0;
+      }
+
+      const parsed = Number.parseInt(String(value).trim(), 10);
+      return Number.isNaN(parsed) ? 0 : parsed;
+    }
+
+    function parseBooleanValue(value) {
+      if (typeof value === "boolean") {
+        return value;
+      }
+
+      const normalized = String(value ?? "").trim().toLowerCase();
+      return normalized === "true" || normalized === "yes" || normalized === "1";
+    }
+
+    function defaultValueForColumn(column) {
+      if (LIST_COLUMNS.has(column)) {
+        return [];
+      }
+
+      if (INTEGER_COLUMNS.has(column)) {
+        return 0;
+      }
+
+      if (column === "milestone") {
+        return false;
+      }
+
+      return "";
+    }
+
+    function mergeColumns(headers) {
+      const columns = [...CSV_COLUMNS];
+
+      headers.forEach((header) => {
+        if (!columns.includes(header) && !COMPUTED_COLUMNS.has(header)) {
+          columns.push(header);
+        }
+      });
+
+      return columns;
+    }
+
+    function getExportColumns(tasks) {
+      const columns = mergeColumns(state.project.columns);
+
+      tasks.forEach((task) => {
+        Object.keys(task).forEach((column) => {
+          if (!columns.includes(column) && !COMPUTED_COLUMNS.has(column)) {
+            columns.push(column);
+          }
+        });
+      });
+
+      return columns;
+    }
+
+    function formatCSVCell(value, column) {
+      if (LIST_COLUMNS.has(column)) {
+        return Array.isArray(value) ? value.join(",") : String(value ?? "");
+      }
+
+      if (column === "milestone") {
+        return value ? "true" : "false";
+      }
+
+      return value === null || value === undefined ? "" : String(value);
+    }
+
+    function quoteCSVValue(value) {
+      const text = String(value);
+
+      if (/[",\r\n]/.test(text)) {
+        return `"${text.replace(/"/g, "\"\"")}"`;
+      }
+
+      return text;
+    }
+
+    function getParentTaskId(taskId) {
+      const normalized = String(taskId ?? "").trim();
+      const lastDotIndex = normalized.lastIndexOf(".");
+
+      return lastDotIndex === -1 ? null : normalized.slice(0, lastDotIndex);
+    }
+
+    async function openFile() {
+      try {
+        if ("showOpenFilePicker" in window) {
+          const [fileHandle] = await window.showOpenFilePicker({
+            multiple: false,
+            types: [
+              {
+                description: "CSV files",
+                accept: {
+                  "text/csv": [".csv"],
+                  "text/plain": [".csv"]
+                }
+              }
+            ]
+          });
+          const file = await fileHandle.getFile();
+          const text = await file.text();
+
+          await loadProjectFromText(text, file.name, fileHandle);
+          showToast(`Opened ${file.name}`, "success");
+          return;
+        }
+
+        openFileFallback();
+      } catch (error) {
+        handleFileError(error, "Could not open the CSV file.");
+      }
+    }
+
+    async function saveFile() {
+      const csvText = serialiseCSV(state.project.tasks);
+
+      try {
+        if (state.project.fileHandle && "createWritable" in state.project.fileHandle) {
+          const writable = await state.project.fileHandle.createWritable();
+          await writable.write(csvText);
+          await writable.close();
+          markProjectSaved(csvText);
+          showToast("Saved ✓", "success");
+          return;
+        }
+
+        await saveFileAs();
+      } catch (error) {
+        handleFileError(error, "Could not save the CSV file.");
+      }
+    }
+
+    async function saveFileAs() {
+      const suggestedName = normaliseCSVFilename(state.project.filename || "project.csv");
+      const csvText = serialiseCSV(state.project.tasks);
+
+      try {
+        if ("showSaveFilePicker" in window) {
+          const fileHandle = await window.showSaveFilePicker({
+            suggestedName,
+            types: [
+              {
+                description: "CSV files",
+                accept: {
+                  "text/csv": [".csv"],
+                  "text/plain": [".csv"]
+                }
+              }
+            ]
+          });
+
+          state.project.fileHandle = fileHandle;
+          state.project.filename = fileHandle.name || suggestedName;
+          await saveFile();
+          return;
+        }
+
+        const filename = window.prompt("Save CSV as", suggestedName);
+
+        if (!filename) {
+          return;
+        }
+
+        const finalFilename = normaliseCSVFilename(filename);
+        downloadCSV(csvText, finalFilename);
+        state.project.fileHandle = null;
+        state.project.filename = finalFilename;
+        markProjectSaved(csvText);
+        showToast("Saved ✓", "success");
+      } catch (error) {
+        handleFileError(error, "Could not save the CSV file.");
+      }
+    }
+
+    function openFileFallback() {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = ".csv,text/csv";
+      input.style.position = "fixed";
+      input.style.left = "-9999px";
+
+      input.addEventListener("change", async () => {
+        const [file] = input.files;
+        input.remove();
+
+        if (!file) {
+          return;
+        }
+
+        try {
+          const text = await readFileAsText(file);
+          await loadProjectFromText(text, file.name, null);
+          showToast(`Opened ${file.name}`, "success");
+        } catch (error) {
+          handleFileError(error, "Could not open the CSV file.");
+        }
+      }, { once: true });
+
+      document.body.append(input);
+      input.click();
+    }
+
+    function readFileAsText(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.addEventListener("load", () => resolve(String(reader.result ?? "")));
+        reader.addEventListener("error", () => reject(reader.error));
+        reader.readAsText(file);
+      });
+    }
+
+    async function loadProjectFromText(text, filename, fileHandle) {
+      showLoadingState();
+      await new Promise((resolve) => window.requestAnimationFrame(resolve));
+
+      try {
+        const tasks = parseCSV(text);
+
+        state.project.tasks = buildTree(tasks);
+        state.project.filename = filename || "project.csv";
+        state.project.fileHandle = fileHandle;
+        state.project.lastSavedText = serialiseCSV(state.project.tasks);
+        state.project.isDirty = false;
+        state.ui.selectedTaskId = null;
+        state.ui.collapsedTaskIds.clear();
+
+        closeTaskEditor();
+        renderCurrentView();
+        updateStatusBar();
+      } catch (error) {
+        console.error(error);
+        renderCurrentView();
+        showToast(error.rowNumber ? `CSV parse failed at row ${error.rowNumber}.` : "CSV parse failed.", "error");
+      }
+    }
+
+    function showLoadingState() {
+      const mainContent = document.getElementById("main-content");
+      const loading = document.createElement("div");
+
+      loading.className = "loading-view";
+      loading.textContent = "Loading...";
+      mainContent?.replaceChildren(loading);
+    }
+
+    function downloadCSV(csvText, filename) {
+      const blob = new Blob([csvText], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = filename;
+      link.style.display = "none";
+      document.body.append(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function renderCurrentView() {
+      const mainContent = document.getElementById("main-content");
+
+      if (!mainContent) {
+        return;
+      }
+
+      cleanupDashboardResizeObservers();
+
+      const view = state.ui.currentView;
+      const filteredTasks = getFilteredTasks();
+      const criticalPath = calculateCriticalPath(state.project.tasks);
+      let renderedView;
+
+      state.ui.criticalPathTaskIds = criticalPath;
+
+      if (state.project.tasks.length === 0) {
+        renderedView = renderPlaceholderView(view);
+      } else if (view === "table") {
+        renderedView = renderTable(filteredTasks, state.ui);
+      } else if (view === "gantt") {
+        renderedView = renderGantt(filteredTasks, state.ui, criticalPath);
+      } else if (view === "board") {
+        renderedView = renderBoard(filteredTasks, state.ui);
+      } else if (view === "timeline") {
+        renderedView = renderTimeline(filteredTasks, state.ui);
+      } else if (view === "dashboard") {
+        renderedView = renderDashboard(filteredTasks, state.ui);
+      } else {
+        renderedView = renderPlaceholderView(view);
+      }
+
+      mainContent.replaceChildren(renderedView);
+      updateViewButtons();
+      updateToolbarControls();
+      updateFilterButton();
+      updateStatusBar();
+    }
+
+    function renderPlaceholderView(viewName) {
+      const viewLabel = getViewLabel(viewName);
+      const taskCount = state.project.tasks.length;
+      const section = document.createElement("section");
+      const panel = document.createElement("div");
+      const title = document.createElement("h1");
+      const copy = document.createElement("p");
+
+      section.className = "empty-view";
+      section.setAttribute("aria-label", `${viewLabel} workspace`);
+      panel.className = "empty-panel";
+      title.className = "empty-title";
+      title.textContent = `${viewLabel} view`;
+      copy.className = "empty-copy";
+      copy.textContent = taskCount > 0
+        ? `Loaded ${taskCount} tasks from ${state.project.filename}.`
+        : "Open a CSV file to get started.";
+
+      panel.append(title, copy);
+
+      if (taskCount === 0) {
+        const openButton = document.createElement("button");
+
+        openButton.type = "button";
+        openButton.className = "empty-action";
+        openButton.textContent = "Open File";
+        openButton.addEventListener("click", openFile);
+        panel.append(openButton);
+      }
+
+      section.append(panel);
+      return section;
+    }
+
+    function switchView(viewName) {
+      state.ui.currentView = viewName;
+      renderCurrentView();
+    }
+
+    function renderTable(tasks, ui) {
+      const section = document.createElement("section");
+      const frame = document.createElement("div");
+      const displayTasks = getDisplayTasks(tasks, ui);
+
+      section.className = "table-view";
+      section.setAttribute("aria-label", "Task table view");
+      frame.className = "table-frame";
+
+      const table = document.createElement("table");
+      const thead = document.createElement("thead");
+      const headerRow = document.createElement("tr");
+      const tbody = document.createElement("tbody");
+
+      table.className = "task-table";
+      table.setAttribute("aria-label", "Tasks");
+
+      TABLE_COLUMNS.forEach((column) => {
+        headerRow.append(renderTableHeaderCell(column, ui));
+      });
+
+      thead.append(headerRow);
+
+      displayTasks.forEach((task) => {
+        tbody.append(renderTaskRow(task));
+      });
+
+      if (displayTasks.length === 0) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+
+        cell.colSpan = TABLE_COLUMNS.length;
+        cell.className = "table-empty";
+        cell.textContent = state.project.tasks.length === 0
+          ? "No tasks yet. Use Add Task to create the first row."
+          : "No tasks match the current view.";
+        row.append(cell);
+        tbody.append(row);
+      }
+
+      table.append(thead, tbody);
+      frame.append(table);
+      section.append(frame);
+      return section;
+    }
+
+    function renderGantt(tasks, ui, criticalPath = new Set()) {
+      const section = document.createElement("section");
+      const shell = document.createElement("div");
+      const left = document.createElement("div");
+      const right = document.createElement("div");
+      const leftHeader = document.createElement("div");
+      const leftBody = document.createElement("div");
+      const rightScroll = document.createElement("div");
+      const displayTasks = getDisplayTasks(tasks, ui);
+      const range = getProjectDateRange(displayTasks);
+      const pxPerDay = getPxPerDay(ui.ganttZoom);
+      const totalDays = Math.max(1, daysBetween(range.start, range.end) + 1);
+      const chartWidth = totalDays * pxPerDay;
+      const chartHeight = Math.max(32, displayTasks.length * 32);
+      const positions = new Map();
+
+      section.className = "gantt-view";
+      shell.className = "gantt-shell";
+      left.className = "gantt-left";
+      right.className = "gantt-right";
+      leftHeader.className = "gantt-left-header";
+      leftHeader.append(
+        ...["Task ID", "Task Name", "Dur", "Start", "End", "Owner", "%"].map((label) => {
+          const span = document.createElement("span");
+          span.textContent = label;
+          return span;
+        })
+      );
+
+      leftBody.className = "gantt-left-body";
+      rightScroll.className = "gantt-right-scroll";
+      rightScroll.append(renderTimeAxis(range.start, range.end, pxPerDay, ui.ganttZoom));
+
+      const chartArea = document.createElement("div");
+      chartArea.className = "gantt-chart-area";
+      chartArea.style.width = `${chartWidth}px`;
+      chartArea.style.height = `${chartHeight}px`;
+
+      displayTasks.forEach((task, index) => {
+        const leftRow = renderGanttLeftRow(task);
+        const taskRange = getTaskDateRange(task);
+        const top = index * 32 + 7;
+
+        leftBody.append(leftRow);
+
+        if (!taskRange) {
+          return;
+        }
+
+        const leftOffset = Math.max(0, daysBetween(range.start, taskRange.start) * pxPerDay);
+        const width = Math.max(pxPerDay, (daysBetween(taskRange.start, taskRange.end) + 1) * pxPerDay);
+        positions.set(task.task_id, {
+          left: leftOffset,
+          top,
+          width,
+          centerY: top + 9
+        });
+
+        if (task.milestone) {
+          const milestone = document.createElement("div");
+          milestone.className = "milestone-diamond";
+          milestone.style.left = `${leftOffset}px`;
+          milestone.style.top = `${top + 2}px`;
+          milestone.title = getTaskTooltip(task);
+          milestone.addEventListener("click", () => selectTask(task.task_id));
+          chartArea.append(milestone);
+          return;
+        }
+
+        const bar = document.createElement("div");
+        const progress = document.createElement("div");
+
+        bar.className = "gantt-bar";
+        bar.classList.toggle("is-group", task._isGroup);
+        bar.classList.toggle("is-critical", criticalPath.has(task.task_id));
+        bar.style.left = `${leftOffset}px`;
+        bar.style.top = `${top}px`;
+        bar.style.width = `${width}px`;
+        bar.style.background = `var(--status-${toKebabCase(task.task_status || "not_started")})`;
+        bar.title = getTaskTooltip(task);
+        bar.addEventListener("click", () => selectTask(task.task_id));
+
+        progress.className = "bar-progress";
+        progress.style.width = `${Math.min(100, Math.max(0, parseIntegerValue(task.percent_complete)))}%`;
+        bar.append(progress);
+        chartArea.append(bar);
+      });
+
+      appendTodayLine(chartArea, range.start, range.end, pxPerDay, chartHeight);
+      chartArea.append(renderDependencySvg(displayTasks, positions, chartWidth, chartHeight));
+
+      rightScroll.append(chartArea);
+      left.append(leftHeader, leftBody);
+      right.append(rightScroll);
+      shell.append(left, right);
+      section.append(shell);
+      syncVerticalScroll(leftBody, rightScroll);
+      return section;
+    }
+
+    function renderGanttLeftRow(task) {
+      const row = document.createElement("div");
+      const fields = [
+        task.task_id,
+        "",
+        parseIntegerValue(task.duration_days),
+        task.start_date,
+        task.end_date,
+        task.owner,
+        `${parseIntegerValue(task.percent_complete)}%`
+      ];
+
+      row.className = "gantt-left-row";
+      row.dataset.taskId = task.task_id;
+      row.addEventListener("click", () => selectTask(task.task_id));
+
+      fields.forEach((value, index) => {
+        const span = document.createElement("span");
+
+        if (index === 1) {
+          span.append(renderGanttTaskName(task));
+        } else {
+          span.textContent = value || "";
+        }
+
+        row.append(span);
+      });
+
+      return row;
+    }
+
+    function renderGanttTaskName(task) {
+      const wrapper = document.createElement("span");
+      const dot = document.createElement("span");
+      const text = document.createElement("span");
+      const isCollapsed = state.ui.collapsedTaskIds.has(task.task_id);
+
+      wrapper.className = "gantt-task-name";
+      wrapper.style.setProperty("--task-depth", String(task._depth || 0));
+
+      if (task._isGroup) {
+        const toggle = document.createElement("button");
+
+        toggle.type = "button";
+        toggle.className = "task-toggle";
+        toggle.textContent = isCollapsed ? "▶" : "▼";
+        toggle.setAttribute("aria-label", `${isCollapsed ? "Expand" : "Collapse"} ${task.task_name || task.task_id}`);
+        toggle.addEventListener("click", (event) => {
+          event.stopPropagation();
+          toggleTaskCollapse(task.task_id);
+        });
+        wrapper.append(toggle);
+      }
+
+      dot.className = `status-dot ${toKebabCase(task.task_status || "not_started")}`;
+      text.textContent = task.task_name || "";
+      wrapper.append(dot, text);
+      return wrapper;
+    }
+
+    function renderTimeAxis(startDate, endDate, pxPerDay, zoom) {
+      const axis = document.createElement("div");
+      const cells = getTimeAxisCells(startDate, endDate, zoom);
+
+      axis.className = "time-axis";
+      axis.style.width = `${Math.max(1, daysBetween(startDate, endDate) + 1) * pxPerDay}px`;
+
+      cells.forEach((cell) => {
+        const element = document.createElement("div");
+        const cellDays = Math.max(1, daysBetween(cell.start, cell.end) + 1);
+
+        element.className = "time-cell";
+        element.style.width = `${cellDays * pxPerDay}px`;
+        element.textContent = cell.label;
+        axis.append(element);
+      });
+
+      return axis;
+    }
+
+    function getTimeAxisCells(startDate, endDate, zoom) {
+      const cells = [];
+      let cursor = new Date(startDate);
+
+      cursor.setHours(0, 0, 0, 0);
+
+      while (cursor <= endDate) {
+        const cellStart = new Date(cursor);
+        const cellEnd = getAxisCellEnd(cellStart, zoom, endDate);
+
+        cells.push({
+          start: cellStart,
+          end: cellEnd,
+          label: formatAxisLabel(cellStart, zoom)
+        });
+        cursor = addDays(cellEnd, 1);
+      }
+
+      return cells;
+    }
+
+    function getAxisCellEnd(startDate, zoom, maxDate) {
+      const end = new Date(startDate);
+
+      if (zoom === "week") {
+        end.setDate(end.getDate() + 6);
+      } else if (zoom === "month") {
+        end.setMonth(end.getMonth() + 1, 0);
+      } else if (zoom === "quarter") {
+        end.setMonth(end.getMonth() + 3, 0);
+      } else {
+        end.setFullYear(end.getFullYear() + 1, 0, 0);
+      }
+
+      return end > maxDate ? new Date(maxDate) : end;
+    }
+
+    function formatAxisLabel(date, zoom) {
+      if (zoom === "week") {
+        return `W${getWeekNumber(date)} ${date.toLocaleDateString(undefined, { month: "short", day: "numeric" })}`;
+      }
+
+      if (zoom === "month") {
+        return date.toLocaleDateString(undefined, { month: "short", year: "numeric" });
+      }
+
+      if (zoom === "quarter") {
+        return `Q${Math.floor(date.getMonth() / 3) + 1} ${date.getFullYear()}`;
+      }
+
+      return String(date.getFullYear());
+    }
+
+    function appendTodayLine(chartArea, startDate, endDate, pxPerDay, chartHeight) {
+      const today = new Date();
+
+      today.setHours(0, 0, 0, 0);
+
+      if (today < startDate || today > endDate) {
+        return;
+      }
+
+      const line = document.createElement("div");
+
+      line.className = "today-line";
+      line.style.left = `${daysBetween(startDate, today) * pxPerDay}px`;
+      line.style.height = `${chartHeight}px`;
+      chartArea.append(line);
+    }
+
+    function renderDependencySvg(tasks, positions, width, height) {
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+      const marker = document.createElementNS("http://www.w3.org/2000/svg", "marker");
+      const markerPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+
+      svg.classList.add("dependency-svg");
+      svg.setAttribute("width", String(width));
+      svg.setAttribute("height", String(height));
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+
+      marker.setAttribute("id", "arrowhead");
+      marker.setAttribute("markerWidth", "8");
+      marker.setAttribute("markerHeight", "6");
+      marker.setAttribute("refX", "7");
+      marker.setAttribute("refY", "3");
+      marker.setAttribute("orient", "auto");
+      markerPath.setAttribute("d", "M0,0 L8,3 L0,6 Z");
+      markerPath.setAttribute("fill", "#9CA3AF");
+      marker.append(markerPath);
+      defs.append(marker);
+      svg.append(defs);
+
+      tasks.forEach((task) => {
+        const target = positions.get(task.task_id);
+
+        if (!target) {
+          return;
+        }
+
+        parseListValue(task.dependencies).forEach((dependencyId) => {
+          const source = positions.get(dependencyId);
+
+          if (!source) {
+            return;
+          }
+
+          const startX = source.left + source.width;
+          const startY = source.centerY;
+          const endX = target.left;
+          const endY = target.centerY;
+          const midX = Math.max(startX + 12, endX - 12);
+          const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+
+          path.setAttribute("d", `M${startX} ${startY} H${midX} V${endY} H${endX}`);
+          path.setAttribute("fill", "none");
+          path.setAttribute("stroke", "#9CA3AF");
+          path.setAttribute("stroke-width", "1.5");
+          path.setAttribute("marker-end", "url(#arrowhead)");
+          svg.append(path);
+        });
+      });
+
+      return svg;
+    }
+
+    function syncVerticalScroll(leftBody, rightScroll) {
+      let isSyncing = false;
+
+      leftBody.addEventListener("scroll", () => {
+        if (isSyncing) {
+          return;
+        }
+
+        isSyncing = true;
+        rightScroll.scrollTop = leftBody.scrollTop;
+        isSyncing = false;
+      });
+
+      rightScroll.addEventListener("scroll", () => {
+        if (isSyncing) {
+          return;
+        }
+
+        isSyncing = true;
+        leftBody.scrollTop = rightScroll.scrollTop;
+        isSyncing = false;
+      });
+    }
+
+    function renderBoard(tasks, ui) {
+      const section = document.createElement("section");
+      const filters = document.createElement("div");
+      const columns = document.createElement("div");
+      const leafTasks = tasks.filter(isLeafTask);
+      const owners = getUniqueOwners(state.project.tasks);
+      const statuses = ["not_started", "in_progress", "on_hold", "completed", "cancelled"];
+
+      section.className = "board-view";
+      filters.className = "board-filters";
+      columns.className = "board-columns";
+
+      filters.append(createOwnerFilterPill("", "All Owners", !ui.boardOwnerFilter));
+      owners.forEach((owner) => {
+        filters.append(createOwnerFilterPill(owner, owner, ui.boardOwnerFilter === owner));
+      });
+
+      statuses.forEach((status) => {
+        const column = document.createElement("section");
+        const header = document.createElement("div");
+        const title = document.createElement("span");
+        const count = document.createElement("span");
+        const list = document.createElement("div");
+        const statusTasks = leafTasks.filter((task) => {
+          return task.task_status === status
+            && (!ui.boardOwnerFilter || (task.owner || "Unassigned") === ui.boardOwnerFilter);
+        });
+
+        column.className = "board-column";
+        column.dataset.status = status;
+        column.style.background = `var(--status-${toKebabCase(status)}-bg)`;
+        column.addEventListener("dragover", (event) => {
+          event.preventDefault();
+          column.classList.add("drag-over");
+        });
+        column.addEventListener("dragleave", () => column.classList.remove("drag-over"));
+        column.addEventListener("drop", (event) => {
+          event.preventDefault();
+          column.classList.remove("drag-over");
+          const taskId = event.dataTransfer.getData("text/plain");
+          updateTaskField(taskId, "task_status", status);
+        });
+
+        header.className = "board-column-header";
+        title.textContent = formatOptionLabel(status);
+        count.className = "badge";
+        count.textContent = String(statusTasks.length);
+        header.append(title, count);
+
+        list.className = "board-card-list";
+        statusTasks.forEach((task) => list.append(renderBoardCard(task)));
+        column.append(header, list);
+        columns.append(column);
+      });
+
+      section.append(filters, columns);
+      return section;
+    }
+
+    function createOwnerFilterPill(owner, label, active) {
+      const button = document.createElement("button");
+
+      button.type = "button";
+      button.className = "owner-filter-pill";
+      button.setAttribute("aria-pressed", String(active));
+      button.textContent = label;
+      button.addEventListener("click", () => {
+        state.ui.boardOwnerFilter = owner;
+        renderCurrentView();
+      });
+      return button;
+    }
+
+    function renderBoardCard(task) {
+      const card = document.createElement("article");
+      const id = document.createElement("div");
+      const title = document.createElement("div");
+      const owner = document.createElement("div");
+      const progressTrack = document.createElement("div");
+      const progressFill = document.createElement("div");
+      const meta = document.createElement("div");
+      const percentComplete = Math.min(100, Math.max(0, parseIntegerValue(task.percent_complete)));
+
+      card.className = "task-card";
+      card.draggable = true;
+      card.dataset.taskId = task.task_id;
+      card.style.borderLeftColor = `var(--priority-${toKebabCase(task.priority || "medium")})`;
+      card.addEventListener("dragstart", (event) => {
+        event.dataTransfer.setData("text/plain", task.task_id);
+      });
+      card.addEventListener("click", () => selectTask(task.task_id));
+
+      id.className = "task-card-id";
+      id.textContent = task.task_id;
+      title.className = "task-card-title";
+      title.textContent = task.task_name || "Untitled task";
+      owner.className = "task-card-owner";
+      owner.textContent = task.owner || "Unassigned";
+
+      progressTrack.className = "progress-track";
+      progressFill.className = "progress-fill";
+      progressFill.style.width = `${percentComplete}%`;
+      progressTrack.append(progressFill);
+
+      meta.className = "card-meta";
+      meta.append(renderPriorityCell(task.priority));
+      if (task.milestone) {
+        const milestone = document.createElement("span");
+        milestone.className = "milestone-mark";
+        milestone.textContent = "◆";
+        meta.append(milestone);
+      }
+
+      card.append(id, title, owner, progressTrack, meta);
+      return card;
+    }
+
+    function renderTimeline(tasks, ui) {
+      const section = document.createElement("section");
+      const shell = document.createElement("div");
+      const left = document.createElement("div");
+      const right = document.createElement("div");
+      const leftHeader = document.createElement("div");
+      const leftBody = document.createElement("div");
+      const rightScroll = document.createElement("div");
+      const leafTasks = tasks.filter(isLeafTask);
+      const groupedTasks = groupTimelineTasks(leafTasks, ui.timelineGroupBy);
+      const range = getProjectDateRange(leafTasks);
+      const pxPerDay = getPxPerDay(ui.ganttZoom);
+      const totalDays = Math.max(1, daysBetween(range.start, range.end) + 1);
+      const chartWidth = totalDays * pxPerDay;
+      let accumulatedTop = 0;
+
+      section.className = "timeline-view";
+      shell.className = "timeline-shell";
+      leftHeader.className = "timeline-left-header";
+      leftHeader.textContent = ui.timelineGroupBy === "level" ? "Task Level" : "Owner";
+      leftBody.className = "timeline-left-body";
+      rightScroll.className = "timeline-right-scroll";
+      rightScroll.append(renderTimeAxis(range.start, range.end, pxPerDay, ui.ganttZoom));
+
+      const chartArea = document.createElement("div");
+      chartArea.className = "timeline-chart-area";
+      chartArea.style.width = `${chartWidth}px`;
+
+      groupedTasks.forEach(([groupName, groupTasks]) => {
+        const laneHeight = Math.max(48, groupTasks.length * 22 + 18);
+        const label = document.createElement("div");
+        const lane = document.createElement("div");
+
+        label.className = "timeline-lane-label";
+        label.style.height = `${laneHeight}px`;
+        label.textContent = groupName;
+        leftBody.append(label);
+
+        lane.className = "timeline-lane";
+        lane.style.position = "absolute";
+        lane.style.left = "0";
+        lane.style.top = `${accumulatedTop}px`;
+        lane.style.width = `${chartWidth}px`;
+        lane.style.height = `${laneHeight}px`;
+        chartArea.append(lane);
+
+        groupTasks.forEach((task, index) => {
+          const taskRange = getTaskDateRange(task);
+
+          if (!taskRange) {
+            return;
+          }
+
+          const leftOffset = Math.max(0, daysBetween(range.start, taskRange.start) * pxPerDay);
+          const width = Math.max(pxPerDay, (daysBetween(taskRange.start, taskRange.end) + 1) * pxPerDay);
+          const top = accumulatedTop + 10 + index * 22;
+
+          if (task.milestone) {
+            const milestone = document.createElement("div");
+            milestone.className = "milestone-diamond";
+            milestone.style.left = `${leftOffset}px`;
+            milestone.style.top = `${top}px`;
+            milestone.style.background = `var(--priority-${toKebabCase(task.priority || "medium")})`;
+            milestone.title = getTaskTooltip(task);
+            milestone.addEventListener("click", () => selectTask(task.task_id));
+            chartArea.append(milestone);
+            return;
+          }
+
+          const bar = document.createElement("div");
+          bar.className = "timeline-bar";
+          bar.style.left = `${leftOffset}px`;
+          bar.style.top = `${top}px`;
+          bar.style.width = `${width}px`;
+          bar.style.background = `var(--priority-${toKebabCase(task.priority || "medium")})`;
+          bar.title = getTaskTooltip(task);
+          bar.addEventListener("click", () => selectTask(task.task_id));
+          chartArea.append(bar);
+        });
+
+        accumulatedTop += laneHeight;
+      });
+
+      chartArea.style.height = `${Math.max(48, accumulatedTop)}px`;
+      appendTodayLine(chartArea, range.start, range.end, pxPerDay, Math.max(48, accumulatedTop));
+      left.append(leftHeader, leftBody);
+      right.append(rightScroll);
+      rightScroll.append(chartArea);
+      shell.append(left, right);
+      section.append(shell);
+      syncVerticalScroll(leftBody, rightScroll);
+      return section;
+    }
+
+    function groupTimelineTasks(tasks, groupBy) {
+      const groups = new Map();
+
+      tasks.forEach((task) => {
+        const key = groupBy === "level"
+          ? formatOptionLabel(task.task_level || "task")
+          : (task.owner || "Unassigned");
+
+        if (!groups.has(key)) {
+          groups.set(key, []);
+        }
+
+        groups.get(key).push(task);
+      });
+
+      return [...groups.entries()].sort(([left], [right]) => left.localeCompare(right));
+    }
+
+    function renderDashboard(tasks) {
+      const section = document.createElement("section");
+      const leafTasks = tasks.filter(isLeafTask);
+      const stats = getDashboardStats(leafTasks);
+      const summary = document.createElement("div");
+      const progressStats = document.createElement("div");
+      const charts = document.createElement("div");
+      const tables = document.createElement("div");
+      const workloadSection = document.createElement("div");
+
+      section.className = "dashboard-view";
+      summary.className = "dashboard-section summary-grid";
+      [
+        ["Total Tasks", stats.total, "var(--color-primary)"],
+        ["Completed", stats.completed, "var(--status-completed)"],
+        ["In Progress", stats.inProgress, "var(--status-in-progress)"],
+        ["Not Started", stats.notStarted, "var(--status-not-started)"],
+        ["Overdue", stats.overdue.length, "var(--color-danger)"]
+      ].forEach(([label, value, colour]) => {
+        summary.append(renderMetricCard(label, value, colour));
+      });
+
+      progressStats.className = "dashboard-section stats-grid";
+      progressStats.append(
+        renderCanvasPanel("Overall % Complete", (canvas) => drawDonutChart(canvas, {
+          segments: [
+            { label: "Complete", value: stats.weightedComplete, colour: resolveCssVar("--color-success") },
+            { label: "Remaining", value: Math.max(0, 100 - stats.weightedComplete), colour: resolveCssVar("--color-surface-muted") }
+          ]
+        })),
+        renderMetricCard("Days Remaining", stats.daysRemaining, "var(--color-warning)"),
+        renderMetricCard("On-time Rate", `${stats.onTimeRate}%`, "var(--color-success)")
+      );
+
+      charts.className = "dashboard-section charts-grid";
+      charts.append(
+        renderCanvasPanel("Tasks by Status", (canvas) => drawVerticalBarChart(canvas, {
+          labels: STATUS_OPTIONS.map(formatOptionLabel),
+          values: STATUS_OPTIONS.map((status) => stats.byStatus.get(status) || 0),
+          colours: STATUS_OPTIONS.map((status) => resolveCssVar(`--status-${toKebabCase(status)}`))
+        })),
+        renderCanvasPanel("Tasks by Priority", (canvas) => drawDonutChart(canvas, {
+          segments: PRIORITY_OPTIONS.map((priority) => ({
+            label: formatOptionLabel(priority),
+            value: stats.byPriority.get(priority) || 0,
+            colour: resolveCssVar(`--priority-${priority}`)
+          }))
+        }))
+      );
+
+      tables.className = "dashboard-section tables-grid";
+      tables.append(
+        renderTaskTablePanel("Overdue Tasks", ["Task", "Owner", "End Date", "Days"], stats.overdue.map((task) => [
+          task.task_name,
+          task.owner || "Unassigned",
+          task.end_date || "",
+          `${Math.max(0, daysBetween(parseDateValue(task.end_date), startOfToday()))} overdue`
+        ])),
+        renderTaskTablePanel("Due This Week", ["Task", "Owner", "End Date", "Status"], stats.dueThisWeek.map((task) => [
+          task.task_name,
+          task.owner || "Unassigned",
+          task.end_date || "",
+          formatOptionLabel(task.task_status)
+        ]))
+      );
+
+      workloadSection.className = "dashboard-section";
+      workloadSection.append(renderOwnerWorkloadPanel(stats.ownerWorkload));
+      section.append(summary, progressStats, charts, tables, workloadSection);
+      return section;
+    }
+
+    function renderMetricCard(label, value, colour) {
+      const card = document.createElement("article");
+      const number = document.createElement("div");
+      const text = document.createElement("div");
+
+      card.className = "metric-card";
+      card.style.borderLeftColor = colour;
+      number.className = "metric-value";
+      number.textContent = String(value);
+      text.className = "metric-label";
+      text.textContent = label;
+      card.append(number, text);
+      return card;
+    }
+
+    function renderCanvasPanel(title, drawCallback) {
+      const panel = document.createElement("section");
+      const heading = document.createElement("h2");
+      const canvas = document.createElement("canvas");
+
+      panel.className = "dashboard-panel";
+      heading.textContent = title;
+      canvas.className = "chart-canvas";
+      canvas.width = 520;
+      canvas.height = 260;
+      panel.append(heading, canvas);
+      const redraw = () => drawCallback(canvas);
+      window.requestAnimationFrame(redraw);
+
+      if ("ResizeObserver" in window) {
+        const observer = new ResizeObserver(() => {
+          window.requestAnimationFrame(redraw);
+        });
+
+        observer.observe(canvas);
+        dashboardResizeObservers.push(observer);
+      }
+
+      return panel;
+    }
+
+    function renderTaskTablePanel(title, headers, rows) {
+      const panel = document.createElement("section");
+      const heading = document.createElement("h2");
+      const table = document.createElement("table");
+      const thead = document.createElement("thead");
+      const tbody = document.createElement("tbody");
+      const headerRow = document.createElement("tr");
+
+      panel.className = "dashboard-panel";
+      heading.textContent = title;
+      table.className = "dashboard-table";
+
+      headers.forEach((header) => {
+        const th = document.createElement("th");
+        th.textContent = header;
+        headerRow.append(th);
+      });
+      thead.append(headerRow);
+
+      if (rows.length === 0) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+
+        cell.colSpan = headers.length;
+        cell.textContent = "No tasks";
+        row.append(cell);
+        tbody.append(row);
+      } else {
+        rows.forEach((values) => {
+          const row = document.createElement("tr");
+          values.forEach((value) => {
+            const cell = document.createElement("td");
+            cell.textContent = value || "";
+            row.append(cell);
+          });
+          tbody.append(row);
+        });
+      }
+
+      table.append(thead, tbody);
+      panel.append(heading, table);
+      return panel;
+    }
+
+    function renderOwnerWorkloadPanel(workload) {
+      const rows = [...workload.entries()].sort(([left], [right]) => left.localeCompare(right)).map(([owner, values]) => {
+        const avg = values.total ? Math.round(values.percentTotal / values.total) : 0;
+        return [owner, values.total, values.completed, values.inProgress, values.notStarted, avg];
+      });
+      const panel = document.createElement("section");
+      const heading = document.createElement("h2");
+      const table = document.createElement("table");
+      const thead = document.createElement("thead");
+      const tbody = document.createElement("tbody");
+      const headerRow = document.createElement("tr");
+
+      panel.className = "dashboard-panel";
+      heading.textContent = "Owner Workload";
+      table.className = "dashboard-table";
+      ["Owner", "Total Tasks", "Completed", "In Progress", "Not Started", "Avg % Complete"].forEach((header) => {
+        const th = document.createElement("th");
+        th.textContent = header;
+        headerRow.append(th);
+      });
+      thead.append(headerRow);
+
+      rows.forEach(([owner, total, completed, inProgress, notStarted, average]) => {
+        const row = document.createElement("tr");
+        [owner, total, completed, inProgress, notStarted].forEach((value) => {
+          const cell = document.createElement("td");
+          cell.textContent = String(value);
+          row.append(cell);
+        });
+
+        const progressCell = document.createElement("td");
+        const progress = document.createElement("div");
+        const track = document.createElement("div");
+        const fill = document.createElement("div");
+        const label = document.createElement("span");
+
+        progress.className = "inline-progress";
+        track.className = "progress-track";
+        fill.className = "progress-fill";
+        fill.style.width = `${average}%`;
+        label.textContent = `${average}%`;
+        track.append(fill);
+        progress.append(track, label);
+        progressCell.append(progress);
+        row.append(progressCell);
+        tbody.append(row);
+      });
+
+      table.append(thead, tbody);
+      panel.append(heading, table);
+      return panel;
+    }
+
+    function getDashboardStats(tasks) {
+      const today = startOfToday();
+      const weekEnd = addDays(today, 7);
+      const projectEnd = getMaxDate(tasks.map((task) => parseDateValue(task.end_date))) || today;
+      const totalDuration = tasks.reduce((sum, task) => sum + Math.max(1, parseIntegerValue(task.duration_days)), 0) || 1;
+      const weightedComplete = Math.round(tasks.reduce((sum, task) => {
+        return sum + Math.max(1, parseIntegerValue(task.duration_days)) * parseIntegerValue(task.percent_complete);
+      }, 0) / totalDuration);
+      const byStatus = new Map();
+      const byPriority = new Map();
+      const ownerWorkload = new Map();
+
+      tasks.forEach((task) => {
+        const status = task.task_status || "not_started";
+        const priority = task.priority || "medium";
+        const owner = task.owner || "Unassigned";
+
+        byStatus.set(status, (byStatus.get(status) || 0) + 1);
+        byPriority.set(priority, (byPriority.get(priority) || 0) + 1);
+
+        if (!ownerWorkload.has(owner)) {
+          ownerWorkload.set(owner, {
+            total: 0,
+            completed: 0,
+            inProgress: 0,
+            notStarted: 0,
+            percentTotal: 0
+          });
+        }
+
+        const workload = ownerWorkload.get(owner);
+        workload.total += 1;
+        workload.completed += status === "completed" ? 1 : 0;
+        workload.inProgress += status === "in_progress" ? 1 : 0;
+        workload.notStarted += status === "not_started" ? 1 : 0;
+        workload.percentTotal += parseIntegerValue(task.percent_complete);
+      });
+
+      const completedTasks = tasks.filter((task) => task.task_status === "completed");
+      const onTimeCompleted = completedTasks.filter((task) => {
+        const end = parseDateValue(task.end_date);
+        return !end || end <= today;
+      }).length;
+
+      return {
+        total: tasks.length,
+        completed: byStatus.get("completed") || 0,
+        inProgress: byStatus.get("in_progress") || 0,
+        notStarted: byStatus.get("not_started") || 0,
+        weightedComplete,
+        daysRemaining: Math.max(0, daysBetween(today, projectEnd)),
+        onTimeRate: completedTasks.length ? Math.round(onTimeCompleted / completedTasks.length * 100) : 0,
+        overdue: tasks.filter((task) => {
+          const end = parseDateValue(task.end_date);
+          return end && end < today && !["completed", "cancelled"].includes(task.task_status);
+        }),
+        dueThisWeek: tasks.filter((task) => {
+          const end = parseDateValue(task.end_date);
+          return end && end >= today && end <= weekEnd;
+        }),
+        byStatus,
+        byPriority,
+        ownerWorkload
+      };
+    }
+
+    function cleanupDashboardResizeObservers() {
+      dashboardResizeObservers.forEach((observer) => observer.disconnect());
+      dashboardResizeObservers = [];
+    }
+
+    function prepareCanvasForDraw(canvas) {
+      const rect = canvas.getBoundingClientRect();
+      const width = Math.max(1, Math.round(rect.width || 520));
+      const height = Math.max(1, Math.round(rect.height || width / 2));
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      const pixelWidth = Math.round(width * dpr);
+      const pixelHeight = Math.round(height * dpr);
+
+      if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+        canvas.width = pixelWidth;
+        canvas.height = pixelHeight;
+      }
+
+      const context = canvas.getContext("2d");
+
+      context.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { context, width, height };
+    }
+
+    function drawVerticalBarChart(canvas, { labels, values, colours }) {
+      const { context, width, height } = prepareCanvasForDraw(canvas);
+      const padding = 36;
+      const maxValue = Math.max(1, ...values);
+      const barWidth = (width - padding * 2) / values.length * 0.62;
+
+      context.clearRect(0, 0, width, height);
+      context.fillStyle = "#FFFFFF";
+      context.fillRect(0, 0, width, height);
+      context.strokeStyle = "#E2E5EB";
+      context.beginPath();
+      context.moveTo(padding, height - padding);
+      context.lineTo(width - padding, height - padding);
+      context.stroke();
+
+      values.forEach((value, index) => {
+        const x = padding + index * ((width - padding * 2) / values.length) + barWidth * 0.3;
+        const barHeight = (height - padding * 2) * (value / maxValue);
+        const y = height - padding - barHeight;
+
+        context.fillStyle = colours[index] || "#2563EB";
+        context.fillRect(x, y, barWidth, barHeight);
+        context.fillStyle = "#1F2937";
+        context.font = "12px Inter, sans-serif";
+        context.textAlign = "center";
+        context.fillText(String(value), x + barWidth / 2, y - 6);
+        context.fillStyle = "#6B7280";
+        context.fillText(labels[index].split(" ")[0], x + barWidth / 2, height - 12);
+      });
+    }
+
+    function drawDonutChart(canvas, { segments }) {
+      const { context, width, height } = prepareCanvasForDraw(canvas);
+      const radius = Math.min(width, height) / 2 - 36;
+      const centerX = width / 2;
+      const centerY = height / 2 - 8;
+      const total = segments.reduce((sum, segment) => sum + segment.value, 0) || 1;
+      let startAngle = -Math.PI / 2;
+
+      context.clearRect(0, 0, width, height);
+      segments.forEach((segment) => {
+        const angle = segment.value / total * Math.PI * 2;
+
+        context.beginPath();
+        context.arc(centerX, centerY, radius, startAngle, startAngle + angle);
+        context.lineWidth = 28;
+        context.strokeStyle = segment.colour;
+        context.stroke();
+        startAngle += angle;
+      });
+
+      context.fillStyle = "#1F2937";
+      context.font = "700 22px Inter, sans-serif";
+      context.textAlign = "center";
+      context.fillText(`${Math.round(segments[0]?.value || 0)}%`, centerX, centerY + 8);
+    }
+
+    function renderTableHeaderCell(column, ui) {
+      const th = document.createElement("th");
+      const button = document.createElement("button");
+      const label = document.createElement("span");
+      const indicator = document.createElement("span");
+
+      th.scope = "col";
+      if (column.className) {
+        th.classList.add(column.className);
+      }
+
+      button.type = "button";
+      button.className = "table-sort-button";
+      button.addEventListener("click", () => sortTableByColumn(column.field));
+
+      label.textContent = column.label;
+      indicator.className = "sort-indicator";
+      indicator.textContent = getSortIndicator(column.field, ui);
+
+      button.append(label, indicator);
+      th.append(button);
+      return th;
+    }
+
+    function renderTaskRow(task) {
+      const row = document.createElement("tr");
+
+      row.dataset.taskId = task.task_id;
+      row.classList.toggle("is-selected", task.task_id === state.ui.selectedTaskId);
+      row.classList.toggle("is-critical", state.ui.criticalPathTaskIds.has(task.task_id));
+      row.addEventListener("click", () => selectTask(task.task_id));
+
+      TABLE_COLUMNS.forEach((column) => {
+        const cell = document.createElement("td");
+
+        cell.dataset.field = column.field;
+        cell.dataset.editable = String(Boolean(column.editable));
+
+        if (column.className) {
+          cell.classList.add(column.className);
+        }
+
+        setTableCellContent(cell, task, column);
+
+        if (column.editable) {
+          cell.addEventListener("dblclick", (event) => {
+            event.stopPropagation();
+            beginInlineEdit(cell, task, column);
+          });
+        }
+
+        row.append(cell);
+      });
+
+      return row;
+    }
+
+    function setTableCellContent(cell, task, column) {
+      cell.replaceChildren();
+
+      if (column.field === "task_name") {
+        cell.append(renderTaskNameCell(task));
+        return;
+      }
+
+      if (column.field === "task_status") {
+        cell.append(renderStatusPill(task.task_status));
+        return;
+      }
+
+      if (column.field === "priority") {
+        cell.append(renderPriorityCell(task.priority));
+        return;
+      }
+
+      if (column.field === "milestone") {
+        if (task.milestone) {
+          const mark = document.createElement("span");
+          mark.className = "milestone-mark";
+          mark.setAttribute("aria-label", "Milestone");
+          mark.textContent = "◆";
+          cell.append(mark);
+        }
+        return;
+      }
+
+      cell.textContent = formatTableValue(task[column.field], column.field);
+    }
+
+    function renderTaskNameCell(task) {
+      const wrapper = document.createElement("div");
+      const text = document.createElement("span");
+      const isCollapsed = state.ui.collapsedTaskIds.has(task.task_id);
+
+      wrapper.className = "task-name-content";
+      wrapper.style.setProperty("--task-depth", String(task._depth || 0));
+
+      if (task._isGroup) {
+        const toggle = document.createElement("button");
+
+        toggle.type = "button";
+        toggle.className = "task-toggle";
+        toggle.setAttribute("aria-label", `${isCollapsed ? "Expand" : "Collapse"} ${task.task_name || task.task_id}`);
+        toggle.setAttribute("aria-expanded", String(!isCollapsed));
+        toggle.textContent = isCollapsed ? "▶" : "▼";
+        toggle.addEventListener("click", (event) => {
+          event.stopPropagation();
+          toggleTaskCollapse(task.task_id);
+        });
+        wrapper.append(toggle);
+      } else {
+        const spacer = document.createElement("span");
+        spacer.className = "task-toggle-spacer";
+        spacer.setAttribute("aria-hidden", "true");
+        wrapper.append(spacer);
+      }
+
+      text.className = "task-name-text";
+      text.textContent = task.task_name || "";
+      wrapper.append(text);
+      return wrapper;
+    }
+
+    function renderStatusPill(status) {
+      const normalized = String(status || "not_started").trim() || "not_started";
+      const pill = document.createElement("span");
+
+      pill.className = `status-pill ${toKebabCase(normalized)}`;
+      pill.textContent = formatOptionLabel(normalized);
+      return pill;
+    }
+
+    function renderPriorityCell(priority) {
+      const normalized = String(priority || "medium").trim() || "medium";
+      const wrapper = document.createElement("span");
+      const dot = document.createElement("span");
+      const label = document.createElement("span");
+
+      wrapper.className = "priority-cell";
+      dot.className = `priority-dot ${toKebabCase(normalized)}`;
+      dot.setAttribute("aria-hidden", "true");
+      label.textContent = formatOptionLabel(normalized);
+      wrapper.append(dot, label);
+      return wrapper;
+    }
+
+    function beginInlineEdit(cell, task, column) {
+      if (cell.classList.contains("is-editing")) {
+        return;
+      }
+
+      const input = createEditInput(column.field, task[column.field]);
+      let isFinished = false;
+
+      cell.classList.add("is-editing");
+      cell.replaceChildren(input);
+
+      const commit = () => {
+        if (isFinished) {
+          return;
+        }
+
+        isFinished = true;
+        updateTaskField(task.task_id, column.field, readEditInputValue(input, column.field));
+      };
+
+      const cancel = () => {
+        if (isFinished) {
+          return;
+        }
+
+        isFinished = true;
+        renderCurrentView();
+      };
+
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          commit();
+        }
+
+        if (event.key === "Escape") {
+          event.preventDefault();
+          cancel();
+        }
+      });
+
+      input.addEventListener("blur", commit);
+      window.requestAnimationFrame(() => {
+        input.focus();
+        if ("select" in input && input.type !== "checkbox") {
+          input.select();
+        }
+      });
+    }
+
+    function createEditInput(field, value) {
+      if (field === "task_status" || field === "priority") {
+        const select = document.createElement("select");
+        const options = field === "task_status" ? STATUS_OPTIONS : PRIORITY_OPTIONS;
+
+        select.className = "table-edit-input";
+        options.forEach((optionValue) => {
+          const option = document.createElement("option");
+          option.value = optionValue;
+          option.textContent = formatOptionLabel(optionValue);
+          select.append(option);
+        });
+        select.value = String(value || options[0]);
+        return select;
+      }
+
+      const input = document.createElement("input");
+
+      input.className = "table-edit-input";
+
+      if (field === "milestone") {
+        input.type = "checkbox";
+        input.checked = Boolean(value);
+        return input;
+      }
+
+      if (field === "duration_days" || field === "percent_complete") {
+        input.type = "number";
+        input.min = "0";
+        if (field === "percent_complete") {
+          input.max = "100";
+        }
+        input.value = String(value ?? 0);
+        return input;
+      }
+
+      if (field === "start_date" || field === "end_date") {
+        input.type = "date";
+        input.value = String(value || "");
+        return input;
+      }
+
+      input.type = "text";
+      input.value = formatTableValue(value, field);
+      return input;
+    }
+
+    function readEditInputValue(input, field) {
+      if (field === "milestone") {
+        return input.checked;
+      }
+
+      return input.value;
+    }
+
+    function updateTaskField(taskId, field, rawValue) {
+      const task = findTaskById(taskId);
+
+      if (!task) {
+        return;
+      }
+
+      task[field] = normaliseTaskValue(field, rawValue);
+      state.project.tasks = buildTree(state.project.tasks);
+      markProjectDirty();
+      renderCurrentView();
+    }
+
+    function normaliseTaskValue(field, value) {
+      if (LIST_COLUMNS.has(field)) {
+        return parseListValue(value);
+      }
+
+      if (field === "milestone") {
+        return parseBooleanValue(value);
+      }
+
+      if (INTEGER_COLUMNS.has(field)) {
+        const parsed = Math.max(0, parseIntegerValue(value));
+        return field === "percent_complete" ? Math.min(100, parsed) : parsed;
+      }
+
+      return String(value ?? "").trim();
+    }
+
+    function sortTableByColumn(field) {
+      const { sort } = state.ui;
+
+      if (sort.column === field) {
+        sort.direction = sort.direction === "asc" ? "desc" : "asc";
+      } else {
+        sort.column = field;
+        sort.direction = "asc";
+      }
+
+      renderCurrentView();
+    }
+
+    function getSortIndicator(field, ui) {
+      if (ui.sort.column !== field) {
+        return "";
+      }
+
+      return ui.sort.direction === "asc" ? "▲" : "▼";
+    }
+
+    function getDisplayTasks(tasks, ui) {
+      const taskById = new Map(tasks.map((task) => [task.task_id, task]));
+      const visibleTasks = tasks.filter((task) => isTaskVisibleByCollapse(task, taskById));
+
+      if (!ui.sort.column) {
+        return visibleTasks;
+      }
+
+      return [...visibleTasks].sort((left, right) => {
+        return compareTaskValues(left, right, ui.sort.column) * (ui.sort.direction === "desc" ? -1 : 1);
+      });
+    }
+
+    function getFilteredTasks() {
+      const tasks = state.project.tasks;
+      const filters = state.ui.filters;
+
+      if (tasks.length === 0) {
+        return [];
+      }
+
+      const taskById = new Map(tasks.map((task) => [task.task_id, task]));
+      const includedTaskIds = new Set();
+      const hasAnyFilter = hasActiveFilters();
+
+      tasks.forEach((task) => {
+        if (taskMatchesFilters(task, filters)) {
+          includedTaskIds.add(task.task_id);
+          addAncestorTaskIds(task, taskById, includedTaskIds);
+
+          if (task._isGroup && !hasAnyFilter) {
+            addDescendantTaskIds(task, includedTaskIds);
+          }
+        }
+      });
+
+      return tasks.filter((task) => includedTaskIds.has(task.task_id));
+    }
+
+    function taskMatchesFilters(task, filters) {
+      if (!taskMatchesSearch(task, filters.search || state.ui.searchTerm)) {
+        return false;
+      }
+
+      if (filters.status.size > 0 && !filters.status.has(task.task_status)) {
+        return false;
+      }
+
+      if (filters.owner.size > 0 && !filters.owner.has(task.owner || "Unassigned")) {
+        return false;
+      }
+
+      if (filters.priority.size > 0 && !filters.priority.has(task.priority || "medium")) {
+        return false;
+      }
+
+      if (filters.milestone && !task.milestone) {
+        return false;
+      }
+
+      if (!taskOverlapsDateRange(task, filters.dateFrom, filters.dateTo)) {
+        return false;
+      }
+
+      return true;
+    }
+
+    function addAncestorTaskIds(task, taskById, includedTaskIds) {
+      let parentId = task._parent;
+      let guard = 0;
+
+      while (parentId && guard < 1000) {
+        includedTaskIds.add(parentId);
+        parentId = taskById.get(parentId)?._parent || null;
+        guard += 1;
+      }
+    }
+
+    function addDescendantTaskIds(task, includedTaskIds) {
+      (task._children || []).forEach((child) => {
+        includedTaskIds.add(child.task_id);
+        addDescendantTaskIds(child, includedTaskIds);
+      });
+    }
+
+    function taskOverlapsDateRange(task, dateFrom, dateTo) {
+      if (!dateFrom && !dateTo) {
+        return true;
+      }
+
+      const start = parseDateValue(task.start_date);
+      const end = parseDateValue(task.end_date) || start;
+      const rangeStart = parseDateValue(dateFrom);
+      const rangeEnd = parseDateValue(dateTo);
+
+      if (!start && !end) {
+        return false;
+      }
+
+      if (rangeStart && end && end < rangeStart) {
+        return false;
+      }
+
+      if (rangeEnd && start && start > rangeEnd) {
+        return false;
+      }
+
+      return true;
+    }
+
+    function hasActiveFilters() {
+      const filters = state.ui.filters;
+
+      return Boolean(
+        (filters.search || "").trim()
+        || filters.status.size
+        || filters.owner.size
+        || filters.priority.size
+        || filters.milestone
+        || filters.dateFrom
+        || filters.dateTo
+      );
+    }
+
+    function getActiveFilterCount() {
+      const filters = state.ui.filters;
+      let count = 0;
+
+      if ((filters.search || "").trim()) {
+        count += 1;
+      }
+
+      count += filters.status.size;
+      count += filters.owner.size;
+      count += filters.priority.size;
+
+      if (filters.milestone) {
+        count += 1;
+      }
+
+      if (filters.dateFrom || filters.dateTo) {
+        count += 1;
+      }
+
+      return count;
+    }
+
+    function isTaskVisibleByCollapse(task, taskById) {
+      let parentId = task._parent;
+      let guard = 0;
+
+      while (parentId && guard < 1000) {
+        if (state.ui.collapsedTaskIds.has(parentId)) {
+          return false;
+        }
+
+        const parent = taskById.get(parentId);
+        parentId = parent?._parent || null;
+        guard += 1;
+      }
+
+      return true;
+    }
+
+    function taskMatchesSearch(task, searchTerm) {
+      const normalizedSearch = String(searchTerm || "").trim().toLowerCase();
+
+      if (!normalizedSearch) {
+        return true;
+      }
+
+      return String(task.task_name || "").toLowerCase().includes(normalizedSearch);
+    }
+
+    function compareTaskValues(leftTask, rightTask, field) {
+      if (field === "task_id") {
+        return compareTaskIds(leftTask.task_id, rightTask.task_id);
+      }
+
+      const left = getComparableValue(leftTask[field], field);
+      const right = getComparableValue(rightTask[field], field);
+
+      if (typeof left === "number" && typeof right === "number") {
+        return left - right;
+      }
+
+      return String(left).localeCompare(String(right), undefined, {
+        numeric: true,
+        sensitivity: "base"
+      });
+    }
+
+    function getComparableValue(value, field) {
+      if (INTEGER_COLUMNS.has(field)) {
+        return parseIntegerValue(value);
+      }
+
+      if (field === "milestone") {
+        return value ? 1 : 0;
+      }
+
+      if (field === "start_date" || field === "end_date") {
+        const time = Date.parse(value);
+        return Number.isNaN(time) ? 0 : time;
+      }
+
+      if (LIST_COLUMNS.has(field)) {
+        return Array.isArray(value) ? value.join(", ") : String(value ?? "");
+      }
+
+      return String(value ?? "");
+    }
+
+    function compareTaskIds(leftId, rightId) {
+      const leftParts = String(leftId || "").split(".");
+      const rightParts = String(rightId || "").split(".");
+      const maxLength = Math.max(leftParts.length, rightParts.length);
+
+      for (let index = 0; index < maxLength; index += 1) {
+        const leftPart = leftParts[index] ?? "";
+        const rightPart = rightParts[index] ?? "";
+        const leftNumber = Number(leftPart);
+        const rightNumber = Number(rightPart);
+
+        if (!Number.isNaN(leftNumber) && !Number.isNaN(rightNumber) && leftNumber !== rightNumber) {
+          return leftNumber - rightNumber;
+        }
+
+        const textCompare = leftPart.localeCompare(rightPart, undefined, {
+          numeric: true,
+          sensitivity: "base"
+        });
+
+        if (textCompare !== 0) {
+          return textCompare;
+        }
+      }
+
+      return 0;
+    }
+
+    function isLeafTask(task) {
+      return task.task_level === "task" || !task._children || task._children.length === 0;
+    }
+
+    function getUniqueOwners(tasks) {
+      return [...new Set(tasks.map((task) => task.owner || "Unassigned"))]
+        .filter(Boolean)
+        .sort((left, right) => left.localeCompare(right));
+    }
+
+    function getProjectDateRange(tasks) {
+      const starts = [];
+      const ends = [];
+
+      tasks.forEach((task) => {
+        const range = getTaskDateRange(task);
+
+        if (range) {
+          starts.push(range.start);
+          ends.push(range.end);
+        }
+      });
+
+      const today = startOfToday();
+      const start = addDays(getMinDate(starts) || today, -3);
+      const end = addDays(getMaxDate(ends) || addDays(today, 30), 7);
+
+      return { start, end };
+    }
+
+    function getTaskDateRange(task) {
+      const directStart = parseDateValue(task.start_date);
+      const directEnd = parseDateValue(task.end_date);
+
+      if (task._isGroup && task._children?.length) {
+        const childRanges = task._children.map(getTaskDateRange).filter(Boolean);
+
+        if (childRanges.length > 0) {
+          return {
+            start: getMinDate(childRanges.map((range) => range.start)),
+            end: getMaxDate(childRanges.map((range) => range.end))
+          };
+        }
+      }
+
+      if (!directStart && !directEnd) {
+        return null;
+      }
+
+      return {
+        start: directStart || directEnd,
+        end: directEnd || directStart
+      };
+    }
+
+    function parseDateValue(value) {
+      if (!value) {
+        return null;
+      }
+
+      const date = new Date(`${String(value).slice(0, 10)}T00:00:00`);
+
+      if (Number.isNaN(date.getTime())) {
+        return null;
+      }
+
+      return date;
+    }
+
+    function startOfToday() {
+      const today = new Date();
+
+      today.setHours(0, 0, 0, 0);
+      return today;
+    }
+
+    function daysBetween(startDate, endDate) {
+      const msPerDay = 24 * 60 * 60 * 1000;
+
+      return Math.round((endDate - startDate) / msPerDay);
+    }
+
+    function addDays(date, days) {
+      const next = new Date(date);
+
+      next.setDate(next.getDate() + days);
+      return next;
+    }
+
+    function getMinDate(dates) {
+      const validDates = dates.filter(Boolean);
+
+      if (validDates.length === 0) {
+        return null;
+      }
+
+      return new Date(Math.min(...validDates.map((date) => date.getTime())));
+    }
+
+    function getMaxDate(dates) {
+      const validDates = dates.filter(Boolean);
+
+      if (validDates.length === 0) {
+        return null;
+      }
+
+      return new Date(Math.max(...validDates.map((date) => date.getTime())));
+    }
+
+    function getPxPerDay(zoom) {
+      const values = {
+        week: 28,
+        month: 14,
+        quarter: 7,
+        year: 3
+      };
+
+      return values[zoom] || values.week;
+    }
+
+    function getWeekNumber(date) {
+      const target = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      const dayNumber = target.getUTCDay() || 7;
+
+      target.setUTCDate(target.getUTCDate() + 4 - dayNumber);
+      const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
+      return Math.ceil((((target - yearStart) / 86400000) + 1) / 7);
+    }
+
+    function getTaskTooltip(task) {
+      return `${task.task_name || task.task_id}\n${task.start_date || "No start"} to ${task.end_date || "No end"}\nOwner: ${task.owner || "Unassigned"}\nComplete: ${parseIntegerValue(task.percent_complete)}%`;
+    }
+
+    function resolveCssVar(name) {
+      return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || "#2563EB";
+    }
+
+    function calculateCriticalPath(tasks) {
+      const leafTasks = tasks.filter(isLeafTask);
+      const taskById = new Map(leafTasks.map((task) => [task.task_id, task]));
+      const inDegree = new Map();
+      const successors = new Map();
+
+      leafTasks.forEach((task) => {
+        inDegree.set(task.task_id, 0);
+        successors.set(task.task_id, []);
+      });
+
+      leafTasks.forEach((task) => {
+        parseListValue(task.dependencies).forEach((dependencyId) => {
+          if (!taskById.has(dependencyId)) {
+            return;
+          }
+
+          successors.get(dependencyId).push(task.task_id);
+          inDegree.set(task.task_id, inDegree.get(task.task_id) + 1);
+        });
+      });
+
+      const queue = [...inDegree.entries()]
+        .filter(([, degree]) => degree === 0)
+        .map(([taskId]) => taskId);
+      const order = [];
+
+      while (queue.length > 0) {
+        const taskId = queue.shift();
+        order.push(taskId);
+
+        successors.get(taskId).forEach((successorId) => {
+          const nextDegree = inDegree.get(successorId) - 1;
+          inDegree.set(successorId, nextDegree);
+
+          if (nextDegree === 0) {
+            queue.push(successorId);
+          }
+        });
+      }
+
+      if (order.length !== leafTasks.length) {
+        const message = "Circular dependencies detected; critical path skipped.";
+
+        if (state.ui.lastCriticalPathError !== message) {
+          showToast(message, "warning");
+          state.ui.lastCriticalPathError = message;
+        }
+
+        return new Set();
+      }
+
+      state.ui.lastCriticalPathError = "";
+
+      const earliestStart = new Map();
+      const earliestEnd = new Map();
+      const latestStart = new Map();
+      const latestEnd = new Map();
+
+      order.forEach((taskId) => {
+        const task = taskById.get(taskId);
+        const dependencyEnds = parseListValue(task.dependencies)
+          .filter((dependencyId) => earliestEnd.has(dependencyId))
+          .map((dependencyId) => earliestEnd.get(dependencyId));
+        const es = dependencyEnds.length ? Math.max(...dependencyEnds) : 0;
+        const duration = Math.max(1, parseIntegerValue(task.duration_days));
+
+        earliestStart.set(taskId, es);
+        earliestEnd.set(taskId, es + duration);
+      });
+
+      const projectEnd = Math.max(0, ...[...earliestEnd.values()]);
+
+      [...order].reverse().forEach((taskId) => {
+        const taskSuccessors = successors.get(taskId) || [];
+        const duration = Math.max(1, parseIntegerValue(taskById.get(taskId).duration_days));
+        const lf = taskSuccessors.length
+          ? Math.min(...taskSuccessors.map((successorId) => latestStart.get(successorId)))
+          : projectEnd;
+
+        latestEnd.set(taskId, lf);
+        latestStart.set(taskId, lf - duration);
+      });
+
+      const criticalPath = new Set();
+
+      leafTasks.forEach((task) => {
+        const slack = (latestStart.get(task.task_id) ?? 0) - (earliestStart.get(task.task_id) ?? 0);
+
+        if (slack === 0) {
+          criticalPath.add(task.task_id);
+          addAncestorTaskIds(task, new Map(tasks.map((item) => [item.task_id, item])), criticalPath);
+        }
+      });
+
+      return criticalPath;
+    }
+
+    function toggleTaskCollapse(taskId) {
+      if (state.ui.collapsedTaskIds.has(taskId)) {
+        state.ui.collapsedTaskIds.delete(taskId);
+      } else {
+        state.ui.collapsedTaskIds.add(taskId);
+      }
+
+      renderCurrentView();
+    }
+
+    function selectTask(taskId) {
+      state.ui.selectedTaskId = taskId;
+      updateTableSelection();
+      openTaskEditor(taskId);
+    }
+
+    function updateTableSelection() {
+      document.querySelectorAll(".task-table tbody tr[data-task-id]").forEach((row) => {
+        row.classList.toggle("is-selected", row.dataset.taskId === state.ui.selectedTaskId);
+      });
+    }
+
+    function addBlankTask() {
+      const task = createBlankTask();
+
+      state.project.tasks.push(task);
+      state.project.tasks = buildTree(state.project.tasks);
+      state.ui.currentView = "table";
+      state.ui.selectedTaskId = task.task_id;
+      markProjectDirty();
+      renderCurrentView();
+      openTaskEditor(task.task_id);
+    }
+
+    function createBlankTask() {
+      const task = {};
+
+      CSV_COLUMNS.forEach((column) => {
+        task[column] = defaultValueForColumn(column);
+      });
+
+      task.task_id = generateNextTaskId();
+      task.task_name = "";
+      task.task_level = "task";
+      task.task_status = "not_started";
+      task.priority = "medium";
+      task.duration_days = 0;
+      task.percent_complete = 0;
+      task.milestone = false;
+      refreshComputedFields(task);
+      task._children = [];
+      task._parent = null;
+
+      return task;
+    }
+
+    function generateNextTaskId() {
+      const existingIds = new Set(state.project.tasks.map((task) => String(task.task_id)));
+      let nextId = state.project.tasks.reduce((maxId, task) => {
+        const taskId = String(task.task_id || "");
+
+        if (!taskId.includes(".")) {
+          const numericId = Number.parseInt(taskId, 10);
+          if (!Number.isNaN(numericId)) {
+            return Math.max(maxId, numericId);
+          }
+        }
+
+        return maxId;
+      }, 0) + 1;
+
+      while (existingIds.has(String(nextId))) {
+        nextId += 1;
+      }
+
+      return String(nextId);
+    }
+
+    function openTaskEditor(taskId) {
+      const task = findTaskById(taskId);
+
+      if (!task) {
+        return;
+      }
+
+      const { overlay, panel } = ensureTaskEditorElements();
+
+      renderTaskEditorShell(panel, task);
+      overlay.hidden = false;
+      window.requestAnimationFrame(() => {
+        panel.classList.add("open");
+      });
+    }
+
+    function closeTaskEditor() {
+      const overlay = document.getElementById("task-editor-overlay");
+      const panel = document.getElementById("task-editor-panel");
+
+      if (!overlay || !panel) {
+        return;
+      }
+
+      panel.classList.remove("open");
+      window.setTimeout(() => {
+        overlay.hidden = true;
+      }, 200);
+    }
+
+    function ensureTaskEditorElements() {
+      let overlay = document.getElementById("task-editor-overlay");
+      let panel = document.getElementById("task-editor-panel");
+
+      if (!overlay) {
+        overlay = document.createElement("div");
+        overlay.id = "task-editor-overlay";
+        overlay.className = "task-editor-overlay";
+        overlay.hidden = true;
+        overlay.addEventListener("click", closeTaskEditor);
+        document.body.append(overlay);
+      }
+
+      if (!panel) {
+        panel = document.createElement("aside");
+        panel.id = "task-editor-panel";
+        panel.className = "task-editor-panel";
+        panel.setAttribute("aria-label", "Task editor");
+        document.body.append(panel);
+      }
+
+      return { overlay, panel };
+    }
+
+    function renderTaskEditorShell(panel, task) {
+      const header = document.createElement("div");
+      const title = document.createElement("div");
+      const heading = document.createElement("h2");
+      const badge = document.createElement("span");
+      const closeButton = document.createElement("button");
+      const body = document.createElement("div");
+      const actions = document.createElement("div");
+      const saveButton = document.createElement("button");
+      const deleteButton = document.createElement("button");
+
+      header.className = "task-editor-header";
+      title.className = "task-editor-title";
+      heading.textContent = task.task_name ? "Edit Task" : "New Task";
+      badge.textContent = `Task ${task.task_id}`;
+      title.append(heading, badge);
+
+      closeButton.type = "button";
+      closeButton.className = "task-editor-close";
+      closeButton.setAttribute("aria-label", "Close task editor");
+      closeButton.textContent = "×";
+      closeButton.addEventListener("click", closeTaskEditor);
+
+      header.append(title, closeButton);
+
+      body.className = "task-editor-body";
+      body.append(
+        createTaskEditorField("Task Name", "task_name", "text", task.task_name),
+        createTaskEditorField("Task Level", "task_level", "select", task.task_level, TASK_LEVEL_OPTIONS),
+        createTaskEditorField("Status", "task_status", "select", task.task_status, STATUS_OPTIONS),
+        createTaskEditorField("Priority", "priority", "select", task.priority, PRIORITY_OPTIONS),
+        createTaskEditorField("Owner", "owner", "text", task.owner),
+        createTaskEditorField("Resources", "resources", "text", formatTableValue(task.resources, "resources"), null, renderTags(task.resources)),
+        createTaskEditorField("Start Date", "start_date", "date", task.start_date),
+        createTaskEditorField("End Date", "end_date", "date", task.end_date),
+        createTaskEditorField("Duration", "duration_days", "number", task.duration_days),
+        createPercentCompleteField(task.percent_complete),
+        createTaskEditorField("Milestone", "milestone", "checkbox", task.milestone),
+        createTaskEditorField("Dependencies", "dependencies", "text", formatTableValue(task.dependencies, "dependencies"), null, renderDependencyTags(task.dependencies)),
+        createTaskEditorField("Notes", "notes", "textarea", task.notes)
+      );
+
+      if (task._isGroup) {
+        const summary = document.createElement("div");
+        const children = task._children || [];
+        const averageComplete = children.length
+          ? Math.round(children.reduce((sum, child) => sum + parseIntegerValue(child.percent_complete), 0) / children.length)
+          : 0;
+
+        summary.className = "computed-summary";
+        summary.textContent = `Children: ${children.length} | Avg Complete: ${averageComplete}%`;
+        body.append(summary);
+      }
+
+      actions.className = "task-editor-actions";
+      saveButton.type = "button";
+      saveButton.className = "primary-button";
+      saveButton.textContent = "Save Changes";
+      saveButton.addEventListener("click", () => saveTaskEditorChanges(panel, task.task_id));
+
+      deleteButton.type = "button";
+      deleteButton.className = "danger-button";
+      deleteButton.textContent = "Delete Task";
+      deleteButton.addEventListener("click", () => deleteTaskFromEditor(task.task_id));
+
+      actions.append(saveButton, deleteButton);
+      body.append(actions);
+
+      wireTaskEditorAutoCalc(body);
+
+      panel.replaceChildren(header, body);
+    }
+
+    function renderTaskEditorReadOnlyField(labelText, valueText) {
+      const field = document.createElement("div");
+      const label = document.createElement("label");
+      const value = document.createElement("div");
+
+      field.className = "task-editor-field";
+      label.textContent = labelText;
+      value.textContent = valueText || " ";
+      field.append(label, value);
+      return field;
+    }
+
+    function createTaskEditorField(labelText, fieldName, type, value, options = null, helper = null) {
+      const field = document.createElement("div");
+      const label = document.createElement("label");
+      let input;
+
+      field.className = "task-editor-field";
+      label.textContent = labelText;
+      label.setAttribute("for", `task-editor-${fieldName}`);
+
+      if (type === "select") {
+        input = document.createElement("select");
+        input.className = "task-editor-select";
+        (options || []).forEach((optionValue) => {
+          const option = document.createElement("option");
+          option.value = optionValue;
+          option.textContent = formatOptionLabel(optionValue);
+          input.append(option);
+        });
+        input.value = String(value || options?.[0] || "");
+      } else if (type === "textarea") {
+        input = document.createElement("textarea");
+        input.className = "task-editor-textarea";
+        input.value = String(value || "");
+      } else if (type === "checkbox") {
+        const row = document.createElement("label");
+        input = document.createElement("input");
+        input.type = "checkbox";
+        input.checked = Boolean(value);
+        input.dataset.field = fieldName;
+        input.id = `task-editor-${fieldName}`;
+        row.className = "checkbox-row";
+        row.append(input, document.createTextNode("Milestone task"));
+        field.append(label, row);
+        return field;
+      } else {
+        input = document.createElement("input");
+        input.className = "task-editor-input";
+        input.type = type;
+        if (type === "number") {
+          input.min = "0";
+        }
+        input.value = String(value ?? "");
+      }
+
+      input.id = `task-editor-${fieldName}`;
+      input.dataset.field = fieldName;
+      field.append(label, input);
+
+      if (helper) {
+        field.append(helper);
+      }
+
+      return field;
+    }
+
+    function createPercentCompleteField(percentComplete) {
+      const field = document.createElement("div");
+      const label = document.createElement("label");
+      const value = document.createElement("span");
+      const input = document.createElement("input");
+      const currentValue = Math.min(100, Math.max(0, parseIntegerValue(percentComplete)));
+
+      field.className = "task-editor-field";
+      label.textContent = "% Complete";
+      label.setAttribute("for", "task-editor-percent_complete");
+      value.textContent = `${currentValue}%`;
+      input.id = "task-editor-percent_complete";
+      input.dataset.field = "percent_complete";
+      input.type = "range";
+      input.min = "0";
+      input.max = "100";
+      input.value = String(currentValue);
+      input.addEventListener("input", () => {
+        value.textContent = `${input.value}%`;
+      });
+      field.append(label, value, input);
+      return field;
+    }
+
+    function renderTags(values) {
+      const wrapper = document.createElement("div");
+      const items = Array.isArray(values) ? values : parseListValue(values);
+
+      wrapper.className = "task-editor-tags";
+      items.forEach((item) => {
+        const tag = document.createElement("span");
+        tag.className = "tag-pill";
+        tag.textContent = item;
+        wrapper.append(tag);
+      });
+      return wrapper;
+    }
+
+    function renderDependencyTags(dependencies) {
+      const wrapper = document.createElement("div");
+      const items = Array.isArray(dependencies) ? dependencies : parseListValue(dependencies);
+
+      wrapper.className = "task-editor-tags";
+      items.forEach((dependencyId) => {
+        const dependencyTask = findTaskById(dependencyId);
+        const tag = document.createElement("span");
+
+        tag.className = "tag-pill";
+        tag.textContent = dependencyTask
+          ? `${dependencyId} ${dependencyTask.task_name}`
+          : dependencyId;
+        wrapper.append(tag);
+      });
+      return wrapper;
+    }
+
+    function wireTaskEditorAutoCalc(container) {
+      const startInput = container.querySelector('[data-field="start_date"]');
+      const endInput = container.querySelector('[data-field="end_date"]');
+      const durationInput = container.querySelector('[data-field="duration_days"]');
+
+      if (!startInput || !endInput || !durationInput) {
+        return;
+      }
+
+      const recalculateDuration = () => {
+        const start = parseDateValue(startInput.value);
+        const end = parseDateValue(endInput.value);
+
+        if (!start || !end || end < start) {
+          return;
+        }
+
+        durationInput.value = String(daysBetween(start, end) + 1);
+      };
+
+      startInput.addEventListener("change", recalculateDuration);
+      endInput.addEventListener("change", recalculateDuration);
+    }
+
+    function saveTaskEditorChanges(panel, taskId) {
+      const task = findTaskById(taskId);
+
+      if (!task) {
+        return;
+      }
+
+      panel.querySelectorAll("[data-field]").forEach((input) => {
+        const field = input.dataset.field;
+        task[field] = normaliseTaskValue(field, readTaskEditorValue(input));
+      });
+
+      state.project.tasks = buildTree(state.project.tasks);
+      markProjectDirty();
+      closeTaskEditor();
+      renderCurrentView();
+    }
+
+    function readTaskEditorValue(input) {
+      if (input.type === "checkbox") {
+        return input.checked;
+      }
+
+      return input.value;
+    }
+
+    function deleteTaskFromEditor(taskId) {
+      const task = findTaskById(taskId);
+
+      if (!task) {
+        return;
+      }
+
+      const deleteCount = countTaskAndDescendants(task);
+      const confirmed = window.confirm(`Delete ${deleteCount} task${deleteCount === 1 ? "" : "s"}?`);
+
+      if (!confirmed) {
+        return;
+      }
+
+      const deleteIds = new Set();
+      collectTaskAndDescendantIds(task, deleteIds);
+      state.project.tasks = buildTree(state.project.tasks.filter((item) => !deleteIds.has(item.task_id)));
+      state.ui.selectedTaskId = null;
+      markProjectDirty();
+      closeTaskEditor();
+      renderCurrentView();
+    }
+
+    function countTaskAndDescendants(task) {
+      return 1 + (task._children || []).reduce((sum, child) => sum + countTaskAndDescendants(child), 0);
+    }
+
+    function collectTaskAndDescendantIds(task, ids) {
+      ids.add(task.task_id);
+      (task._children || []).forEach((child) => collectTaskAndDescendantIds(child, ids));
+    }
+
+    function findTaskById(taskId) {
+      return state.project.tasks.find((task) => task.task_id === taskId);
+    }
+
+    function formatTableValue(value, field) {
+      if (LIST_COLUMNS.has(field)) {
+        return Array.isArray(value) ? value.join(", ") : String(value ?? "");
+      }
+
+      if (field === "milestone") {
+        return value ? "true" : "false";
+      }
+
+      return value === null || value === undefined ? "" : String(value);
+    }
+
+    function formatOptionLabel(value) {
+      return String(value || "")
+        .replace(/[-_]/g, " ")
+        .replace(/\b\w/g, (char) => char.toUpperCase());
+    }
+
+    function toKebabCase(value) {
+      return String(value || "").replace(/_/g, "-").toLowerCase();
+    }
+
+    function updateViewButtons() {
+      document.querySelectorAll(".view-button[data-view]").forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.view === state.ui.currentView));
+      });
+    }
+
+    function updateToolbarControls() {
+      const container = document.getElementById("view-controls");
+
+      if (!container) {
+        return;
+      }
+
+      container.replaceChildren();
+
+      if (state.ui.currentView === "gantt" || state.ui.currentView === "timeline") {
+        container.append(createSegmentedControl("Zoom", ZOOM_OPTIONS, state.ui.ganttZoom, (value) => {
+          state.ui.ganttZoom = value;
+          state.ui.zoom = value;
+          renderCurrentView();
+        }));
+      }
+
+      if (state.ui.currentView === "timeline") {
+        container.append(createSegmentedControl("Group", TIMELINE_GROUP_OPTIONS, state.ui.timelineGroupBy, (value) => {
+          state.ui.timelineGroupBy = value;
+          renderCurrentView();
+        }));
+      }
+    }
+
+    function createSegmentedControl(label, options, activeValue, onChange) {
+      const wrapper = document.createElement("div");
+
+      wrapper.className = "segmented-control";
+      wrapper.setAttribute("aria-label", label);
+      options.forEach((optionValue) => {
+        const button = document.createElement("button");
+
+        button.type = "button";
+        button.textContent = formatOptionLabel(optionValue);
+        button.setAttribute("aria-pressed", String(optionValue === activeValue));
+        button.addEventListener("click", () => onChange(optionValue));
+        wrapper.append(button);
+      });
+      return wrapper;
+    }
+
+    function updateFilterButton() {
+      const button = document.getElementById("filter-button");
+      const badge = button?.querySelector(".badge");
+      const count = getActiveFilterCount();
+
+      if (badge) {
+        badge.textContent = String(count);
+        badge.setAttribute("aria-label", `${count} active filters`);
+      }
+    }
+
+    function toggleFilterPanel() {
+      state.ui.filterPanelOpen = !state.ui.filterPanelOpen;
+      renderFilterPanel();
+    }
+
+    function renderFilterPanel() {
+      let panel = document.getElementById("filter-panel");
+
+      if (!panel) {
+        panel = document.createElement("div");
+        panel.id = "filter-panel";
+        panel.className = "filter-panel";
+        document.body.append(panel);
+      }
+
+      panel.hidden = !state.ui.filterPanelOpen;
+
+      if (panel.hidden) {
+        return;
+      }
+
+      panel.replaceChildren(
+        renderCheckboxFilterSection("Status", STATUS_OPTIONS, state.ui.filters.status, formatOptionLabel),
+        renderCheckboxFilterSection("Owner", getUniqueOwners(state.project.tasks), state.ui.filters.owner, (value) => value),
+        renderCheckboxFilterSection("Priority", PRIORITY_OPTIONS, state.ui.filters.priority, formatOptionLabel),
+        renderDateFilterSection(),
+        renderMilestoneFilter(),
+        renderClearFiltersButton()
+      );
+    }
+
+    function renderCheckboxFilterSection(title, values, set, formatter) {
+      const section = document.createElement("section");
+      const heading = document.createElement("h3");
+      const options = document.createElement("div");
+
+      section.className = "filter-section";
+      heading.className = "filter-section-title";
+      heading.textContent = title;
+      options.className = "filter-options";
+
+      values.forEach((value) => {
+        const label = document.createElement("label");
+        const checkbox = document.createElement("input");
+
+        label.className = "filter-option";
+        checkbox.type = "checkbox";
+        checkbox.checked = set.has(value);
+        checkbox.addEventListener("change", () => {
+          toggleSetValue(set, value, checkbox.checked);
+          renderCurrentView();
+          renderFilterPanel();
+        });
+        label.append(checkbox, document.createTextNode(formatter(value)));
+        options.append(label);
+      });
+
+      section.append(heading, options);
+      return section;
+    }
+
+    function renderDateFilterSection() {
+      const section = document.createElement("section");
+      const heading = document.createElement("h3");
+      const grid = document.createElement("div");
+
+      section.className = "filter-section";
+      heading.className = "filter-section-title";
+      heading.textContent = "Date Range";
+      grid.className = "date-filter-grid";
+      [["From", "dateFrom"], ["To", "dateTo"]].forEach(([labelText, field]) => {
+        const label = document.createElement("label");
+        const input = document.createElement("input");
+
+        input.type = "date";
+        input.value = state.ui.filters[field] || "";
+        input.addEventListener("change", () => {
+          state.ui.filters[field] = input.value;
+          renderCurrentView();
+          renderFilterPanel();
+        });
+        label.append(document.createTextNode(labelText), input);
+        grid.append(label);
+      });
+
+      section.append(heading, grid);
+      return section;
+    }
+
+    function renderMilestoneFilter() {
+      const section = document.createElement("section");
+      const label = document.createElement("label");
+      const checkbox = document.createElement("input");
+
+      section.className = "filter-section";
+      label.className = "checkbox-row";
+      checkbox.type = "checkbox";
+      checkbox.checked = Boolean(state.ui.filters.milestone);
+      checkbox.addEventListener("change", () => {
+        state.ui.filters.milestone = checkbox.checked;
+        renderCurrentView();
+        renderFilterPanel();
+      });
+      label.append(checkbox, document.createTextNode("Milestone only"));
+      section.append(label);
+      return section;
+    }
+
+    function renderClearFiltersButton() {
+      const button = document.createElement("button");
+
+      button.type = "button";
+      button.className = "filter-clear";
+      button.textContent = "Clear all filters";
+      button.addEventListener("click", () => {
+        clearFilters();
+        renderCurrentView();
+        renderFilterPanel();
+      });
+      return button;
+    }
+
+    function toggleSetValue(set, value, enabled) {
+      if (enabled) {
+        set.add(value);
+      } else {
+        set.delete(value);
+      }
+    }
+
+    function clearFilters() {
+      state.ui.searchTerm = "";
+      state.ui.filters.search = "";
+      state.ui.filters.status.clear();
+      state.ui.filters.owner.clear();
+      state.ui.filters.priority.clear();
+      state.ui.filters.milestone = false;
+      state.ui.filters.dateFrom = "";
+      state.ui.filters.dateTo = "";
+
+      const search = document.querySelector(".search");
+      if (search) {
+        search.value = "";
+      }
+    }
+
+    function updateStatusBar() {
+      const taskCount = state.project.tasks.length;
+      const completedCount = state.project.tasks
+        .filter((task) => task.task_status === "completed")
+        .length;
+      const visibleCount = getDisplayTasks(getFilteredTasks(), state.ui).length;
+      const filename = state.project.filename || "Untitled project.csv";
+      const dirtyStatus = document.getElementById("dirty-status");
+      const dirtySeparator = document.querySelector(".dirty-status-separator");
+      const title = document.querySelector(".project-title");
+
+      setText("task-count-status", `Tasks: ${taskCount}`);
+      setText("completed-count-status", `Completed: ${completedCount}`);
+      setText("visible-count-status", `Visible: ${visibleCount}`);
+      setText("filename-status", `Filename: ${filename}`);
+
+      if (dirtyStatus) {
+        dirtyStatus.hidden = !state.project.isDirty;
+      }
+
+      if (dirtySeparator) {
+        dirtySeparator.hidden = !state.project.isDirty;
+      }
+
+      if (title) {
+        title.textContent = filename.replace(/\.csv$/i, "");
+      }
+
+      document.title = `${filename.replace(/\.csv$/i, "")} - ProjectPlan`;
+    }
+
+    function markProjectDirty() {
+      state.project.isDirty = true;
+      updateStatusBar();
+    }
+
+    function markProjectSaved(csvText = serialiseCSV(state.project.tasks)) {
+      state.project.lastSavedText = csvText;
+      state.project.isDirty = false;
+      updateStatusBar();
+    }
+
+    function showToast(message, type = "info") {
+      const container = document.getElementById("toast-container");
+
+      if (!container) {
+        return null;
+      }
+
+      const toast = document.createElement("div");
+      toast.className = `toast ${type}`;
+      toast.role = type === "error" ? "alert" : "status";
+      toast.textContent = message;
+      container.append(toast);
+
+      window.setTimeout(() => {
+        toast.remove();
+      }, 3000);
+
+      return toast;
+    }
+
+    function wireFileActions() {
+      document.getElementById("open-file-button")?.addEventListener("click", openFile);
+      document.getElementById("save-file-button")?.addEventListener("click", saveFile);
+      document.getElementById("save-as-file-button")?.addEventListener("click", saveFileAs);
+
+      document.addEventListener("keydown", (event) => {
+        const isShortcut = event.ctrlKey || event.metaKey;
+
+        if (event.key === "Escape") {
+          closeTaskEditor();
+          state.ui.filterPanelOpen = false;
+          renderFilterPanel();
+          return;
+        }
+
+        if (!isShortcut || event.altKey) {
+          if (isTypingTarget(event.target)) {
+            return;
+          }
+
+          const viewByKey = {
+            g: "gantt",
+            t: "table",
+            b: "board",
+            l: "timeline",
+            d: "dashboard"
+          };
+          const view = viewByKey[event.key.toLowerCase()];
+
+          if (view) {
+            event.preventDefault();
+            switchView(view);
+          }
+          return;
+        }
+
+        const key = event.key.toLowerCase();
+
+        if (key === "s") {
+          event.preventDefault();
+          saveFile();
+        }
+
+        if (key === "o") {
+          event.preventDefault();
+          openFile();
+        }
+
+        if (key === "f") {
+          event.preventDefault();
+          document.querySelector(".search")?.focus();
+        }
+      });
+    }
+
+    function wireToolbarActions() {
+      document.querySelectorAll(".view-button[data-view]").forEach((button) => {
+        button.addEventListener("click", () => switchView(button.dataset.view));
+      });
+
+      document.getElementById("add-task-button")?.addEventListener("click", addBlankTask);
+      document.getElementById("filter-button")?.addEventListener("click", toggleFilterPanel);
+
+      document.querySelector(".search")?.addEventListener("input", (event) => {
+        state.ui.searchTerm = event.target.value;
+        state.ui.filters.search = event.target.value;
+        renderCurrentView();
+      });
+    }
+
+    function isTypingTarget(target) {
+      return ["INPUT", "TEXTAREA", "SELECT"].includes(target?.tagName);
+    }
+
+    function handleFileError(error, message) {
+      if (error?.name === "AbortError") {
+        return;
+      }
+
+      console.error(error);
+      showToast(message, "error");
+    }
+
+    function getViewLabel(viewName) {
+      const labels = {
+        gantt: "Gantt",
+        table: "Table",
+        board: "Board",
+        timeline: "Timeline",
+        dashboard: "Dashboard"
+      };
+
+      return labels[viewName] || "Gantt";
+    }
+
+    function normaliseCSVFilename(filename) {
+      const trimmed = String(filename || "project.csv").trim() || "project.csv";
+      return trimmed.toLowerCase().endsWith(".csv") ? trimmed : `${trimmed}.csv`;
+    }
+
+    function setText(id, text) {
+      const element = document.getElementById(id);
+
+      if (element) {
+        element.textContent = text;
+      }
+    }
+
+    const parsedSampleTasks = parseCSV(SAMPLE_CSV);
+    console.log("ProjectPlan Step 2 sample tasks:", parsedSampleTasks);
+    console.log("ProjectPlan Step 2 round-trip CSV:", serialiseCSV(parsedSampleTasks));
+    wireFileActions();
+    wireToolbarActions();
+    renderCurrentView();
+
+    window.ProjectPlan = {
+      CSV_COLUMNS,
+      SAMPLE_CSV,
+      state,
+      parseCSV,
+      serialiseCSV,
+      buildTree,
+      openFile,
+      saveFile,
+      saveFileAs,
+      loadProjectFromText,
+      showToast,
+      updateStatusBar,
+      renderCurrentView,
+      renderTable,
+      renderGantt,
+      renderBoard,
+      renderTimeline,
+      renderDashboard,
+      switchView,
+      addBlankTask,
+      openTaskEditor,
+      closeTaskEditor,
+      getFilteredTasks,
+      calculateCriticalPath,
+      markProjectDirty,
+      markProjectSaved
+    };
+  </script>
+</body>
+</html>
