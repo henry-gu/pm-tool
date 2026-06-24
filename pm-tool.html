@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="A local CSV-based project planning application.">
-  <title>ProjectPlan</title>
+  <title>Project Plan</title>
   <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="%231A1F2E"/><rect x="12" y="16" width="30" height="8" rx="3" fill="%2360A5FA"/><rect x="20" y="30" width="32" height="8" rx="3" fill="%2316A34A"/><rect x="12" y="44" width="22" height="8" rx="3" fill="%23F59E0B"/></svg>'>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,6 +29,8 @@
       --color-warning: #D97706;
       --color-danger: #DC2626;
       --color-focus: #60A5FA;
+      --color-selected-row: #FEF3C7;
+      --color-critical-path: #F59E0B;
 
       --status-not-started: #6B7280;
       --status-not-started-bg: #F3F4F6;
@@ -385,6 +387,70 @@
       font-size: var(--font-size-xs);
       line-height: 1.5;
       white-space: pre;
+    }
+
+    .csv-picker {
+      display: grid;
+      gap: var(--space-4);
+      margin-top: var(--space-5);
+      text-align: left;
+    }
+
+    .csv-picker-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      justify-content: center;
+    }
+
+    .csv-picker-message {
+      margin: 0;
+      color: var(--color-text-muted);
+      font-size: var(--font-size-sm);
+      text-align: center;
+    }
+
+    .csv-file-list {
+      display: grid;
+      gap: var(--space-2);
+      max-height: 320px;
+      margin: 0;
+      padding: 0;
+      overflow: auto;
+      list-style: none;
+    }
+
+    .csv-file-button {
+      display: grid;
+      width: 100%;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-white);
+      color: var(--color-text);
+      text-align: left;
+    }
+
+    .csv-file-button:hover {
+      border-color: var(--color-border-strong);
+      background: var(--color-surface);
+    }
+
+    .csv-file-name {
+      overflow: hidden;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .csv-file-source {
+      color: var(--color-text-muted);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
     }
 
     .table-view {
@@ -838,6 +904,7 @@
       display: inline-flex;
       align-items: center;
       gap: var(--space-2);
+      flex-wrap: wrap;
     }
 
     .segmented-control {
@@ -862,6 +929,59 @@
     .segmented-control button[aria-pressed="true"] {
       color: var(--color-white);
       background: var(--color-primary);
+    }
+
+    .zoom-scale-control {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      height: 28px;
+      padding: 0 var(--space-2);
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      background: var(--color-white);
+      color: var(--color-text-muted);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .zoom-scale-control input {
+      width: 96px;
+      accent-color: var(--color-primary);
+    }
+
+    .zoom-scale-value {
+      min-width: 34px;
+      color: var(--color-text);
+      text-align: right;
+    }
+
+    .toolbar-checkbox-control {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      height: 28px;
+      padding: 0 var(--space-2);
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      background: var(--color-white);
+      color: var(--color-text-muted);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      white-space: nowrap;
+    }
+
+    .toolbar-checkbox-control input {
+      width: 14px;
+      height: 14px;
+      margin: 0;
+      accent-color: var(--color-critical-path);
+    }
+
+    .view-control-button {
+      height: 28px;
+      padding: 0 var(--space-2);
+      font-size: var(--font-size-xs);
     }
 
     .filter-panel {
@@ -1048,7 +1168,7 @@
 
     .gantt-shell {
       display: grid;
-      grid-template-columns: 380px minmax(0, 1fr);
+      grid-template-columns: var(--gantt-left-width, 904px) minmax(0, 1fr);
       height: 100%;
       min-height: 0;
       border: 1px solid var(--color-border);
@@ -1071,9 +1191,9 @@
     .gantt-left-header,
     .gantt-left-row {
       display: grid;
-      grid-template-columns: 60px minmax(150px, 1fr) 60px 80px 80px 80px 40px;
+      grid-template-columns: var(--gantt-left-columns, 72px 260px 64px 96px 96px 112px 140px 64px);
       align-items: center;
-      min-width: 560px;
+      min-width: var(--gantt-left-width, 904px);
     }
 
     .gantt-left-header {
@@ -1095,6 +1215,53 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    .gantt-left-header-cell {
+      position: relative;
+      height: 100%;
+      display: inline-flex;
+      align-items: center;
+      overflow: visible;
+    }
+
+    .gantt-left-header .gantt-left-header-cell {
+      overflow: visible;
+    }
+
+    .gantt-column-resizer {
+      position: absolute;
+      top: 0;
+      right: -4px;
+      width: 8px;
+      height: 100%;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      cursor: col-resize;
+      z-index: 4;
+    }
+
+    .gantt-column-resizer::after {
+      position: absolute;
+      top: 8px;
+      right: 3px;
+      bottom: 8px;
+      width: 2px;
+      border-radius: 999px;
+      background: transparent;
+      content: "";
+    }
+
+    .gantt-column-resizer:hover::after,
+    .gantt-column-resizer:focus-visible::after {
+      background: var(--color-primary);
+    }
+
+    body.is-resizing-gantt-column {
+      cursor: col-resize;
+      user-select: none;
     }
 
     .gantt-left-body,
@@ -1120,12 +1287,33 @@
       background: #FFFFFF;
     }
 
+    .gantt-left-row.is-selected,
+    .gantt-left-row.is-selected:nth-child(odd),
+    .gantt-left-row.is-selected:nth-child(even) {
+      background: var(--color-selected-row);
+      box-shadow: none;
+    }
+
     .gantt-task-name {
       display: inline-flex;
       align-items: center;
       gap: var(--space-1);
       min-width: 0;
-      padding-left: calc(var(--task-depth, 0) * 16px);
+      padding-left: calc(var(--task-depth, 0) * 20px);
+    }
+
+    .gantt-left-row .gantt-task-name {
+      padding: 0 0 0 calc(var(--task-depth, 0) * 20px);
+    }
+
+    .gantt-left-row .gantt-task-name > span {
+      padding: 0;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .gantt-task-name.is-group {
+      font-weight: var(--font-weight-semibold);
     }
 
     .status-dot {
@@ -1183,7 +1371,11 @@
       color: var(--color-text-muted);
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-semibold);
+      overflow: hidden;
+      padding: 0 var(--space-1);
       text-align: center;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .gantt-chart-area,
@@ -1194,6 +1386,20 @@
         linear-gradient(var(--color-border) 1px, transparent 1px),
         var(--color-white);
       background-size: 100% 32px;
+    }
+
+    .gantt-row-highlight {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 32px;
+      background: transparent;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .gantt-row-highlight.is-selected {
+      background: var(--color-selected-row);
     }
 
     .gantt-bar,
@@ -1207,6 +1413,7 @@
       background: var(--status-not-started);
       box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.08);
       cursor: pointer;
+      z-index: 1;
     }
 
     .gantt-bar.is-group {
@@ -1215,8 +1422,12 @@
     }
 
     .gantt-bar.is-critical {
-      outline: 2px solid var(--priority-critical);
-      outline-offset: 1px;
+      outline: 2px dashed var(--color-critical-path);
+      outline-offset: 3px;
+    }
+
+    .gantt-bar.is-selected {
+      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.08);
     }
 
     .bar-progress {
@@ -1232,6 +1443,16 @@
       border-radius: 2px;
       background: var(--priority-critical);
       cursor: pointer;
+      z-index: 1;
+    }
+
+    .milestone-diamond.is-critical {
+      outline: 2px dashed var(--color-critical-path);
+      outline-offset: 4px;
+    }
+
+    .milestone-diamond.is-selected {
+      outline: none;
     }
 
     .today-line {
@@ -1242,6 +1463,7 @@
       background: var(--color-danger);
       opacity: 0.85;
       pointer-events: none;
+      z-index: 2;
     }
 
     .dependency-svg {
@@ -1249,6 +1471,7 @@
       inset: 0;
       overflow: visible;
       pointer-events: none;
+      z-index: 2;
     }
 
     .board-filters {
@@ -1583,6 +1806,10 @@
         min-width: 384px;
       }
 
+      .gantt-column-resizer {
+        display: none;
+      }
+
       .gantt-left-header span:nth-child(n+6),
       .gantt-left-row span:nth-child(n+6) {
         display: none;
@@ -1664,13 +1891,14 @@
 <body>
   <div class="app-shell">
     <header class="top-bar" aria-label="Application bar">
-      <div class="brand" aria-label="ProjectPlan">
+      <div class="brand" aria-label="Project Plan">
         <span class="brand-mark" aria-hidden="true">P</span>
-        <span>ProjectPlan</span>
+        <span>Project Plan</span>
       </div>
       <div class="project-title" aria-live="polite">Untitled Project</div>
       <div class="top-actions" aria-label="File actions">
         <button class="top-button" id="open-file-button" type="button">Open</button>
+        <button class="top-button" id="refresh-file-button" type="button" disabled>Refresh</button>
         <button class="top-button" id="save-file-button" type="button">Save</button>
         <button class="top-button" id="save-as-file-button" type="button">Save As</button>
       </div>
@@ -1698,14 +1926,14 @@
       <section class="empty-view" aria-label="Project workspace">
         <div class="empty-panel">
           <h1 class="empty-title">Gantt view</h1>
-          <p class="empty-copy">Open a CSV project file or add tasks to begin planning.</p>
+          <p class="empty-copy">Open a CSV project file to get started.</p>
           <details class="sample-csv-preview" open>
             <summary>Sample CSV</summary>
-            <pre id="sample-csv-source">task_id,task_name,task_level,task_status,duration_days,start_date,end_date,dependencies,owner,resources,percent_complete,notes,priority,milestone
-1,Test Project,project,in_progress,30,2025-01-06,2025-02-04,,Alice,,50,,high,false
-1.1,Phase 1,group1,completed,14,2025-01-06,2025-01-19,,Alice,,100,,high,false
-1.1.1,Task A,task,completed,5,2025-01-06,2025-01-10,,Bob,"Bob,Carol",100,,medium,false
-1.1.2,Task B,task,in_progress,5,2025-01-13,2025-01-17,1.1.1,Alice,,60,,high,false</pre>
+            <pre id="sample-csv-source">Task#,Complete%,Task Level,Task Name,Duration,Start,Finish,Predecessors,Successors,Constrain Type,Resources
+1,64%,1,EMEA Wave 1: EXPENSE ES & PT,264,2026-01-08,2026-09-28,,,As Soon As Possible,
+2,100%,2,Getting Started Phase,15,2026-01-08,2026-01-22,,,As Soon As Possible,
+3,100%,,Project Planning Initiation Assigning Resources,13,2026-01-08,2026-01-20,,4,As Soon As Possible,person1
+4,100%,,Kickoff call,3,2026-01-20,2026-01-22,3,"7,42,11",As Soon As Possible,"person2,person3"</pre>
           </details>
         </div>
       </section>
@@ -1728,49 +1956,57 @@
   </div>
 
   <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
-
   <script type="module">
-    const CSV_COLUMNS = [
-      "task_id",
-      "task_name",
-      "task_level",
-      "task_status",
-      "duration_days",
-      "start_date",
-      "end_date",
-      "dependencies",
-      "owner",
-      "resources",
-      "percent_complete",
-      "notes",
-      "priority",
-      "milestone"
+    const PROJECT_COLUMNS = [
+      { field: "task_id", label: "Task#", aliases: ["task_id", "Task#", "Task #", "Task ID", "id"] },
+      { field: "percent_complete", label: "Complete%", aliases: ["percent_complete", "Complete%", "% Done", "Complete", "completion"] },
+      { field: "task_level", label: "Task Level", aliases: ["task_level", "Task Level", "level"] },
+      { field: "task_name", label: "Task Name", aliases: ["task_name", "Task Name", "name"] },
+      { field: "duration_days", label: "Duration", aliases: ["duration_days", "Duration", "duration"] },
+      { field: "start_date", label: "Start", aliases: ["start_date", "Start", "Start Date"] },
+      { field: "end_date", label: "Finish", aliases: ["end_date", "Finish", "End Date", "end_date"] },
+      { field: "dependencies", label: "Predecessors", aliases: ["dependencies", "Predecessors", "predecessors"] },
+      { field: "successors", label: "Successors", aliases: ["successors", "Successors"] },
+      { field: "constraint_type", label: "Constrain Type", aliases: ["constraint_type", "Constrain Type", "Constraint Type"] },
+      { field: "resources", label: "Resources", aliases: ["resources", "Resources", "Resource", "Owner", "owner", "Task Owner", "Responsible"] }
     ];
+    const CSV_COLUMNS = PROJECT_COLUMNS.map((column) => column.field);
+    const LEGACY_COLUMNS = ["task_status", "owner", "notes", "priority", "milestone"];
 
     const COMPUTED_COLUMNS = new Set(["_depth", "_isGroup", "_children", "_parent"]);
-    const LIST_COLUMNS = new Set(["dependencies", "resources"]);
+    const LIST_COLUMNS = new Set(["dependencies", "successors", "resources"]);
     const INTEGER_COLUMNS = new Set(["duration_days", "percent_complete"]);
     const STATUS_OPTIONS = ["not_started", "in_progress", "blocked", "completed", "on_hold", "cancelled"];
     const PRIORITY_OPTIONS = ["low", "medium", "high", "critical"];
-    const TASK_LEVEL_OPTIONS = ["project", "group1", "group2", "group3", "task"];
-    const ZOOM_OPTIONS = ["week", "month", "quarter", "year"];
+    const TASK_LEVEL_OPTIONS = ["", "1", "2", "3", "4", "5"];
+    const ZOOM_OPTIONS = ["day", "week", "month", "quarter", "year"];
     const TIMELINE_GROUP_OPTIONS = ["owner", "level"];
     const TABLE_COLUMNS = [
-      { field: "task_id", label: "Task ID", className: "col-task-id", editable: false },
+      { field: "task_id", label: "Task#", className: "col-task-id", editable: false },
+      { field: "percent_complete", label: "Complete%", editable: true },
+      { field: "task_level", label: "Task Level", editable: true },
       { field: "task_name", label: "Task Name", className: "col-task-name", editable: true },
-      { field: "task_level", label: "Level", editable: true },
-      { field: "task_status", label: "Status", editable: true },
       { field: "duration_days", label: "Duration", editable: true },
-      { field: "start_date", label: "Start Date", editable: true },
-      { field: "end_date", label: "End Date", editable: true },
-      { field: "dependencies", label: "Dependencies", editable: true },
-      { field: "owner", label: "Owner", editable: true },
-      { field: "resources", label: "Resources", editable: true },
-      { field: "percent_complete", label: "% Done", editable: true },
-      { field: "priority", label: "Priority", editable: true },
-      { field: "milestone", label: "Milestone", editable: true },
-      { field: "notes", label: "Notes", className: "col-notes", editable: true }
+      { field: "start_date", label: "Start", editable: true },
+      { field: "end_date", label: "Finish", editable: true },
+      { field: "dependencies", label: "Predecessors", editable: true },
+      { field: "successors", label: "Successors", editable: true },
+      { field: "constraint_type", label: "Constrain Type", className: "col-notes", editable: true },
+      { field: "resources", label: "Resources", editable: true }
     ];
+    const GANTT_COLUMNS = [
+      { field: "task_id", label: "Task#", width: 72, minWidth: 52, maxWidth: 140 },
+      { field: "task_name", label: "Task Name", width: 260, minWidth: 160, maxWidth: 520 },
+      { field: "duration_days", label: "Dur", width: 64, minWidth: 48, maxWidth: 120 },
+      { field: "start_date", label: "Start", width: 96, minWidth: 76, maxWidth: 150 },
+      { field: "end_date", label: "Finish", width: 96, minWidth: 76, maxWidth: 150 },
+      { field: "dependencies", label: "Pred", width: 112, minWidth: 72, maxWidth: 220 },
+      { field: "resources", label: "Resources", width: 140, minWidth: 90, maxWidth: 280 },
+      { field: "percent_complete", label: "%", width: 64, minWidth: 44, maxWidth: 100 }
+    ];
+    const GANTT_SCALE_MIN = 0.1;
+    const GANTT_SCALE_MAX = 2.5;
+    const GANTT_SCALE_STEP = 0.05;
 
     const state = {
       project: {
@@ -1778,6 +2014,12 @@
         columns: [...CSV_COLUMNS],
         filename: "Untitled project.csv",
         fileHandle: null,
+        sourceFile: null,
+        sourceUrl: "",
+        directoryHandle: null,
+        availableCsvFiles: [],
+        csvDiscoveryStatus: "idle",
+        csvDiscoveryMessage: "",
         isDirty: false,
         lastSavedText: ""
       },
@@ -1804,6 +2046,9 @@
         boardOwnerFilter: "",
         timelineGroupBy: "owner",
         ganttZoom: "week",
+        ganttScale: 1,
+        showCriticalPath: true,
+        ganttColumnWidths: Object.fromEntries(GANTT_COLUMNS.map((column) => [column.field, column.width])),
         zoom: "week",
         criticalPathTaskIds: new Set(),
         lastCriticalPathError: "",
@@ -1835,18 +2080,28 @@
 
     function serialiseCSV(tasks) {
       const columns = getExportColumns(tasks);
-      const header = columns.map(quoteCSVValue).join(",");
+      const header = columns.map((column) => quoteCSVValue(getColumnLabel(column))).join(",");
       const rows = tasks.map((task) => {
         return columns
-          .map((column) => quoteCSVValue(formatCSVCell(task[column], column)))
+          .map((column) => quoteCSVValue(formatCSVCell(getTaskExportValue(task, column), column)))
           .join(",");
       });
 
       return [header, ...rows].join("\n");
     }
 
+    function getTaskExportValue(task, field) {
+      if (field === "resources") {
+        return getTaskResources(task);
+      }
+
+      return task[field];
+    }
+
     function buildTree(tasks) {
       const taskById = new Map();
+      const usesDottedIds = tasks.some((task) => String(task.task_id || "").includes("."));
+      const outlineStack = [];
 
       tasks.forEach((task) => {
         refreshComputedFields(task);
@@ -1858,13 +2113,38 @@
         }
       });
 
-      tasks.forEach((task) => {
-        const parentId = getParentTaskId(task.task_id);
-        const parent = parentId ? taskById.get(parentId) : null;
+      if (usesDottedIds) {
+        tasks.forEach((task) => {
+          const parentId = getParentTaskId(task.task_id);
+          const parent = parentId ? taskById.get(parentId) : null;
 
-        if (parent) {
-          task._parent = parent.task_id;
-          parent._children.push(task);
+          if (parent) {
+            task._parent = parent.task_id;
+            parent._children.push(task);
+          }
+        });
+        return tasks;
+      }
+
+      tasks.forEach((task) => {
+        const level = parseTaskOutlineLevel(task.task_level);
+
+        if (level !== null) {
+          task._depth = Math.max(0, level - 1);
+          task._isGroup = true;
+          task._parent = outlineStack[level - 2]?.task_id || null;
+          outlineStack[level - 1] = task;
+          outlineStack.length = level;
+        } else {
+          const parent = outlineStack[outlineStack.length - 1] || null;
+
+          task._depth = parent ? parent._depth + 1 : 0;
+          task._isGroup = false;
+          task._parent = parent?.task_id || null;
+        }
+
+        if (task._parent && taskById.has(task._parent)) {
+          taskById.get(task._parent)._children.push(task);
         }
       });
 
@@ -1929,36 +2209,101 @@
     }
 
     function createTaskFromRow(headers, row) {
+      const rawTask = {};
       const task = {};
 
       headers.forEach((header, index) => {
-        task[header] = row[index] ?? "";
+        rawTask[header] = row[index] ?? "";
       });
 
       CSV_COLUMNS.forEach((column) => {
-        if (!(column in task)) {
-          task[column] = defaultValueForColumn(column);
+        task[column] = defaultValueForColumn(column);
+      });
+
+      task.task_id = String(getAliasedValue(rawTask, "task_id") ?? "").trim();
+      task.percent_complete = parsePercentValue(getAliasedValue(rawTask, "percent_complete"));
+      task.task_level = String(getAliasedValue(rawTask, "task_level") ?? "").trim();
+      task.task_name = String(getAliasedValue(rawTask, "task_name") ?? "").trim();
+      task.duration_days = parseIntegerValue(getAliasedValue(rawTask, "duration_days"));
+      task.start_date = formatDateCell(getAliasedValue(rawTask, "start_date"));
+      task.end_date = formatDateCell(getAliasedValue(rawTask, "end_date"));
+      task.dependencies = parseListValue(getAliasedValue(rawTask, "dependencies"));
+      task.successors = parseListValue(getAliasedValue(rawTask, "successors"));
+      task.constraint_type = String(getAliasedValue(rawTask, "constraint_type") ?? "").trim();
+      task.resources = parseListValue(getAliasedValue(rawTask, "resources"));
+
+      LEGACY_COLUMNS.forEach((column) => {
+        const value = rawTask[column];
+
+        if (value !== undefined) {
+          task[column] = value;
+        }
+      });
+
+      headers.forEach((header) => {
+        if (!Object.prototype.hasOwnProperty.call(task, header) && !isKnownColumnHeader(header)) {
+          task[header] = rawTask[header];
         }
       });
 
       task.dependencies = parseListValue(task.dependencies);
-      task.resources = parseListValue(task.resources);
+      task.successors = parseListValue(task.successors);
+      task.resources = parseListValue(task.resources || []);
+      if (task.resources.length === 0 && task.owner) {
+        task.resources = parseListValue(task.owner);
+      }
       task.duration_days = parseIntegerValue(task.duration_days);
-      task.percent_complete = parseIntegerValue(task.percent_complete);
+      if (!task.duration_days && task.start_date && task.end_date) {
+        task.duration_days = daysBetween(parseDateValue(task.start_date), parseDateValue(task.end_date)) + 1;
+      }
       task.milestone = parseBooleanValue(task.milestone);
+      task.priority = task.priority || "medium";
+      task.task_status = task.task_status || deriveTaskStatus(task);
 
       refreshComputedFields(task);
 
       return task;
     }
 
+    function getAliasedValue(rawTask, field) {
+      const schema = PROJECT_COLUMNS.find((column) => column.field === field);
+      const aliases = schema ? schema.aliases : [field];
+      const normalizedRawEntries = new Map(
+        Object.entries(rawTask).map(([key, value]) => [normalizeHeader(key), value])
+      );
+
+      for (const alias of aliases) {
+        const normalizedAlias = normalizeHeader(alias);
+
+        if (normalizedRawEntries.has(normalizedAlias)) {
+          return normalizedRawEntries.get(normalizedAlias);
+        }
+      }
+
+      return rawTask[field];
+    }
+
+    function isKnownColumnHeader(header) {
+      const normalized = normalizeHeader(header);
+
+      return PROJECT_COLUMNS.some((column) => {
+        return column.aliases.some((alias) => normalizeHeader(alias) === normalized);
+      }) || LEGACY_COLUMNS.some((column) => normalizeHeader(column) === normalized);
+    }
+
+    function normalizeHeader(header) {
+      return String(header || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    }
+
     function refreshComputedFields(task) {
       const taskId = String(task.task_id ?? "").trim();
       const taskLevel = String(task.task_level ?? "").trim();
+      const outlineLevel = parseTaskOutlineLevel(taskLevel);
 
       task.task_id = taskId;
+      task.task_level = taskLevel;
       task._depth = taskId === "" ? 0 : (taskId.match(/\./g) || []).length;
-      task._isGroup = taskLevel !== "task";
+      task._isGroup = outlineLevel !== null;
     }
 
     function parseListValue(value) {
@@ -1979,6 +2324,176 @@
 
       const parsed = Number.parseInt(String(value).trim(), 10);
       return Number.isNaN(parsed) ? 0 : parsed;
+    }
+
+    function parsePercentValue(value) {
+      if (value === "" || value === null || value === undefined) {
+        return 0;
+      }
+
+      if (typeof value === "number") {
+        return Math.round(value <= 1 ? value * 100 : value);
+      }
+
+      const text = String(value).trim();
+      const parsed = Number.parseFloat(text.replace("%", ""));
+
+      if (Number.isNaN(parsed)) {
+        return 0;
+      }
+
+      return Math.round(parsed <= 1 && !text.includes("%") ? parsed * 100 : parsed);
+    }
+
+    function formatDateCell(value) {
+      if (!value) {
+        return "";
+      }
+
+      if (value instanceof Date && !Number.isNaN(value.getTime())) {
+        return formatDateAsISO(value);
+      }
+
+      const date = parseDateValue(value);
+      return date ? formatDateAsISO(date) : "";
+    }
+
+    function formatDateAsISO(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+
+      return `${year}-${month}-${day}`;
+    }
+
+    function parseTaskOutlineLevel(value) {
+      if (value === null || value === undefined || value === "") {
+        return null;
+      }
+
+      const text = String(value).trim().toLowerCase();
+      const directNumber = Number.parseInt(text, 10);
+
+      if (!Number.isNaN(directNumber) && directNumber > 0) {
+        return directNumber;
+      }
+
+      if (text === "project") {
+        return 1;
+      }
+
+      const groupMatch = text.match(/^group(\d+)$/);
+      if (groupMatch) {
+        return Number.parseInt(groupMatch[1], 10) + 1;
+      }
+
+      return text === "task" ? null : null;
+    }
+
+    function deriveTaskStatus(task) {
+      const percent = getTaskPercentComplete(task);
+
+      if (percent >= 100) {
+        return "completed";
+      }
+
+      if (percent <= 0) {
+        return "not_started";
+      }
+
+      return "in_progress";
+    }
+
+    function getTaskStatus(task) {
+      return deriveTaskStatus(task);
+    }
+
+    function getTaskPercentComplete(task) {
+      if (!task?._isGroup) {
+        return parsePercentValue(task?.percent_complete);
+      }
+
+      const leafTasks = getLeafDescendants(task);
+
+      if (leafTasks.length === 0) {
+        return parsePercentValue(task.percent_complete);
+      }
+
+      const totalWeight = leafTasks.reduce((sum, child) => sum + getTaskCompletionWeight(child), 0);
+
+      if (totalWeight <= 0) {
+        return Math.round(leafTasks.reduce((sum, child) => sum + parsePercentValue(child.percent_complete), 0) / leafTasks.length);
+      }
+
+      const weightedTotal = leafTasks.reduce((sum, child) => {
+        return sum + getTaskCompletionWeight(child) * parsePercentValue(child.percent_complete);
+      }, 0);
+
+      return Math.round(weightedTotal / totalWeight);
+    }
+
+    function getTaskCompletionWeight(task) {
+      return Math.max(1, parseIntegerValue(task?.duration_days));
+    }
+
+    function getLeafDescendants(task) {
+      const children = task?._children || [];
+
+      if (children.length === 0) {
+        return [];
+      }
+
+      return children.flatMap((child) => {
+        return child._isGroup ? getLeafDescendants(child) : [child];
+      });
+    }
+
+    function getTaskResources(task) {
+      if (task?._isGroup) {
+        return [];
+      }
+
+      const resources = parseListValue(task?.resources || []);
+
+      if (resources.length > 0) {
+        return resources;
+      }
+
+      return parseListValue(task?.owner || []);
+    }
+
+    function getTaskResourceGroups(task) {
+      if (task?._isGroup) {
+        return [];
+      }
+
+      const resources = getTaskResources(task);
+
+      return resources.length > 0 ? resources : ["Unassigned"];
+    }
+
+    function getTaskResourceLabel(task) {
+      if (task?._isGroup) {
+        return "";
+      }
+
+      return getTaskResourceGroups(task).join(", ");
+    }
+
+    function taskHasResource(task, resource) {
+      return !resource || getTaskResourceGroups(task).includes(resource);
+    }
+
+    function setTaskStatusFromBoard(taskId, status) {
+      const percentByStatus = {
+        not_started: 0,
+        in_progress: 50,
+        on_hold: 50,
+        completed: 100,
+        cancelled: parsePercentValue(findTaskById(taskId)?.percent_complete)
+      };
+
+      updateTaskField(taskId, "percent_complete", percentByStatus[status] ?? 0);
     }
 
     function parseBooleanValue(value) {
@@ -2010,7 +2525,15 @@
       const columns = [...CSV_COLUMNS];
 
       headers.forEach((header) => {
-        if (!columns.includes(header) && !COMPUTED_COLUMNS.has(header)) {
+        const knownColumn = PROJECT_COLUMNS.find((column) => {
+          return column.aliases.some((alias) => normalizeHeader(alias) === normalizeHeader(header));
+        });
+
+        if (knownColumn) {
+          return;
+        }
+
+        if (!columns.includes(header) && !COMPUTED_COLUMNS.has(header) && !LEGACY_COLUMNS.includes(header)) {
           columns.push(header);
         }
       });
@@ -2023,7 +2546,7 @@
 
       tasks.forEach((task) => {
         Object.keys(task).forEach((column) => {
-          if (!columns.includes(column) && !COMPUTED_COLUMNS.has(column)) {
+          if (!columns.includes(column) && !COMPUTED_COLUMNS.has(column) && !LEGACY_COLUMNS.includes(column)) {
             columns.push(column);
           }
         });
@@ -2032,9 +2555,17 @@
       return columns;
     }
 
+    function getColumnLabel(column) {
+      return PROJECT_COLUMNS.find((schema) => schema.field === column)?.label || column;
+    }
+
     function formatCSVCell(value, column) {
       if (LIST_COLUMNS.has(column)) {
         return Array.isArray(value) ? value.join(",") : String(value ?? "");
+      }
+
+      if (column === "percent_complete") {
+        return `${parsePercentValue(value)}%`;
       }
 
       if (column === "milestone") {
@@ -2068,7 +2599,7 @@
             multiple: false,
             types: [
               {
-                description: "CSV files",
+                description: "CSV project plan",
                 accept: {
                   "text/csv": [".csv"],
                   "text/plain": [".csv"]
@@ -2077,28 +2608,30 @@
             ]
           });
           const file = await fileHandle.getFile();
-          const text = await file.text();
 
-          await loadProjectFromText(text, file.name, fileHandle);
-          showToast(`Opened ${file.name}`, "success");
+          const loaded = await loadProjectFromFile(file, fileHandle);
+
+          if (loaded) {
+            showToast(`Opened ${file.name}`, "success");
+          }
           return;
         }
 
         openFileFallback();
       } catch (error) {
-        handleFileError(error, "Could not open the CSV file.");
+        handleFileError(error, "Could not open the project file.");
       }
     }
 
     async function saveFile() {
-      const csvText = serialiseCSV(state.project.tasks);
+      const output = new Blob([serialiseCSV(state.project.tasks)], { type: "text/csv;charset=utf-8" });
 
       try {
         if (state.project.fileHandle && "createWritable" in state.project.fileHandle) {
           const writable = await state.project.fileHandle.createWritable();
-          await writable.write(csvText);
+          await writable.write(output);
           await writable.close();
-          markProjectSaved(csvText);
+          markProjectSaved();
           showToast("Saved ✓", "success");
           return;
         }
@@ -2111,7 +2644,6 @@
 
     async function saveFileAs() {
       const suggestedName = normaliseCSVFilename(state.project.filename || "project.csv");
-      const csvText = serialiseCSV(state.project.tasks);
 
       try {
         if ("showSaveFilePicker" in window) {
@@ -2119,7 +2651,7 @@
             suggestedName,
             types: [
               {
-                description: "CSV files",
+                description: "CSV file",
                 accept: {
                   "text/csv": [".csv"],
                   "text/plain": [".csv"]
@@ -2129,32 +2661,34 @@
           });
 
           state.project.fileHandle = fileHandle;
-          state.project.filename = fileHandle.name || suggestedName;
+          state.project.filename = normaliseCSVFilename(fileHandle.name || suggestedName);
           await saveFile();
           return;
         }
 
-        const filename = window.prompt("Save CSV as", suggestedName);
+        const filename = window.prompt("Save project as", suggestedName);
 
         if (!filename) {
           return;
         }
 
         const finalFilename = normaliseCSVFilename(filename);
-        downloadCSV(csvText, finalFilename);
+        downloadProjectFile(finalFilename);
         state.project.fileHandle = null;
+        state.project.sourceFile = null;
+        state.project.sourceUrl = "";
         state.project.filename = finalFilename;
-        markProjectSaved(csvText);
+        markProjectSaved();
         showToast("Saved ✓", "success");
       } catch (error) {
-        handleFileError(error, "Could not save the CSV file.");
+        handleFileError(error, "Could not save the project file.");
       }
     }
 
     function openFileFallback() {
       const input = document.createElement("input");
       input.type = "file";
-      input.accept = ".csv,text/csv";
+      input.accept = ".csv,text/csv,text/plain";
       input.style.position = "fixed";
       input.style.left = "-9999px";
 
@@ -2167,11 +2701,13 @@
         }
 
         try {
-          const text = await readFileAsText(file);
-          await loadProjectFromText(text, file.name, null);
-          showToast(`Opened ${file.name}`, "success");
+          const loaded = await loadProjectFromFile(file, null);
+
+          if (loaded) {
+            showToast(`Opened ${file.name}`, "success");
+          }
         } catch (error) {
-          handleFileError(error, "Could not open the CSV file.");
+          handleFileError(error, "Could not open the project file.");
         }
       }, { once: true });
 
@@ -2189,7 +2725,48 @@
       });
     }
 
-    async function loadProjectFromText(text, filename, fileHandle) {
+    async function loadProjectFromFile(file, fileHandle) {
+      if (!isCSVFilename(file.name)) {
+        throw new Error("Only CSV files are supported.");
+      }
+
+      const text = await file.text();
+      return loadProjectFromText(text, file.name, fileHandle, file);
+    }
+
+    async function loadProjectFromUrl(url, filename) {
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`Could not read ${filename || "CSV file"}.`);
+      }
+
+      const text = await response.text();
+      return loadProjectFromText(text, filename || getFilenameFromUrl(url), null, null, url);
+    }
+
+    async function loadCsvEntry(entry) {
+      try {
+        let loaded = false;
+
+        if (entry.handle) {
+          const file = await entry.handle.getFile();
+          loaded = await loadProjectFromFile(file, entry.handle);
+        } else if (entry.file) {
+          loaded = await loadProjectFromFile(entry.file, null);
+        } else if (entry.url) {
+          loaded = await loadProjectFromUrl(entry.url, entry.name);
+        }
+
+        if (loaded) {
+          showToast(`Opened ${entry.name}`, "success");
+        }
+      } catch (error) {
+        handleFileError(error, `Could not open ${entry.name}.`);
+      }
+    }
+
+    async function loadProjectFromText(text, filename, fileHandle, sourceFile = null, sourceUrl = "") {
       showLoadingState();
       await new Promise((resolve) => window.requestAnimationFrame(resolve));
 
@@ -2199,6 +2776,8 @@
         state.project.tasks = buildTree(tasks);
         state.project.filename = filename || "project.csv";
         state.project.fileHandle = fileHandle;
+        state.project.sourceFile = sourceFile;
+        state.project.sourceUrl = sourceUrl;
         state.project.lastSavedText = serialiseCSV(state.project.tasks);
         state.project.isDirty = false;
         state.ui.selectedTaskId = null;
@@ -2207,10 +2786,225 @@
         closeTaskEditor();
         renderCurrentView();
         updateStatusBar();
+        return true;
       } catch (error) {
         console.error(error);
         renderCurrentView();
         showToast(error.rowNumber ? `CSV parse failed at row ${error.rowNumber}.` : "CSV parse failed.", "error");
+        return false;
+      }
+    }
+
+    async function discoverLocalCsvFiles() {
+      if (state.project.tasks.length > 0) {
+        return;
+      }
+
+      state.project.csvDiscoveryStatus = "loading";
+      state.project.csvDiscoveryMessage = "Looking for CSV files...";
+      renderCurrentView();
+
+      if (window.location.protocol === "file:") {
+        state.project.csvDiscoveryStatus = "permission_required";
+        state.project.csvDiscoveryMessage = "Use Open CSV to choose a project file.";
+        renderCurrentView();
+        return;
+      }
+
+      try {
+        const response = await fetch(new URL(".", window.location.href));
+
+        if (!response.ok) {
+          throw new Error("Directory listing is not available.");
+        }
+
+        const html = await response.text();
+        const entries = parseCsvDirectoryListing(html, new URL(".", window.location.href));
+
+        state.project.availableCsvFiles = entries;
+        state.project.csvDiscoveryStatus = "ready";
+        state.project.csvDiscoveryMessage = entries.length
+          ? `${entries.length} CSV file${entries.length === 1 ? "" : "s"} found.`
+          : "No CSV files were found in this folder.";
+        renderCurrentView();
+      } catch (error) {
+        state.project.availableCsvFiles = [];
+        state.project.csvDiscoveryStatus = "permission_required";
+        state.project.csvDiscoveryMessage = "Use Open CSV to choose a project file.";
+        renderCurrentView();
+      }
+    }
+
+    function parseCsvDirectoryListing(html, baseUrl) {
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const seen = new Set();
+
+      return Array.from(doc.querySelectorAll("a[href]"))
+        .map((link) => {
+          const url = new URL(link.getAttribute("href"), baseUrl);
+
+          if (!isCSVFilename(url.pathname) || url.origin !== baseUrl.origin) {
+            return null;
+          }
+
+          const name = getFilenameFromUrl(url.href);
+
+          if (seen.has(name)) {
+            return null;
+          }
+
+          seen.add(name);
+          return {
+            name,
+            source: "folder",
+            url: url.href
+          };
+        })
+        .filter(Boolean)
+        .sort((left, right) => left.name.localeCompare(right.name));
+    }
+
+    async function chooseCsvFolder() {
+      try {
+        if (!("showDirectoryPicker" in window)) {
+          chooseCsvFiles();
+          return;
+        }
+
+        const directoryHandle = await window.showDirectoryPicker();
+        const entries = [];
+
+        for await (const [name, handle] of directoryHandle.entries()) {
+          if (handle.kind === "file" && isCSVFilename(name)) {
+            entries.push({
+              name,
+              source: "folder",
+              handle
+            });
+          }
+        }
+
+        state.project.directoryHandle = directoryHandle;
+        state.project.availableCsvFiles = entries.sort((left, right) => left.name.localeCompare(right.name));
+        state.project.csvDiscoveryStatus = "ready";
+        state.project.csvDiscoveryMessage = entries.length
+          ? `${entries.length} CSV file${entries.length === 1 ? "" : "s"} found.`
+          : "No CSV files were found in the selected folder.";
+        renderCurrentView();
+      } catch (error) {
+        handleFileError(error, "Could not read the selected folder.");
+      }
+    }
+
+    async function chooseCsvFiles() {
+      if ("showOpenFilePicker" in window) {
+        try {
+          const handles = await window.showOpenFilePicker({
+            multiple: true,
+            types: [
+              {
+                description: "CSV project plan",
+                accept: {
+                  "text/csv": [".csv"],
+                  "text/plain": [".csv"]
+                }
+              }
+            ]
+          });
+
+          state.project.availableCsvFiles = handles
+            .filter((handle) => isCSVFilename(handle.name))
+            .map((handle) => ({
+              name: handle.name,
+              source: "selected",
+              handle
+            }))
+            .sort((left, right) => left.name.localeCompare(right.name));
+          state.project.csvDiscoveryStatus = "ready";
+          state.project.csvDiscoveryMessage = state.project.availableCsvFiles.length
+            ? `${state.project.availableCsvFiles.length} CSV file${state.project.availableCsvFiles.length === 1 ? "" : "s"} selected.`
+            : "No CSV files were selected.";
+          renderCurrentView();
+        } catch (error) {
+          handleFileError(error, "Could not select CSV files.");
+        }
+        return;
+      }
+
+      chooseCsvFilesFallback();
+    }
+
+    function chooseCsvFilesFallback() {
+      const input = document.createElement("input");
+
+      input.type = "file";
+      input.accept = ".csv,text/csv,text/plain";
+      input.multiple = true;
+      input.style.position = "fixed";
+      input.style.left = "-9999px";
+      input.addEventListener("change", () => {
+        const files = Array.from(input.files || []).filter((file) => isCSVFilename(file.name));
+
+        input.remove();
+        state.project.availableCsvFiles = files
+          .map((file) => ({
+            name: file.name,
+            source: "selected",
+            file
+          }))
+          .sort((left, right) => left.name.localeCompare(right.name));
+        state.project.csvDiscoveryStatus = "ready";
+        state.project.csvDiscoveryMessage = files.length
+          ? `${files.length} CSV file${files.length === 1 ? "" : "s"} selected.`
+          : "No CSV files were selected.";
+        renderCurrentView();
+      }, { once: true });
+
+      document.body.append(input);
+      input.click();
+    }
+
+    async function refreshProjectFile() {
+      try {
+        if (state.project.isDirty) {
+          const shouldRefresh = window.confirm("Refresh from the CSV file and discard unsaved changes?");
+
+          if (!shouldRefresh) {
+            return;
+          }
+        }
+
+        if (state.project.fileHandle && "getFile" in state.project.fileHandle) {
+          const file = await state.project.fileHandle.getFile();
+          const refreshed = await loadProjectFromFile(file, state.project.fileHandle);
+
+          if (refreshed) {
+            showToast(`Refreshed ${file.name}`, "success");
+          }
+          return;
+        }
+
+        if (state.project.sourceFile) {
+          const refreshed = await loadProjectFromFile(state.project.sourceFile, null);
+
+          if (refreshed) {
+            showToast(`Refreshed ${state.project.sourceFile.name}`, "success");
+          }
+          return;
+        }
+
+        if (state.project.sourceUrl) {
+          const refreshed = await loadProjectFromUrl(state.project.sourceUrl, state.project.filename);
+
+          if (refreshed) {
+            showToast(`Refreshed ${state.project.filename}`, "success");
+          }
+          return;
+        }
+
+        showToast("Open a CSV file before refreshing.", "warning");
+      } catch (error) {
+        handleFileError(error, "Could not refresh the CSV file.");
       }
     }
 
@@ -2223,8 +3017,8 @@
       mainContent?.replaceChildren(loading);
     }
 
-    function downloadCSV(csvText, filename) {
-      const blob = new Blob([csvText], { type: "text/csv;charset=utf-8" });
+    function downloadProjectFile(filename) {
+      const blob = new Blob([serialiseCSV(state.project.tasks)], { type: "text/csv;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
 
@@ -2248,7 +3042,9 @@
 
       const view = state.ui.currentView;
       const filteredTasks = getFilteredTasks();
-      const criticalPath = calculateCriticalPath(state.project.tasks);
+      const criticalPath = state.ui.showCriticalPath
+        ? calculateCriticalPath(state.project.tasks)
+        : new Set();
       let renderedView;
 
       state.ui.criticalPathTaskIds = criticalPath;
@@ -2292,22 +3088,82 @@
       copy.className = "empty-copy";
       copy.textContent = taskCount > 0
         ? `Loaded ${taskCount} tasks from ${state.project.filename}.`
-        : "Open a CSV file to get started.";
+          : "Select a CSV project file to get started.";
 
       panel.append(title, copy);
 
       if (taskCount === 0) {
-        const openButton = document.createElement("button");
-
-        openButton.type = "button";
-        openButton.className = "empty-action";
-        openButton.textContent = "Open File";
-        openButton.addEventListener("click", openFile);
-        panel.append(openButton);
+        panel.append(renderCsvStartupPicker());
       }
 
       section.append(panel);
       return section;
+    }
+
+    function renderCsvStartupPicker() {
+      const wrapper = document.createElement("div");
+      const actions = document.createElement("div");
+      const openButton = document.createElement("button");
+      const message = document.createElement("p");
+      const list = document.createElement("ul");
+      const entries = state.project.availableCsvFiles || [];
+
+      wrapper.className = "csv-picker";
+      actions.className = "csv-picker-actions";
+      openButton.type = "button";
+      openButton.className = "primary-button";
+      openButton.textContent = "Open CSV";
+      openButton.addEventListener("click", openFile);
+      actions.append(openButton);
+
+      message.className = "csv-picker-message";
+      message.textContent = getCsvPickerMessage(entries);
+      list.className = "csv-file-list";
+
+      entries.forEach((entry) => {
+        const item = document.createElement("li");
+        const button = document.createElement("button");
+        const name = document.createElement("span");
+        const source = document.createElement("span");
+
+        button.type = "button";
+        button.className = "csv-file-button";
+        button.addEventListener("click", () => loadCsvEntry(entry));
+        name.className = "csv-file-name";
+        name.textContent = entry.name;
+        source.className = "csv-file-source";
+        source.textContent = formatCsvSourceLabel(entry.source);
+        button.append(name, source);
+        item.append(button);
+        list.append(item);
+      });
+
+      wrapper.append(actions, message);
+      if (entries.length > 0) {
+        wrapper.append(list);
+      }
+      return wrapper;
+    }
+
+    function getCsvPickerMessage(entries) {
+      if (state.project.csvDiscoveryStatus === "loading") {
+        return state.project.csvDiscoveryMessage || "Looking for CSV files...";
+      }
+
+      if (entries.length > 0) {
+        return state.project.csvDiscoveryMessage || `${entries.length} CSV file${entries.length === 1 ? "" : "s"} found.`;
+      }
+
+      return state.project.csvDiscoveryMessage || "Use Open CSV to choose a project file.";
+    }
+
+    function formatCsvSourceLabel(source) {
+      const labels = {
+        folder: "Folder",
+        selected: "Selected"
+      };
+
+      return labels[source] || "CSV";
     }
 
     function switchView(viewName) {
@@ -2361,6 +3217,109 @@
       return section;
     }
 
+    function clampNumber(value, min, max) {
+      if (!Number.isFinite(value)) {
+        return min;
+      }
+
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function getGanttColumnWidths(ui = state.ui) {
+      const savedWidths = ui.ganttColumnWidths || {};
+
+      return GANTT_COLUMNS.map((column) => {
+        const width = Number(savedWidths[column.field] ?? column.width);
+        return clampNumber(width, column.minWidth, column.maxWidth);
+      });
+    }
+
+    function getGanttColumnTemplate(ui = state.ui) {
+      return getGanttColumnWidths(ui).map((width) => `${width}px`).join(" ");
+    }
+
+    function getGanttLeftWidth(ui = state.ui) {
+      return getGanttColumnWidths(ui).reduce((total, width) => total + width, 0);
+    }
+
+    function applyGanttColumnLayout(root, ui = state.ui) {
+      if (!root) {
+        return;
+      }
+
+      root.style.setProperty("--gantt-left-columns", getGanttColumnTemplate(ui));
+      root.style.setProperty("--gantt-left-width", `${getGanttLeftWidth(ui)}px`);
+    }
+
+    function beginGanttColumnResize(event, field) {
+      const column = GANTT_COLUMNS.find((item) => item.field === field);
+      const ganttView = event.currentTarget.closest(".gantt-view");
+
+      if (!column || !ganttView) {
+        return;
+      }
+
+      if (document.body.classList.contains("is-resizing-gantt-column")) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      const startX = event.clientX;
+      const startWidth = Number(state.ui.ganttColumnWidths?.[field] ?? column.width);
+      const moveEventName = event.type === "mousedown" ? "mousemove" : "pointermove";
+      const upEventName = event.type === "mousedown" ? "mouseup" : "pointerup";
+      const cancelEventName = event.type === "mousedown" ? "mouseleave" : "pointercancel";
+
+      document.body.classList.add("is-resizing-gantt-column");
+
+      const onPointerMove = (moveEvent) => {
+        const nextWidth = clampNumber(
+          startWidth + moveEvent.clientX - startX,
+          column.minWidth,
+          column.maxWidth
+        );
+
+        state.ui.ganttColumnWidths = {
+          ...state.ui.ganttColumnWidths,
+          [field]: nextWidth
+        };
+        applyGanttColumnLayout(ganttView, state.ui);
+      };
+
+      const onPointerUp = () => {
+        document.body.classList.remove("is-resizing-gantt-column");
+        window.removeEventListener(moveEventName, onPointerMove);
+        window.removeEventListener(upEventName, onPointerUp);
+        window.removeEventListener(cancelEventName, onPointerUp);
+      };
+
+      window.addEventListener(moveEventName, onPointerMove);
+      window.addEventListener(upEventName, onPointerUp);
+      window.addEventListener(cancelEventName, onPointerUp);
+    }
+
+    function getGanttColumnValue(task, field) {
+      if (field === "duration_days") {
+        return String(parseIntegerValue(task.duration_days));
+      }
+
+      if (field === "dependencies") {
+        return formatTableValue(task.dependencies, "dependencies");
+      }
+
+      if (field === "resources") {
+        return getTaskResourceLabel(task);
+      }
+
+      if (field === "percent_complete") {
+        return `${getTaskPercentComplete(task)}%`;
+      }
+
+      return formatTableValue(task[field], field);
+    }
+
     function renderGantt(tasks, ui, criticalPath = new Set()) {
       const section = document.createElement("section");
       const shell = document.createElement("div");
@@ -2371,24 +3330,19 @@
       const rightScroll = document.createElement("div");
       const displayTasks = getDisplayTasks(tasks, ui);
       const range = getProjectDateRange(displayTasks);
-      const pxPerDay = getPxPerDay(ui.ganttZoom);
+      const pxPerDay = getPxPerDay(ui.ganttZoom, ui.ganttScale);
       const totalDays = Math.max(1, daysBetween(range.start, range.end) + 1);
       const chartWidth = totalDays * pxPerDay;
       const chartHeight = Math.max(32, displayTasks.length * 32);
       const positions = new Map();
 
       section.className = "gantt-view";
+      applyGanttColumnLayout(section, ui);
       shell.className = "gantt-shell";
       left.className = "gantt-left";
       right.className = "gantt-right";
       leftHeader.className = "gantt-left-header";
-      leftHeader.append(
-        ...["Task ID", "Task Name", "Dur", "Start", "End", "Owner", "%"].map((label) => {
-          const span = document.createElement("span");
-          span.textContent = label;
-          return span;
-        })
-      );
+      leftHeader.append(...GANTT_COLUMNS.map((column) => renderGanttHeaderCell(column)));
 
       leftBody.className = "gantt-left-body";
       rightScroll.className = "gantt-right-scroll";
@@ -2401,10 +3355,17 @@
 
       displayTasks.forEach((task, index) => {
         const leftRow = renderGanttLeftRow(task);
+        const rowHighlight = document.createElement("div");
         const taskRange = getTaskDateRange(task);
-        const top = index * 32 + 7;
+        const rowTop = index * 32;
+        const top = rowTop + 7;
 
         leftBody.append(leftRow);
+        rowHighlight.className = "gantt-row-highlight";
+        rowHighlight.classList.toggle("is-selected", task.task_id === state.ui.selectedTaskId);
+        rowHighlight.dataset.taskId = task.task_id;
+        rowHighlight.style.top = `${rowTop}px`;
+        chartArea.append(rowHighlight);
 
         if (!taskRange) {
           return;
@@ -2422,10 +3383,14 @@
         if (task.milestone) {
           const milestone = document.createElement("div");
           milestone.className = "milestone-diamond";
+          milestone.classList.toggle("is-critical", ui.showCriticalPath && !task._isGroup && criticalPath.has(task.task_id));
+          milestone.classList.toggle("is-selected", task.task_id === state.ui.selectedTaskId);
+          milestone.dataset.taskId = task.task_id;
           milestone.style.left = `${leftOffset}px`;
           milestone.style.top = `${top + 2}px`;
           milestone.title = getTaskTooltip(task);
-          milestone.addEventListener("click", () => selectTask(task.task_id));
+          milestone.addEventListener("click", () => selectTaskOnly(task.task_id));
+          milestone.addEventListener("dblclick", () => selectTask(task.task_id));
           chartArea.append(milestone);
           return;
         }
@@ -2435,16 +3400,19 @@
 
         bar.className = "gantt-bar";
         bar.classList.toggle("is-group", task._isGroup);
-        bar.classList.toggle("is-critical", criticalPath.has(task.task_id));
+        bar.classList.toggle("is-critical", ui.showCriticalPath && !task._isGroup && criticalPath.has(task.task_id));
+        bar.classList.toggle("is-selected", task.task_id === state.ui.selectedTaskId);
+        bar.dataset.taskId = task.task_id;
         bar.style.left = `${leftOffset}px`;
         bar.style.top = `${top}px`;
         bar.style.width = `${width}px`;
-        bar.style.background = `var(--status-${toKebabCase(task.task_status || "not_started")})`;
+        bar.style.background = `var(--status-${toKebabCase(getTaskStatus(task))})`;
         bar.title = getTaskTooltip(task);
-        bar.addEventListener("click", () => selectTask(task.task_id));
+        bar.addEventListener("click", () => selectTaskOnly(task.task_id));
+        bar.addEventListener("dblclick", () => selectTask(task.task_id));
 
         progress.className = "bar-progress";
-        progress.style.width = `${Math.min(100, Math.max(0, parseIntegerValue(task.percent_complete)))}%`;
+        progress.style.width = `${Math.min(100, Math.max(0, getTaskPercentComplete(task)))}%`;
         bar.append(progress);
         chartArea.append(bar);
       });
@@ -2461,29 +3429,37 @@
       return section;
     }
 
+    function renderGanttHeaderCell(column) {
+      const span = document.createElement("span");
+      const resizer = document.createElement("button");
+
+      span.className = "gantt-left-header-cell";
+      span.textContent = column.label;
+      resizer.type = "button";
+      resizer.className = "gantt-column-resizer";
+      resizer.setAttribute("aria-label", `Resize ${column.label} column`);
+      resizer.addEventListener("pointerdown", (event) => beginGanttColumnResize(event, column.field));
+      resizer.addEventListener("mousedown", (event) => beginGanttColumnResize(event, column.field));
+      span.append(resizer);
+      return span;
+    }
+
     function renderGanttLeftRow(task) {
       const row = document.createElement("div");
-      const fields = [
-        task.task_id,
-        "",
-        parseIntegerValue(task.duration_days),
-        task.start_date,
-        task.end_date,
-        task.owner,
-        `${parseIntegerValue(task.percent_complete)}%`
-      ];
 
       row.className = "gantt-left-row";
+      row.classList.toggle("is-selected", task.task_id === state.ui.selectedTaskId);
       row.dataset.taskId = task.task_id;
-      row.addEventListener("click", () => selectTask(task.task_id));
+      row.addEventListener("click", () => selectTaskOnly(task.task_id));
+      row.addEventListener("dblclick", () => selectTask(task.task_id));
 
-      fields.forEach((value, index) => {
+      GANTT_COLUMNS.forEach((column) => {
         const span = document.createElement("span");
 
-        if (index === 1) {
+        if (column.field === "task_name") {
           span.append(renderGanttTaskName(task));
         } else {
-          span.textContent = value || "";
+          span.textContent = getGanttColumnValue(task, column.field);
         }
 
         row.append(span);
@@ -2499,6 +3475,7 @@
       const isCollapsed = state.ui.collapsedTaskIds.has(task.task_id);
 
       wrapper.className = "gantt-task-name";
+      wrapper.classList.toggle("is-group", Boolean(task._isGroup));
       wrapper.style.setProperty("--task-depth", String(task._depth || 0));
 
       if (task._isGroup) {
@@ -2515,7 +3492,7 @@
         wrapper.append(toggle);
       }
 
-      dot.className = `status-dot ${toKebabCase(task.task_status || "not_started")}`;
+      dot.className = `status-dot ${toKebabCase(getTaskStatus(task))}`;
       text.textContent = task.task_name || "";
       wrapper.append(dot, text);
       return wrapper;
@@ -2565,7 +3542,9 @@
     function getAxisCellEnd(startDate, zoom, maxDate) {
       const end = new Date(startDate);
 
-      if (zoom === "week") {
+      if (zoom === "day") {
+        end.setDate(end.getDate());
+      } else if (zoom === "week") {
         end.setDate(end.getDate() + 6);
       } else if (zoom === "month") {
         end.setMonth(end.getMonth() + 1, 0);
@@ -2579,12 +3558,16 @@
     }
 
     function formatAxisLabel(date, zoom) {
+      if (zoom === "day") {
+        return formatMonthDayLabel(date);
+      }
+
       if (zoom === "week") {
-        return `W${getWeekNumber(date)} ${date.toLocaleDateString(undefined, { month: "short", day: "numeric" })}`;
+        return formatMonthDayLabel(date);
       }
 
       if (zoom === "month") {
-        return date.toLocaleDateString(undefined, { month: "short", year: "numeric" });
+        return formatYearMonthLabel(date);
       }
 
       if (zoom === "quarter") {
@@ -2592,6 +3575,14 @@
       }
 
       return String(date.getFullYear());
+    }
+
+    function formatMonthDayLabel(date) {
+      return `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}`;
+    }
+
+    function formatYearMonthLabel(date) {
+      return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, "0")}`;
     }
 
     function appendTodayLine(chartArea, startDate, endDate, pxPerDay, chartHeight) {
@@ -2696,16 +3687,16 @@
       const filters = document.createElement("div");
       const columns = document.createElement("div");
       const leafTasks = tasks.filter(isLeafTask);
-      const owners = getUniqueOwners(state.project.tasks);
+      const resources = getUniqueResources(state.project.tasks);
       const statuses = ["not_started", "in_progress", "on_hold", "completed", "cancelled"];
 
       section.className = "board-view";
       filters.className = "board-filters";
       columns.className = "board-columns";
 
-      filters.append(createOwnerFilterPill("", "All Owners", !ui.boardOwnerFilter));
-      owners.forEach((owner) => {
-        filters.append(createOwnerFilterPill(owner, owner, ui.boardOwnerFilter === owner));
+      filters.append(createOwnerFilterPill("", "All Resources", !ui.boardOwnerFilter));
+      resources.forEach((resource) => {
+        filters.append(createOwnerFilterPill(resource, resource, ui.boardOwnerFilter === resource));
       });
 
       statuses.forEach((status) => {
@@ -2715,8 +3706,8 @@
         const count = document.createElement("span");
         const list = document.createElement("div");
         const statusTasks = leafTasks.filter((task) => {
-          return task.task_status === status
-            && (!ui.boardOwnerFilter || (task.owner || "Unassigned") === ui.boardOwnerFilter);
+          return getTaskStatus(task) === status
+            && taskHasResource(task, ui.boardOwnerFilter);
         });
 
         column.className = "board-column";
@@ -2731,7 +3722,7 @@
           event.preventDefault();
           column.classList.remove("drag-over");
           const taskId = event.dataTransfer.getData("text/plain");
-          updateTaskField(taskId, "task_status", status);
+          setTaskStatusFromBoard(taskId, status);
         });
 
         header.className = "board-column-header";
@@ -2772,7 +3763,7 @@
       const progressTrack = document.createElement("div");
       const progressFill = document.createElement("div");
       const meta = document.createElement("div");
-      const percentComplete = Math.min(100, Math.max(0, parseIntegerValue(task.percent_complete)));
+      const percentComplete = Math.min(100, Math.max(0, parsePercentValue(task.percent_complete)));
 
       card.className = "task-card";
       card.draggable = true;
@@ -2788,7 +3779,7 @@
       title.className = "task-card-title";
       title.textContent = task.task_name || "Untitled task";
       owner.className = "task-card-owner";
-      owner.textContent = task.owner || "Unassigned";
+      owner.textContent = getTaskResourceLabel(task);
 
       progressTrack.className = "progress-track";
       progressFill.className = "progress-fill";
@@ -2819,7 +3810,7 @@
       const leafTasks = tasks.filter(isLeafTask);
       const groupedTasks = groupTimelineTasks(leafTasks, ui.timelineGroupBy);
       const range = getProjectDateRange(leafTasks);
-      const pxPerDay = getPxPerDay(ui.ganttZoom);
+      const pxPerDay = getPxPerDay(ui.ganttZoom, ui.ganttScale);
       const totalDays = Math.max(1, daysBetween(range.start, range.end) + 1);
       const chartWidth = totalDays * pxPerDay;
       let accumulatedTop = 0;
@@ -2827,7 +3818,7 @@
       section.className = "timeline-view";
       shell.className = "timeline-shell";
       leftHeader.className = "timeline-left-header";
-      leftHeader.textContent = ui.timelineGroupBy === "level" ? "Task Level" : "Owner";
+      leftHeader.textContent = ui.timelineGroupBy === "level" ? "Task Level" : "Resources";
       leftBody.className = "timeline-left-body";
       rightScroll.className = "timeline-right-scroll";
       rightScroll.append(renderTimeAxis(range.start, range.end, pxPerDay, ui.ganttZoom));
@@ -2870,7 +3861,7 @@
             milestone.className = "milestone-diamond";
             milestone.style.left = `${leftOffset}px`;
             milestone.style.top = `${top}px`;
-            milestone.style.background = `var(--priority-${toKebabCase(task.priority || "medium")})`;
+            milestone.style.background = getTimelineTaskColour(task);
             milestone.title = getTaskTooltip(task);
             milestone.addEventListener("click", () => selectTask(task.task_id));
             chartArea.append(milestone);
@@ -2882,7 +3873,7 @@
           bar.style.left = `${leftOffset}px`;
           bar.style.top = `${top}px`;
           bar.style.width = `${width}px`;
-          bar.style.background = `var(--priority-${toKebabCase(task.priority || "medium")})`;
+          bar.style.background = getTimelineTaskColour(task);
           bar.title = getTaskTooltip(task);
           bar.addEventListener("click", () => selectTask(task.task_id));
           chartArea.append(bar);
@@ -2902,19 +3893,29 @@
       return section;
     }
 
+    function getTimelineTaskColour(task) {
+      if (getTaskStatus(task) === "completed") {
+        return "var(--status-completed)";
+      }
+
+      return `var(--priority-${toKebabCase(task.priority || "medium")})`;
+    }
+
     function groupTimelineTasks(tasks, groupBy) {
       const groups = new Map();
 
       tasks.forEach((task) => {
-        const key = groupBy === "level"
-          ? formatOptionLabel(task.task_level || "task")
-          : (task.owner || "Unassigned");
+        const keys = groupBy === "level"
+          ? [formatOptionLabel(task.task_level || "task")]
+          : getTaskResourceGroups(task);
 
-        if (!groups.has(key)) {
-          groups.set(key, []);
-        }
+        keys.forEach((key) => {
+          if (!groups.has(key)) {
+            groups.set(key, []);
+          }
 
-        groups.get(key).push(task);
+          groups.get(key).push(task);
+        });
       });
 
       return [...groups.entries()].sort(([left], [right]) => left.localeCompare(right));
@@ -2972,17 +3973,17 @@
 
       tables.className = "dashboard-section tables-grid";
       tables.append(
-        renderTaskTablePanel("Overdue Tasks", ["Task", "Owner", "End Date", "Days"], stats.overdue.map((task) => [
+        renderTaskTablePanel("Overdue Tasks", ["Task", "Resources", "End Date", "Days"], stats.overdue.map((task) => [
           task.task_name,
-          task.owner || "Unassigned",
+          getTaskResourceLabel(task),
           task.end_date || "",
           `${Math.max(0, daysBetween(parseDateValue(task.end_date), startOfToday()))} overdue`
         ])),
-        renderTaskTablePanel("Due This Week", ["Task", "Owner", "End Date", "Status"], stats.dueThisWeek.map((task) => [
+        renderTaskTablePanel("Due This Week", ["Task", "Resources", "End Date", "Status"], stats.dueThisWeek.map((task) => [
           task.task_name,
-          task.owner || "Unassigned",
+          getTaskResourceLabel(task),
           task.end_date || "",
-          formatOptionLabel(task.task_status)
+          formatOptionLabel(getTaskStatus(task))
         ]))
       );
 
@@ -3090,9 +4091,9 @@
       const headerRow = document.createElement("tr");
 
       panel.className = "dashboard-panel";
-      heading.textContent = "Owner Workload";
+      heading.textContent = "Resource Workload";
       table.className = "dashboard-table";
-      ["Owner", "Total Tasks", "Completed", "In Progress", "Not Started", "Avg % Complete"].forEach((header) => {
+      ["Resource", "Total Tasks", "Completed", "In Progress", "Not Started", "Avg % Complete"].forEach((header) => {
         const th = document.createElement("th");
         th.textContent = header;
         headerRow.append(th);
@@ -3143,32 +4144,32 @@
       const ownerWorkload = new Map();
 
       tasks.forEach((task) => {
-        const status = task.task_status || "not_started";
+        const status = getTaskStatus(task);
         const priority = task.priority || "medium";
-        const owner = task.owner || "Unassigned";
-
         byStatus.set(status, (byStatus.get(status) || 0) + 1);
         byPriority.set(priority, (byPriority.get(priority) || 0) + 1);
 
-        if (!ownerWorkload.has(owner)) {
-          ownerWorkload.set(owner, {
-            total: 0,
-            completed: 0,
-            inProgress: 0,
-            notStarted: 0,
-            percentTotal: 0
-          });
-        }
+        getTaskResourceGroups(task).forEach((resource) => {
+          if (!ownerWorkload.has(resource)) {
+            ownerWorkload.set(resource, {
+              total: 0,
+              completed: 0,
+              inProgress: 0,
+              notStarted: 0,
+              percentTotal: 0
+            });
+          }
 
-        const workload = ownerWorkload.get(owner);
-        workload.total += 1;
-        workload.completed += status === "completed" ? 1 : 0;
-        workload.inProgress += status === "in_progress" ? 1 : 0;
-        workload.notStarted += status === "not_started" ? 1 : 0;
-        workload.percentTotal += parseIntegerValue(task.percent_complete);
+          const workload = ownerWorkload.get(resource);
+          workload.total += 1;
+          workload.completed += status === "completed" ? 1 : 0;
+          workload.inProgress += status === "in_progress" ? 1 : 0;
+          workload.notStarted += status === "not_started" ? 1 : 0;
+          workload.percentTotal += parsePercentValue(task.percent_complete);
+        });
       });
 
-      const completedTasks = tasks.filter((task) => task.task_status === "completed");
+      const completedTasks = tasks.filter((task) => getTaskStatus(task) === "completed");
       const onTimeCompleted = completedTasks.filter((task) => {
         const end = parseDateValue(task.end_date);
         return !end || end <= today;
@@ -3184,7 +4185,7 @@
         onTimeRate: completedTasks.length ? Math.round(onTimeCompleted / completedTasks.length * 100) : 0,
         overdue: tasks.filter((task) => {
           const end = parseDateValue(task.end_date);
-          return end && end < today && !["completed", "cancelled"].includes(task.task_status);
+          return end && end < today && !["completed", "cancelled"].includes(getTaskStatus(task));
         }),
         dueThisWeek: tasks.filter((task) => {
           const end = parseDateValue(task.end_date);
@@ -3363,6 +4364,11 @@
         return;
       }
 
+      if (column.field === "resources") {
+        cell.textContent = getTaskResourceLabel(task);
+        return;
+      }
+
       cell.textContent = formatTableValue(task[column.field], column.field);
     }
 
@@ -3428,7 +4434,10 @@
         return;
       }
 
-      const input = createEditInput(column.field, task[column.field]);
+      const input = createEditInput(
+        column.field,
+        column.field === "resources" ? getTaskResources(task) : task[column.field]
+      );
       let isFinished = false;
 
       cell.classList.add("is-editing");
@@ -3551,7 +4560,7 @@
       }
 
       if (INTEGER_COLUMNS.has(field)) {
-        const parsed = Math.max(0, parseIntegerValue(value));
+        const parsed = Math.max(0, field === "percent_complete" ? parsePercentValue(value) : parseIntegerValue(value));
         return field === "percent_complete" ? Math.min(100, parsed) : parsed;
       }
 
@@ -3623,11 +4632,11 @@
         return false;
       }
 
-      if (filters.status.size > 0 && !filters.status.has(task.task_status)) {
+      if (filters.status.size > 0 && !filters.status.has(getTaskStatus(task))) {
         return false;
       }
 
-      if (filters.owner.size > 0 && !filters.owner.has(task.owner || "Unassigned")) {
+      if (filters.owner.size > 0 && !getTaskResourceGroups(task).some((resource) => filters.owner.has(resource))) {
         return false;
       }
 
@@ -3750,7 +4759,12 @@
         return true;
       }
 
-      return String(task.task_name || "").toLowerCase().includes(normalizedSearch);
+      return [
+        task.task_id,
+        task.task_name,
+        getTaskResourceLabel(task),
+        task.constraint_type
+      ].join(" ").toLowerCase().includes(normalizedSearch);
     }
 
     function compareTaskValues(leftTask, rightTask, field) {
@@ -3758,8 +4772,10 @@
         return compareTaskIds(leftTask.task_id, rightTask.task_id);
       }
 
-      const left = getComparableValue(leftTask[field], field);
-      const right = getComparableValue(rightTask[field], field);
+      const leftValue = field === "resources" ? getTaskResourceLabel(leftTask) : leftTask[field];
+      const rightValue = field === "resources" ? getTaskResourceLabel(rightTask) : rightTask[field];
+      const left = getComparableValue(leftValue, field);
+      const right = getComparableValue(rightValue, field);
 
       if (typeof left === "number" && typeof right === "number") {
         return left - right;
@@ -3824,8 +4840,8 @@
       return task.task_level === "task" || !task._children || task._children.length === 0;
     }
 
-    function getUniqueOwners(tasks) {
-      return [...new Set(tasks.map((task) => task.owner || "Unassigned"))]
+    function getUniqueResources(tasks) {
+      return [...new Set(tasks.filter((task) => !task._isGroup).flatMap((task) => getTaskResourceGroups(task)))]
         .filter(Boolean)
         .sort((left, right) => left.localeCompare(right));
     }
@@ -3880,9 +4896,42 @@
         return null;
       }
 
-      const date = new Date(`${String(value).slice(0, 10)}T00:00:00`);
+      if (value instanceof Date && !Number.isNaN(value.getTime())) {
+        return new Date(value.getFullYear(), value.getMonth(), value.getDate());
+      }
+
+      const text = String(value).trim();
+      const yearFirstMatch = text.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})(?:\b|T|$)/);
+
+      if (yearFirstMatch) {
+        return createLocalDate(
+          Number.parseInt(yearFirstMatch[1], 10),
+          Number.parseInt(yearFirstMatch[2], 10),
+          Number.parseInt(yearFirstMatch[3], 10)
+        );
+      }
+
+      const date = new Date(text);
 
       if (Number.isNaN(date.getTime())) {
+        return null;
+      }
+
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    }
+
+    function createLocalDate(year, month, day) {
+      if (!year || !month || !day) {
+        return null;
+      }
+
+      const date = new Date(year, month - 1, day);
+
+      if (
+        date.getFullYear() !== year
+        || date.getMonth() !== month - 1
+        || date.getDate() !== day
+      ) {
         return null;
       }
 
@@ -3929,15 +4978,17 @@
       return new Date(Math.max(...validDates.map((date) => date.getTime())));
     }
 
-    function getPxPerDay(zoom) {
+    function getPxPerDay(zoom, scale = 1) {
       const values = {
+        day: 44,
         week: 28,
         month: 14,
         quarter: 7,
         year: 3
       };
+      const normalizedScale = clampNumber(Number(scale) || 1, GANTT_SCALE_MIN, GANTT_SCALE_MAX);
 
-      return values[zoom] || values.week;
+      return Math.max(2, (values[zoom] || values.week) * normalizedScale);
     }
 
     function getWeekNumber(date) {
@@ -3950,7 +5001,20 @@
     }
 
     function getTaskTooltip(task) {
-      return `${task.task_name || task.task_id}\n${task.start_date || "No start"} to ${task.end_date || "No end"}\nOwner: ${task.owner || "Unassigned"}\nComplete: ${parseIntegerValue(task.percent_complete)}%`;
+      const lines = [
+        task.task_name || task.task_id,
+        `${task.start_date || "No start"} to ${task.end_date || "No end"}`
+      ];
+
+      if (!task._isGroup) {
+        lines.push(`Resources: ${getTaskResourceLabel(task)}`);
+      }
+
+      lines.push(
+        `Predecessors: ${formatTableValue(task.dependencies, "dependencies") || "None"}`,
+        `Complete: ${getTaskPercentComplete(task)}%`
+      );
+      return lines.join("\n");
     }
 
     function resolveCssVar(name) {
@@ -3958,7 +5022,7 @@
     }
 
     function calculateCriticalPath(tasks) {
-      const leafTasks = tasks.filter(isLeafTask);
+      const leafTasks = tasks.filter((task) => isLeafTask(task) && !task._isGroup);
       const taskById = new Map(leafTasks.map((task) => [task.task_id, task]));
       const inDegree = new Map();
       const successors = new Map();
@@ -4048,7 +5112,6 @@
 
         if (slack === 0) {
           criticalPath.add(task.task_id);
-          addAncestorTaskIds(task, new Map(tasks.map((item) => [item.task_id, item])), criticalPath);
         }
       });
 
@@ -4066,14 +5129,31 @@
     }
 
     function selectTask(taskId) {
+      selectTaskOnly(taskId);
+      openTaskEditor(taskId);
+    }
+
+    function selectTaskOnly(taskId) {
       state.ui.selectedTaskId = taskId;
       updateTableSelection();
-      openTaskEditor(taskId);
+      updateGanttSelection();
     }
 
     function updateTableSelection() {
       document.querySelectorAll(".task-table tbody tr[data-task-id]").forEach((row) => {
         row.classList.toggle("is-selected", row.dataset.taskId === state.ui.selectedTaskId);
+      });
+    }
+
+    function updateGanttSelection() {
+      document.querySelectorAll(".gantt-left-row[data-task-id]").forEach((row) => {
+        row.classList.toggle("is-selected", row.dataset.taskId === state.ui.selectedTaskId);
+      });
+      document.querySelectorAll(".gantt-row-highlight[data-task-id]").forEach((row) => {
+        row.classList.toggle("is-selected", row.dataset.taskId === state.ui.selectedTaskId);
+      });
+      document.querySelectorAll(".gantt-bar[data-task-id], .milestone-diamond[data-task-id]").forEach((item) => {
+        item.classList.toggle("is-selected", item.dataset.taskId === state.ui.selectedTaskId);
       });
     }
 
@@ -4098,8 +5178,10 @@
 
       task.task_id = generateNextTaskId();
       task.task_name = "";
-      task.task_level = "task";
-      task.task_status = "not_started";
+      task.task_level = "";
+      task.successors = [];
+      task.resources = [];
+      task.constraint_type = "As Soon As Possible";
       task.priority = "medium";
       task.duration_days = 0;
       task.percent_complete = 0;
@@ -4212,32 +5294,37 @@
 
       header.append(title, closeButton);
 
-      body.className = "task-editor-body";
-      body.append(
+      const fields = [
         createTaskEditorField("Task Name", "task_name", "text", task.task_name),
         createTaskEditorField("Task Level", "task_level", "select", task.task_level, TASK_LEVEL_OPTIONS),
-        createTaskEditorField("Status", "task_status", "select", task.task_status, STATUS_OPTIONS),
-        createTaskEditorField("Priority", "priority", "select", task.priority, PRIORITY_OPTIONS),
-        createTaskEditorField("Owner", "owner", "text", task.owner),
-        createTaskEditorField("Resources", "resources", "text", formatTableValue(task.resources, "resources"), null, renderTags(task.resources)),
-        createTaskEditorField("Start Date", "start_date", "date", task.start_date),
-        createTaskEditorField("End Date", "end_date", "date", task.end_date),
-        createTaskEditorField("Duration", "duration_days", "number", task.duration_days),
         createPercentCompleteField(task.percent_complete),
-        createTaskEditorField("Milestone", "milestone", "checkbox", task.milestone),
-        createTaskEditorField("Dependencies", "dependencies", "text", formatTableValue(task.dependencies, "dependencies"), null, renderDependencyTags(task.dependencies)),
-        createTaskEditorField("Notes", "notes", "textarea", task.notes)
+        createTaskEditorField("Duration", "duration_days", "number", task.duration_days),
+        createTaskEditorField("Start", "start_date", "date", task.start_date),
+        createTaskEditorField("Finish", "end_date", "date", task.end_date)
+      ];
+
+      if (!task._isGroup) {
+        fields.push(
+          createTaskEditorField("Resources", "resources", "text", formatTableValue(getTaskResources(task), "resources"), null, renderResourceTags(getTaskResources(task)))
+        );
+      }
+
+      fields.push(
+        createTaskEditorField("Predecessors", "dependencies", "text", formatTableValue(task.dependencies, "dependencies"), null, renderDependencyTags(task.dependencies)),
+        createTaskEditorField("Successors", "successors", "text", formatTableValue(task.successors, "successors"), null, renderDependencyTags(task.successors)),
+        createTaskEditorField("Constrain Type", "constraint_type", "text", task.constraint_type)
       );
+
+      body.className = "task-editor-body";
+      body.append(...fields);
 
       if (task._isGroup) {
         const summary = document.createElement("div");
-        const children = task._children || [];
-        const averageComplete = children.length
-          ? Math.round(children.reduce((sum, child) => sum + parseIntegerValue(child.percent_complete), 0) / children.length)
-          : 0;
+        const leafTasks = getLeafDescendants(task);
+        const computedComplete = getTaskPercentComplete(task);
 
         summary.className = "computed-summary";
-        summary.textContent = `Children: ${children.length} | Avg Complete: ${averageComplete}%`;
+        summary.textContent = `Leaf tasks: ${leafTasks.length} | Weighted Complete: ${computedComplete}%`;
         body.append(summary);
       }
 
@@ -4332,7 +5419,7 @@
       const label = document.createElement("label");
       const value = document.createElement("span");
       const input = document.createElement("input");
-      const currentValue = Math.min(100, Math.max(0, parseIntegerValue(percentComplete)));
+      const currentValue = Math.min(100, Math.max(0, parsePercentValue(percentComplete)));
 
       field.className = "task-editor-field";
       label.textContent = "% Complete";
@@ -4378,6 +5465,21 @@
         tag.textContent = dependencyTask
           ? `${dependencyId} ${dependencyTask.task_name}`
           : dependencyId;
+        wrapper.append(tag);
+      });
+      return wrapper;
+    }
+
+    function renderResourceTags(resources) {
+      const wrapper = document.createElement("div");
+      const items = Array.isArray(resources) ? resources : parseListValue(resources);
+
+      wrapper.className = "task-editor-tags";
+      items.forEach((resource) => {
+        const tag = document.createElement("span");
+
+        tag.className = "tag-pill";
+        tag.textContent = resource;
         wrapper.append(tag);
       });
       return wrapper;
@@ -4474,6 +5576,10 @@
         return Array.isArray(value) ? value.join(", ") : String(value ?? "");
       }
 
+      if (field === "percent_complete") {
+        return `${parsePercentValue(value)}%`;
+      }
+
       if (field === "milestone") {
         return value ? "true" : "false";
       }
@@ -4482,6 +5588,10 @@
     }
 
     function formatOptionLabel(value) {
+      if (value === "owner") {
+        return "Resources";
+      }
+
       return String(value || "")
         .replace(/[-_]/g, " ")
         .replace(/\b\w/g, (char) => char.toUpperCase());
@@ -4512,6 +5622,12 @@
           state.ui.zoom = value;
           renderCurrentView();
         }));
+        container.append(createZoomScaleControl());
+      }
+
+      if (state.ui.currentView === "gantt") {
+        container.append(createTodayButton());
+        container.append(createCriticalPathToggle());
       }
 
       if (state.ui.currentView === "timeline") {
@@ -4537,6 +5653,85 @@
         wrapper.append(button);
       });
       return wrapper;
+    }
+
+    function createZoomScaleControl() {
+      const label = document.createElement("label");
+      const input = document.createElement("input");
+      const value = document.createElement("span");
+      const currentScale = clampNumber(Number(state.ui.ganttScale) || 1, GANTT_SCALE_MIN, GANTT_SCALE_MAX);
+
+      label.className = "zoom-scale-control";
+      input.type = "range";
+      input.min = String(GANTT_SCALE_MIN);
+      input.max = String(GANTT_SCALE_MAX);
+      input.step = String(GANTT_SCALE_STEP);
+      input.value = String(currentScale);
+      value.className = "zoom-scale-value";
+      value.textContent = `${Math.round(currentScale * 100)}%`;
+      input.addEventListener("input", () => {
+        value.textContent = `${Math.round(Number(input.value) * 100)}%`;
+      });
+      input.addEventListener("change", () => {
+        state.ui.ganttScale = clampNumber(Number(input.value) || 1, GANTT_SCALE_MIN, GANTT_SCALE_MAX);
+        renderCurrentView();
+      });
+      label.append(document.createTextNode("Scale"), input, value);
+      return label;
+    }
+
+    function createTodayButton() {
+      const button = document.createElement("button");
+
+      button.type = "button";
+      button.className = "toolbar-button view-control-button";
+      button.textContent = "Today";
+      button.addEventListener("click", scrollGanttToToday);
+      return button;
+    }
+
+    function scrollGanttToToday() {
+      const scroller = document.querySelector(".gantt-right-scroll");
+
+      if (!scroller || state.ui.currentView !== "gantt") {
+        return;
+      }
+
+      const displayTasks = getDisplayTasks(getFilteredTasks(), state.ui);
+      const range = getProjectDateRange(displayTasks);
+      const today = startOfToday();
+
+      if (today < range.start || today > range.end) {
+        showToast("Today is outside the current Gantt date range.", "warning");
+        return;
+      }
+
+      const pxPerDay = getPxPerDay(state.ui.ganttZoom, state.ui.ganttScale);
+      const todayLeft = daysBetween(range.start, today) * pxPerDay;
+      const maxScrollLeft = Math.max(0, scroller.scrollWidth - scroller.clientWidth);
+      const targetLeft = clampNumber(todayLeft - scroller.clientWidth / 2, 0, maxScrollLeft);
+
+      scroller.scrollTo({
+        left: targetLeft,
+        behavior: "auto"
+      });
+    }
+
+    function createCriticalPathToggle() {
+      const label = document.createElement("label");
+      const input = document.createElement("input");
+      const text = document.createElement("span");
+
+      label.className = "toolbar-checkbox-control";
+      input.type = "checkbox";
+      input.checked = Boolean(state.ui.showCriticalPath);
+      text.textContent = "Critical Path";
+      input.addEventListener("change", () => {
+        state.ui.showCriticalPath = input.checked;
+        renderCurrentView();
+      });
+      label.append(input, text);
+      return label;
     }
 
     function updateFilterButton() {
@@ -4573,7 +5768,7 @@
 
       panel.replaceChildren(
         renderCheckboxFilterSection("Status", STATUS_OPTIONS, state.ui.filters.status, formatOptionLabel),
-        renderCheckboxFilterSection("Owner", getUniqueOwners(state.project.tasks), state.ui.filters.owner, (value) => value),
+        renderCheckboxFilterSection("Resources", getUniqueResources(state.project.tasks), state.ui.filters.owner, (value) => value),
         renderCheckboxFilterSection("Priority", PRIORITY_OPTIONS, state.ui.filters.priority, formatOptionLabel),
         renderDateFilterSection(),
         renderMilestoneFilter(),
@@ -4699,13 +5894,14 @@
     function updateStatusBar() {
       const taskCount = state.project.tasks.length;
       const completedCount = state.project.tasks
-        .filter((task) => task.task_status === "completed")
+        .filter((task) => getTaskStatus(task) === "completed")
         .length;
       const visibleCount = getDisplayTasks(getFilteredTasks(), state.ui).length;
       const filename = state.project.filename || "Untitled project.csv";
       const dirtyStatus = document.getElementById("dirty-status");
       const dirtySeparator = document.querySelector(".dirty-status-separator");
       const title = document.querySelector(".project-title");
+      const refreshButton = document.getElementById("refresh-file-button");
 
       setText("task-count-status", `Tasks: ${taskCount}`);
       setText("completed-count-status", `Completed: ${completedCount}`);
@@ -4724,7 +5920,11 @@
         title.textContent = filename.replace(/\.csv$/i, "");
       }
 
-      document.title = `${filename.replace(/\.csv$/i, "")} - ProjectPlan`;
+      if (refreshButton) {
+        refreshButton.disabled = !(state.project.fileHandle || state.project.sourceFile || state.project.sourceUrl);
+      }
+
+      document.title = `${filename.replace(/\.csv$/i, "")} - Project Plan`;
     }
 
     function markProjectDirty() {
@@ -4760,6 +5960,7 @@
 
     function wireFileActions() {
       document.getElementById("open-file-button")?.addEventListener("click", openFile);
+      document.getElementById("refresh-file-button")?.addEventListener("click", refreshProjectFile);
       document.getElementById("save-file-button")?.addEventListener("click", saveFile);
       document.getElementById("save-as-file-button")?.addEventListener("click", saveFileAs);
 
@@ -4838,7 +6039,7 @@
       }
 
       console.error(error);
-      showToast(message, "error");
+      showToast(error?.message || message, "error");
     }
 
     function getViewLabel(viewName) {
@@ -4858,6 +6059,17 @@
       return trimmed.toLowerCase().endsWith(".csv") ? trimmed : `${trimmed}.csv`;
     }
 
+    function isCSVFilename(filename) {
+      return /\.csv$/i.test(String(filename || ""));
+    }
+
+    function getFilenameFromUrl(url) {
+      const pathname = new URL(url, window.location.href).pathname;
+      const name = pathname.split("/").filter(Boolean).pop() || "project.csv";
+
+      return decodeURIComponent(name);
+    }
+
     function setText(id, text) {
       const element = document.getElementById(id);
 
@@ -4872,6 +6084,7 @@
     wireFileActions();
     wireToolbarActions();
     renderCurrentView();
+    discoverLocalCsvFiles();
 
     window.ProjectPlan = {
       CSV_COLUMNS,
@@ -4881,9 +6094,15 @@
       serialiseCSV,
       buildTree,
       openFile,
+      refreshProjectFile,
       saveFile,
       saveFileAs,
       loadProjectFromText,
+      loadProjectFromUrl,
+      loadCsvEntry,
+      discoverLocalCsvFiles,
+      chooseCsvFolder,
+      chooseCsvFiles,
       showToast,
       updateStatusBar,
       renderCurrentView,
