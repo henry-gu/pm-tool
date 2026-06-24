@@ -1158,12 +1158,19 @@
 
     .gantt-view,
     .timeline-view,
+    .calendar-view,
     .board-view,
     .dashboard-view {
       height: 100%;
       min-height: 0;
       padding: var(--space-4);
       background: var(--color-surface);
+    }
+
+    .gantt-view {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      gap: var(--space-3);
     }
 
     .gantt-shell {
@@ -1176,6 +1183,248 @@
       overflow: hidden;
       background: var(--color-white);
       box-shadow: var(--shadow-sm);
+    }
+
+    .gantt-notes-panel {
+      display: grid;
+      gap: var(--space-1);
+      min-height: 64px;
+      max-height: 132px;
+      padding: var(--space-3) var(--space-4);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-white);
+      box-shadow: var(--shadow-sm);
+      overflow: auto;
+    }
+
+    .gantt-notes-panel[hidden] {
+      display: none;
+    }
+
+    .gantt-notes-title {
+      color: var(--color-text-muted);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      text-transform: uppercase;
+    }
+
+    .gantt-notes-body {
+      margin: 0;
+      color: var(--color-text);
+      font-size: var(--font-size-sm);
+      line-height: var(--line-height-base);
+      white-space: pre-wrap;
+    }
+
+    .calendar-view {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: var(--space-3);
+    }
+
+    .calendar-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-3);
+    }
+
+    .calendar-summary-card {
+      display: grid;
+      gap: var(--space-1);
+      padding: var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-white);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .calendar-summary-label {
+      color: var(--color-text-muted);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      text-transform: uppercase;
+    }
+
+    .calendar-summary-value {
+      color: var(--color-text);
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      line-height: var(--line-height-tight);
+    }
+
+    .calendar-shell {
+      display: grid;
+      grid-template-rows: 34px minmax(0, 1fr);
+      min-height: 0;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--color-white);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .calendar-weekdays,
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(120px, 1fr));
+    }
+
+    .calendar-weekday {
+      display: grid;
+      place-items: center;
+      border-right: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--color-border);
+      color: var(--color-text-muted);
+      background: var(--color-surface);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+    }
+
+    .calendar-weekday:last-child {
+      border-right: 0;
+    }
+
+    .calendar-grid {
+      min-height: 0;
+      overflow: auto;
+    }
+
+    .calendar-day {
+      min-height: 132px;
+      padding: var(--space-2);
+      border-right: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-white);
+    }
+
+    .calendar-day.is-outside-month {
+      background: #FAFBFC;
+      color: var(--color-text-subtle);
+    }
+
+    .calendar-day.is-today {
+      box-shadow: inset 0 0 0 2px var(--color-primary);
+    }
+
+    .calendar-day:nth-child(7n) {
+      border-right: 0;
+    }
+
+    .calendar-day-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-2);
+      min-height: 22px;
+      margin-bottom: var(--space-2);
+    }
+
+    .calendar-day-number {
+      color: var(--color-text);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .calendar-day.is-outside-month .calendar-day-number {
+      color: var(--color-text-subtle);
+    }
+
+    .calendar-day-count {
+      color: var(--color-text-muted);
+      font-size: var(--font-size-2xs);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .calendar-task-list {
+      display: grid;
+      gap: var(--space-1);
+    }
+
+    .calendar-task-chip {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: var(--space-2);
+      min-height: 26px;
+      padding: 0 var(--space-2);
+      border-left: 3px solid var(--status-not-started);
+      border-radius: var(--radius-sm);
+      background: var(--status-not-started-bg);
+      color: var(--color-text);
+      cursor: pointer;
+      font-size: var(--font-size-xs);
+      text-align: left;
+    }
+
+    .calendar-task-chip.not-started {
+      border-left-color: var(--status-not-started);
+      background: var(--status-not-started-bg);
+    }
+
+    .calendar-task-chip.in-progress {
+      border-left-color: var(--status-in-progress);
+      background: var(--status-in-progress-bg);
+    }
+
+    .calendar-task-chip.completed {
+      border-left-color: var(--status-completed);
+      background: var(--status-completed-bg);
+    }
+
+    .calendar-task-chip.blocked {
+      border-left-color: var(--status-blocked);
+      background: var(--status-blocked-bg);
+    }
+
+    .calendar-task-chip.on-hold {
+      border-left-color: var(--status-on-hold);
+      background: var(--status-on-hold-bg);
+    }
+
+    .calendar-task-chip.cancelled {
+      border-left-color: var(--status-cancelled);
+      background: var(--status-cancelled-bg);
+    }
+
+    .calendar-task-chip.is-selected {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 1px;
+    }
+
+    .calendar-task-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .calendar-task-marker {
+      color: var(--color-text-muted);
+      font-size: var(--font-size-2xs);
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+    }
+
+    .calendar-overflow {
+      color: var(--color-text-muted);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      padding: var(--space-1) var(--space-2);
+    }
+
+    .calendar-nav-control {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .calendar-nav-label {
+      min-width: 112px;
+      color: var(--color-text);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-bold);
+      text-align: center;
     }
 
     .gantt-left,
@@ -1816,10 +2065,20 @@
       }
 
       .summary-grid,
+      .calendar-summary,
       .stats-grid,
       .charts-grid,
       .tables-grid {
         grid-template-columns: 1fr;
+      }
+
+      .calendar-shell {
+        overflow-x: auto;
+      }
+
+      .calendar-weekdays,
+      .calendar-grid {
+        min-width: 840px;
       }
     }
 
@@ -1910,6 +2169,7 @@
         <button class="view-button" type="button" data-view="table" aria-pressed="false">Table</button>
         <button class="view-button" type="button" data-view="board" aria-pressed="false">Board</button>
         <button class="view-button" type="button" data-view="timeline" aria-pressed="false">Timeline</button>
+        <button class="view-button" type="button" data-view="calendar" aria-pressed="false">Calendar</button>
         <button class="view-button" type="button" data-view="dashboard" aria-pressed="false">Dashboard</button>
       </div>
       <div class="toolbar-spacer" aria-hidden="true"></div>
@@ -1961,19 +2221,21 @@
       { field: "task_id", label: "Task#", aliases: ["task_id", "Task#", "Task #", "Task ID", "id"] },
       { field: "percent_complete", label: "Complete%", aliases: ["percent_complete", "Complete%", "% Done", "Complete", "completion"] },
       { field: "task_level", label: "Task Level", aliases: ["task_level", "Task Level", "level"] },
-      { field: "task_name", label: "Task Name", aliases: ["task_name", "Task Name", "name"] },
+      { field: "task_name", label: "Task Name", aliases: ["task_name", "Task Name", "name", "Item", "Task", "Activity", "Description"] },
+      { field: "task_status", label: "Status", aliases: ["task_status", "Task Status", "Status"] },
       { field: "duration_days", label: "Duration", aliases: ["duration_days", "Duration", "duration"] },
       { field: "start_date", label: "Start", aliases: ["start_date", "Start", "Start Date"] },
-      { field: "end_date", label: "Finish", aliases: ["end_date", "Finish", "End Date", "end_date"] },
+      { field: "end_date", label: "Finish", aliases: ["end_date", "Finish", "End", "End Date", "Finish Date"] },
       { field: "dependencies", label: "Predecessors", aliases: ["dependencies", "Predecessors", "predecessors"] },
       { field: "successors", label: "Successors", aliases: ["successors", "Successors"] },
       { field: "constraint_type", label: "Constrain Type", aliases: ["constraint_type", "Constrain Type", "Constraint Type"] },
-      { field: "resources", label: "Resources", aliases: ["resources", "Resources", "Resource", "Owner", "owner", "Task Owner", "Responsible"] }
+      { field: "resources", label: "Resources", aliases: ["resources", "Resources", "Resource", "Owner", "owner", "Task Owner", "Responsible", "Person Responsible", "Person\nResponsible", "Assignee", "Assigned To"] },
+      { field: "notes", label: "Comment/Notes", aliases: ["notes", "Notes", "Comment", "Comments", "Comment/Notes", "Comment Notes", "comment_notes"] }
     ];
     const CSV_COLUMNS = PROJECT_COLUMNS.map((column) => column.field);
-    const LEGACY_COLUMNS = ["task_status", "owner", "notes", "priority", "milestone"];
+    const LEGACY_COLUMNS = ["owner", "priority", "milestone"];
 
-    const COMPUTED_COLUMNS = new Set(["_depth", "_isGroup", "_children", "_parent"]);
+    const COMPUTED_COLUMNS = new Set(["_depth", "_isGroup", "_children", "_parent", "_generatedTaskId"]);
     const LIST_COLUMNS = new Set(["dependencies", "successors", "resources"]);
     const INTEGER_COLUMNS = new Set(["duration_days", "percent_complete"]);
     const STATUS_OPTIONS = ["not_started", "in_progress", "blocked", "completed", "on_hold", "cancelled"];
@@ -1986,13 +2248,15 @@
       { field: "percent_complete", label: "Complete%", editable: true },
       { field: "task_level", label: "Task Level", editable: true },
       { field: "task_name", label: "Task Name", className: "col-task-name", editable: true },
+      { field: "task_status", label: "Status", editable: true },
       { field: "duration_days", label: "Duration", editable: true },
       { field: "start_date", label: "Start", editable: true },
       { field: "end_date", label: "Finish", editable: true },
       { field: "dependencies", label: "Predecessors", editable: true },
       { field: "successors", label: "Successors", editable: true },
       { field: "constraint_type", label: "Constrain Type", className: "col-notes", editable: true },
-      { field: "resources", label: "Resources", editable: true }
+      { field: "resources", label: "Resources", editable: true },
+      { field: "notes", label: "Comment/Notes", className: "col-notes", editable: true }
     ];
     const GANTT_COLUMNS = [
       { field: "task_id", label: "Task#", width: 72, minWidth: 52, maxWidth: 140 },
@@ -2047,6 +2311,7 @@
         timelineGroupBy: "owner",
         ganttZoom: "week",
         ganttScale: 1,
+        calendarDate: "",
         showCriticalPath: true,
         ganttColumnWidths: Object.fromEntries(GANTT_COLUMNS.map((column) => [column.field, column.width])),
         zoom: "week",
@@ -2073,7 +2338,7 @@
       const tasks = rows
         .slice(1)
         .filter((row) => row.some((value) => value.trim() !== ""))
-        .map((row) => createTaskFromRow(headers, row));
+        .map((row, rowIndex) => createTaskFromRow(headers, row, rowIndex));
 
       return buildTree(tasks);
     }
@@ -2091,6 +2356,10 @@
     }
 
     function getTaskExportValue(task, field) {
+      if (field === "task_id" && task._generatedTaskId) {
+        return "";
+      }
+
       if (field === "resources") {
         return getTaskResources(task);
       }
@@ -2208,7 +2477,7 @@
       return rows;
     }
 
-    function createTaskFromRow(headers, row) {
+    function createTaskFromRow(headers, row, rowIndex = 0) {
       const rawTask = {};
       const task = {};
 
@@ -2220,8 +2489,14 @@
         task[column] = defaultValueForColumn(column);
       });
 
+      const rawPercentComplete = getAliasedValue(rawTask, "percent_complete");
+      const rawStatus = getAliasedValue(rawTask, "task_status");
+
       task.task_id = String(getAliasedValue(rawTask, "task_id") ?? "").trim();
-      task.percent_complete = parsePercentValue(getAliasedValue(rawTask, "percent_complete"));
+      task.task_status = normalizeStatusValue(rawStatus);
+      task.percent_complete = hasCellValue(rawPercentComplete)
+        ? parsePercentValue(rawPercentComplete)
+        : getDefaultPercentForStatus(task.task_status);
       task.task_level = String(getAliasedValue(rawTask, "task_level") ?? "").trim();
       task.task_name = String(getAliasedValue(rawTask, "task_name") ?? "").trim();
       task.duration_days = parseIntegerValue(getAliasedValue(rawTask, "duration_days"));
@@ -2231,6 +2506,7 @@
       task.successors = parseListValue(getAliasedValue(rawTask, "successors"));
       task.constraint_type = String(getAliasedValue(rawTask, "constraint_type") ?? "").trim();
       task.resources = parseListValue(getAliasedValue(rawTask, "resources"));
+      task.notes = String(getAliasedValue(rawTask, "notes") ?? "").trim();
 
       LEGACY_COLUMNS.forEach((column) => {
         const value = rawTask[column];
@@ -2258,11 +2534,39 @@
       }
       task.milestone = parseBooleanValue(task.milestone);
       task.priority = task.priority || "medium";
-      task.task_status = task.task_status || deriveTaskStatus(task);
+
+      if (isAutoGroupRow(task)) {
+        task.task_id = `group-${rowIndex + 1}`;
+        task.task_level = task.task_level || "1";
+        task._generatedTaskId = true;
+      } else if (!task.task_id) {
+        task.task_id = `row-${rowIndex + 1}`;
+        task._generatedTaskId = true;
+      }
+      task.task_status = normalizeStatusValue(task.task_status);
+      if (!task.task_status && !parseTaskOutlineLevel(task.task_level)) {
+        task.task_status = deriveTaskStatus(task);
+      }
 
       refreshComputedFields(task);
 
       return task;
+    }
+
+    function hasCellValue(value) {
+      return value !== null && value !== undefined && String(value).trim() !== "";
+    }
+
+    function isAutoGroupRow(task) {
+      return !task.task_id
+        && Boolean(task.task_name)
+        && !task.start_date
+        && !task.end_date
+        && !task.duration_days
+        && !task.task_status
+        && parseListValue(task.dependencies).length === 0
+        && parseListValue(task.successors).length === 0
+        && parseListValue(task.resources).length === 0;
     }
 
     function getAliasedValue(rawTask, field) {
@@ -2405,7 +2709,44 @@
     }
 
     function getTaskStatus(task) {
-      return deriveTaskStatus(task);
+      return normalizeStatusValue(task?.task_status) || deriveTaskStatus(task);
+    }
+
+    function normalizeStatusValue(value) {
+      const normalized = normalizeHeader(value);
+      const statusMap = {
+        notstarted: "not_started",
+        notstart: "not_started",
+        todo: "not_started",
+        open: "not_started",
+        inprogress: "in_progress",
+        progress: "in_progress",
+        ongoing: "in_progress",
+        completed: "completed",
+        complete: "completed",
+        done: "completed",
+        blocked: "blocked",
+        block: "blocked",
+        onhold: "on_hold",
+        hold: "on_hold",
+        cancelled: "cancelled",
+        canceled: "cancelled"
+      };
+
+      return statusMap[normalized] || "";
+    }
+
+    function getDefaultPercentForStatus(status) {
+      const percentByStatus = {
+        not_started: 0,
+        in_progress: 50,
+        blocked: 50,
+        on_hold: 50,
+        completed: 100,
+        cancelled: 0
+      };
+
+      return percentByStatus[status] ?? 0;
     }
 
     function getTaskPercentComplete(task) {
@@ -2478,6 +2819,10 @@
       }
 
       return getTaskResourceGroups(task).join(", ");
+    }
+
+    function getTaskNotes(task) {
+      return String(task?.notes || task?.["Comment/Notes"] || task?.comment || "").trim();
     }
 
     function taskHasResource(task, resource) {
@@ -2782,6 +3127,7 @@
         state.project.isDirty = false;
         state.ui.selectedTaskId = null;
         state.ui.collapsedTaskIds.clear();
+        state.ui.calendarDate = "";
 
         closeTaskEditor();
         renderCurrentView();
@@ -3059,6 +3405,8 @@
         renderedView = renderBoard(filteredTasks, state.ui);
       } else if (view === "timeline") {
         renderedView = renderTimeline(filteredTasks, state.ui);
+      } else if (view === "calendar") {
+        renderedView = renderCalendar(filteredTasks, state.ui);
       } else if (view === "dashboard") {
         renderedView = renderDashboard(filteredTasks, state.ui);
       } else {
@@ -3301,6 +3649,10 @@
     }
 
     function getGanttColumnValue(task, field) {
+      if (field === "task_id" && task._generatedTaskId) {
+        return "";
+      }
+
       if (field === "duration_days") {
         return String(parseIntegerValue(task.duration_days));
       }
@@ -3424,9 +3776,42 @@
       left.append(leftHeader, leftBody);
       right.append(rightScroll);
       shell.append(left, right);
-      section.append(shell);
+      section.append(shell, renderGanttNotesPanel());
       syncVerticalScroll(leftBody, rightScroll);
       return section;
+    }
+
+    function renderGanttNotesPanel() {
+      const panel = document.createElement("aside");
+      const title = document.createElement("div");
+      const body = document.createElement("p");
+
+      panel.id = "gantt-notes-panel";
+      panel.className = "gantt-notes-panel";
+      title.className = "gantt-notes-title";
+      body.className = "gantt-notes-body";
+      panel.append(title, body);
+      updateGanttNotesPanel(panel);
+      return panel;
+    }
+
+    function updateGanttNotesPanel(panel = document.getElementById("gantt-notes-panel")) {
+      if (!panel) {
+        return;
+      }
+
+      const task = findTaskById(state.ui.selectedTaskId);
+      const title = panel.querySelector(".gantt-notes-title");
+      const body = panel.querySelector(".gantt-notes-body");
+
+      if (!task) {
+        panel.hidden = true;
+        return;
+      }
+
+      panel.hidden = false;
+      title.textContent = `Notes - ${task._generatedTaskId ? "" : `${task.task_id} `}${task.task_name || "Untitled task"}`.trim();
+      body.textContent = getTaskNotes(task) || "No notes for this task.";
     }
 
     function renderGanttHeaderCell(column) {
@@ -3893,6 +4278,199 @@
       return section;
     }
 
+    function renderCalendar(tasks, ui) {
+      const section = document.createElement("section");
+      const summary = document.createElement("div");
+      const shell = document.createElement("div");
+      const weekdays = document.createElement("div");
+      const grid = document.createElement("div");
+      const leafTasks = tasks.filter(isLeafTask).filter((task) => getTaskDateRange(task));
+      const focusDate = getCalendarFocusDate(leafTasks, ui);
+      const monthStart = startOfMonth(focusDate);
+      const monthEnd = endOfMonth(focusDate);
+      const gridStart = startOfWeek(monthStart);
+      const gridEnd = endOfWeek(monthEnd);
+      const stats = getCalendarStats(leafTasks, monthStart, monthEnd);
+
+      section.className = "calendar-view";
+      summary.className = "calendar-summary";
+      summary.append(
+        renderCalendarSummaryCard("Scheduled", stats.scheduled),
+        renderCalendarSummaryCard("Starts", stats.starts),
+        renderCalendarSummaryCard("Finishes", stats.finishes),
+        renderCalendarSummaryCard("Overdue", stats.overdue)
+      );
+
+      shell.className = "calendar-shell";
+      weekdays.className = "calendar-weekdays";
+      ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach((weekday) => {
+        const cell = document.createElement("div");
+
+        cell.className = "calendar-weekday";
+        cell.textContent = weekday;
+        weekdays.append(cell);
+      });
+
+      grid.className = "calendar-grid";
+      for (let day = new Date(gridStart); day <= gridEnd; day = addDays(day, 1)) {
+        grid.append(renderCalendarDay(day, monthStart, leafTasks));
+      }
+
+      shell.append(weekdays, grid);
+      section.append(summary, shell);
+      return section;
+    }
+
+    function renderCalendarSummaryCard(label, value) {
+      const card = document.createElement("div");
+      const labelElement = document.createElement("div");
+      const valueElement = document.createElement("div");
+
+      card.className = "calendar-summary-card";
+      labelElement.className = "calendar-summary-label";
+      labelElement.textContent = label;
+      valueElement.className = "calendar-summary-value";
+      valueElement.textContent = String(value);
+      card.append(labelElement, valueElement);
+      return card;
+    }
+
+    function renderCalendarDay(day, monthStart, tasks) {
+      const article = document.createElement("article");
+      const header = document.createElement("div");
+      const dayNumber = document.createElement("span");
+      const count = document.createElement("span");
+      const list = document.createElement("div");
+      const dayTasks = getCalendarTasksForDay(tasks, day);
+      const visibleTasks = dayTasks.slice(0, 5);
+      const today = startOfToday();
+
+      article.className = "calendar-day";
+      article.classList.toggle("is-outside-month", !isSameMonth(day, monthStart));
+      article.classList.toggle("is-today", isSameDate(day, today));
+      header.className = "calendar-day-header";
+      dayNumber.className = "calendar-day-number";
+      dayNumber.textContent = String(day.getDate());
+      count.className = "calendar-day-count";
+      count.textContent = dayTasks.length ? `${dayTasks.length} task${dayTasks.length === 1 ? "" : "s"}` : "";
+      header.append(dayNumber, count);
+
+      list.className = "calendar-task-list";
+      visibleTasks.forEach((task) => {
+        list.append(renderCalendarTaskChip(task, day));
+      });
+      if (dayTasks.length > visibleTasks.length) {
+        const overflow = document.createElement("div");
+
+        overflow.className = "calendar-overflow";
+        overflow.textContent = `+${dayTasks.length - visibleTasks.length} more`;
+        list.append(overflow);
+      }
+
+      article.append(header, list);
+      return article;
+    }
+
+    function renderCalendarTaskChip(task, day) {
+      const button = document.createElement("button");
+      const name = document.createElement("span");
+      const marker = document.createElement("span");
+      const status = getTaskStatus(task);
+
+      button.type = "button";
+      button.className = `calendar-task-chip ${toKebabCase(status)}`;
+      button.dataset.taskId = task.task_id;
+      button.classList.toggle("is-selected", task.task_id === state.ui.selectedTaskId);
+      button.title = getTaskTooltip(task);
+      button.addEventListener("click", () => selectTask(task.task_id));
+      name.className = "calendar-task-name";
+      name.textContent = task.task_name || task.task_id;
+      marker.className = "calendar-task-marker";
+      marker.textContent = getCalendarTaskMarker(task, day);
+      button.append(name, marker);
+      return button;
+    }
+
+    function getCalendarTasksForDay(tasks, day) {
+      return tasks
+        .filter((task) => isTaskActiveOnDate(task, day))
+        .sort(compareCalendarTasks);
+    }
+
+    function isTaskActiveOnDate(task, day) {
+      const range = getTaskDateRange(task);
+
+      if (!range) {
+        return false;
+      }
+
+      return range.start <= day && range.end >= day;
+    }
+
+    function compareCalendarTasks(left, right) {
+      const leftRange = getTaskDateRange(left);
+      const rightRange = getTaskDateRange(right);
+      const leftEnd = leftRange?.end?.getTime() || 0;
+      const rightEnd = rightRange?.end?.getTime() || 0;
+
+      if (leftEnd !== rightEnd) {
+        return leftEnd - rightEnd;
+      }
+
+      return compareTaskIds(left.task_id, right.task_id);
+    }
+
+    function getCalendarTaskMarker(task, day) {
+      const range = getTaskDateRange(task);
+
+      if (!range) {
+        return "";
+      }
+
+      const starts = isSameDate(range.start, day);
+      const finishes = isSameDate(range.end, day);
+
+      if (starts && finishes) {
+        return "One-day";
+      }
+
+      if (starts) {
+        return "Start";
+      }
+
+      if (finishes) {
+        return "Due";
+      }
+
+      return "";
+    }
+
+    function getCalendarStats(tasks, monthStart, monthEnd) {
+      const today = startOfToday();
+
+      return {
+        scheduled: tasks.filter((task) => doesTaskOverlapDates(task, monthStart, monthEnd)).length,
+        starts: tasks.filter((task) => {
+          const range = getTaskDateRange(task);
+          return range && range.start >= monthStart && range.start <= monthEnd;
+        }).length,
+        finishes: tasks.filter((task) => {
+          const range = getTaskDateRange(task);
+          return range && range.end >= monthStart && range.end <= monthEnd;
+        }).length,
+        overdue: tasks.filter((task) => {
+          const range = getTaskDateRange(task);
+          return range && range.end < today && !["completed", "cancelled"].includes(getTaskStatus(task));
+        }).length
+      };
+    }
+
+    function doesTaskOverlapDates(task, startDate, endDate) {
+      const range = getTaskDateRange(task);
+
+      return Boolean(range && range.start <= endDate && range.end >= startDate);
+    }
+
     function getTimelineTaskColour(task) {
       if (getTaskStatus(task) === "completed") {
         return "var(--status-completed)";
@@ -4343,8 +4921,13 @@
         return;
       }
 
+      if (column.field === "task_id" && task._generatedTaskId) {
+        cell.textContent = "";
+        return;
+      }
+
       if (column.field === "task_status") {
-        cell.append(renderStatusPill(task.task_status));
+        cell.append(renderStatusPill(getTaskStatus(task)));
         return;
       }
 
@@ -4407,7 +4990,7 @@
     }
 
     function renderStatusPill(status) {
-      const normalized = String(status || "not_started").trim() || "not_started";
+      const normalized = normalizeStatusValue(status) || "not_started";
       const pill = document.createElement("span");
 
       pill.className = `status-pill ${toKebabCase(normalized)}`;
@@ -4486,6 +5069,7 @@
       if (field === "task_status" || field === "priority") {
         const select = document.createElement("select");
         const options = field === "task_status" ? STATUS_OPTIONS : PRIORITY_OPTIONS;
+        const selectedValue = field === "task_status" ? normalizeStatusValue(value) : String(value || options[0]);
 
         select.className = "table-edit-input";
         options.forEach((optionValue) => {
@@ -4494,7 +5078,7 @@
           option.textContent = formatOptionLabel(optionValue);
           select.append(option);
         });
-        select.value = String(value || options[0]);
+        select.value = selectedValue || options[0];
         return select;
       }
 
@@ -4557,6 +5141,10 @@
 
       if (field === "milestone") {
         return parseBooleanValue(value);
+      }
+
+      if (field === "task_status") {
+        return normalizeStatusValue(value) || "not_started";
       }
 
       if (INTEGER_COLUMNS.has(field)) {
@@ -4902,12 +5490,21 @@
 
       const text = String(value).trim();
       const yearFirstMatch = text.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})(?:\b|T|$)/);
+      const dayMonthNameMatch = text.match(/^(\d{1,2})[-\s]([A-Za-z]{3,})[-\s](\d{2,4})$/);
 
       if (yearFirstMatch) {
         return createLocalDate(
           Number.parseInt(yearFirstMatch[1], 10),
           Number.parseInt(yearFirstMatch[2], 10),
           Number.parseInt(yearFirstMatch[3], 10)
+        );
+      }
+
+      if (dayMonthNameMatch) {
+        return createLocalDate(
+          normalizeYear(Number.parseInt(dayMonthNameMatch[3], 10)),
+          getMonthNumber(dayMonthNameMatch[2]),
+          Number.parseInt(dayMonthNameMatch[1], 10)
         );
       }
 
@@ -4918,6 +5515,22 @@
       }
 
       return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    }
+
+    function getMonthNumber(monthName) {
+      const normalized = String(monthName || "").slice(0, 3).toLowerCase();
+      const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+      const index = months.indexOf(normalized);
+
+      return index === -1 ? 0 : index + 1;
+    }
+
+    function normalizeYear(year) {
+      if (year < 100) {
+        return year >= 70 ? 1900 + year : 2000 + year;
+      }
+
+      return year;
     }
 
     function createLocalDate(year, month, day) {
@@ -4956,6 +5569,57 @@
 
       next.setDate(next.getDate() + days);
       return next;
+    }
+
+    function addMonths(date, months) {
+      return new Date(date.getFullYear(), date.getMonth() + months, 1);
+    }
+
+    function startOfMonth(date) {
+      return new Date(date.getFullYear(), date.getMonth(), 1);
+    }
+
+    function endOfMonth(date) {
+      return new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    }
+
+    function startOfWeek(date) {
+      return addDays(date, -date.getDay());
+    }
+
+    function endOfWeek(date) {
+      return addDays(date, 6 - date.getDay());
+    }
+
+    function isSameDate(left, right) {
+      return left
+        && right
+        && left.getFullYear() === right.getFullYear()
+        && left.getMonth() === right.getMonth()
+        && left.getDate() === right.getDate();
+    }
+
+    function isSameMonth(left, right) {
+      return left
+        && right
+        && left.getFullYear() === right.getFullYear()
+        && left.getMonth() === right.getMonth();
+    }
+
+    function getCalendarFocusDate(tasks = state.project.tasks, ui = state.ui) {
+      const explicitDate = parseDateValue(ui.calendarDate);
+
+      if (explicitDate) {
+        return explicitDate;
+      }
+
+      const projectStart = getMinDate(
+        tasks
+          .map((task) => getTaskDateRange(task)?.start)
+          .filter(Boolean)
+      );
+
+      return projectStart || startOfToday();
     }
 
     function getMinDate(dates) {
@@ -5005,15 +5669,20 @@
         task.task_name || task.task_id,
         `${task.start_date || "No start"} to ${task.end_date || "No end"}`
       ];
+      const notes = getTaskNotes(task);
 
       if (!task._isGroup) {
         lines.push(`Resources: ${getTaskResourceLabel(task)}`);
       }
 
       lines.push(
+        `Status: ${formatOptionLabel(getTaskStatus(task))}`,
         `Predecessors: ${formatTableValue(task.dependencies, "dependencies") || "None"}`,
         `Complete: ${getTaskPercentComplete(task)}%`
       );
+      if (notes) {
+        lines.push(`Notes: ${notes}`);
+      }
       return lines.join("\n");
     }
 
@@ -5137,6 +5806,7 @@
       state.ui.selectedTaskId = taskId;
       updateTableSelection();
       updateGanttSelection();
+      updateCalendarSelection();
     }
 
     function updateTableSelection() {
@@ -5153,6 +5823,13 @@
         row.classList.toggle("is-selected", row.dataset.taskId === state.ui.selectedTaskId);
       });
       document.querySelectorAll(".gantt-bar[data-task-id], .milestone-diamond[data-task-id]").forEach((item) => {
+        item.classList.toggle("is-selected", item.dataset.taskId === state.ui.selectedTaskId);
+      });
+      updateGanttNotesPanel();
+    }
+
+    function updateCalendarSelection() {
+      document.querySelectorAll(".calendar-task-chip[data-task-id]").forEach((item) => {
         item.classList.toggle("is-selected", item.dataset.taskId === state.ui.selectedTaskId);
       });
     }
@@ -5179,9 +5856,11 @@
       task.task_id = generateNextTaskId();
       task.task_name = "";
       task.task_level = "";
+      task.task_status = "not_started";
       task.successors = [];
       task.resources = [];
       task.constraint_type = "As Soon As Possible";
+      task.notes = "";
       task.priority = "medium";
       task.duration_days = 0;
       task.percent_complete = 0;
@@ -5297,6 +5976,7 @@
       const fields = [
         createTaskEditorField("Task Name", "task_name", "text", task.task_name),
         createTaskEditorField("Task Level", "task_level", "select", task.task_level, TASK_LEVEL_OPTIONS),
+        createTaskEditorField("Status", "task_status", "select", getTaskStatus(task), STATUS_OPTIONS),
         createPercentCompleteField(task.percent_complete),
         createTaskEditorField("Duration", "duration_days", "number", task.duration_days),
         createTaskEditorField("Start", "start_date", "date", task.start_date),
@@ -5305,14 +5985,15 @@
 
       if (!task._isGroup) {
         fields.push(
-          createTaskEditorField("Resources", "resources", "text", formatTableValue(getTaskResources(task), "resources"), null, renderResourceTags(getTaskResources(task)))
+        createTaskEditorField("Resources", "resources", "text", formatTableValue(getTaskResources(task), "resources"), null, renderResourceTags(getTaskResources(task)))
         );
       }
 
       fields.push(
         createTaskEditorField("Predecessors", "dependencies", "text", formatTableValue(task.dependencies, "dependencies"), null, renderDependencyTags(task.dependencies)),
         createTaskEditorField("Successors", "successors", "text", formatTableValue(task.successors, "successors"), null, renderDependencyTags(task.successors)),
-        createTaskEditorField("Constrain Type", "constraint_type", "text", task.constraint_type)
+        createTaskEditorField("Constrain Type", "constraint_type", "text", task.constraint_type),
+        createTaskEditorField("Comment/Notes", "notes", "textarea", getTaskNotes(task))
       );
 
       body.className = "task-editor-body";
@@ -5636,6 +6317,10 @@
           renderCurrentView();
         }));
       }
+
+      if (state.ui.currentView === "calendar") {
+        container.append(createCalendarNavControl());
+      }
     }
 
     function createSegmentedControl(label, options, activeValue, onChange) {
@@ -5688,6 +6373,55 @@
       button.textContent = "Today";
       button.addEventListener("click", scrollGanttToToday);
       return button;
+    }
+
+    function createCalendarNavControl() {
+      const wrapper = document.createElement("div");
+      const previousButton = document.createElement("button");
+      const todayButton = document.createElement("button");
+      const nextButton = document.createElement("button");
+      const label = document.createElement("span");
+      const focusDate = getCalendarFocusDate(getFilteredTasks().filter(isLeafTask), state.ui);
+
+      wrapper.className = "calendar-nav-control";
+      previousButton.type = "button";
+      previousButton.className = "toolbar-button view-control-button";
+      previousButton.textContent = "‹";
+      previousButton.setAttribute("aria-label", "Previous month");
+      previousButton.addEventListener("click", () => moveCalendarMonth(-1));
+
+      label.className = "calendar-nav-label";
+      label.textContent = formatCalendarMonthLabel(focusDate);
+
+      todayButton.type = "button";
+      todayButton.className = "toolbar-button view-control-button";
+      todayButton.textContent = "Today";
+      todayButton.addEventListener("click", () => {
+        state.ui.calendarDate = formatDateAsISO(startOfToday());
+        renderCurrentView();
+      });
+
+      nextButton.type = "button";
+      nextButton.className = "toolbar-button view-control-button";
+      nextButton.textContent = "›";
+      nextButton.setAttribute("aria-label", "Next month");
+      nextButton.addEventListener("click", () => moveCalendarMonth(1));
+
+      wrapper.append(previousButton, label, todayButton, nextButton);
+      return wrapper;
+    }
+
+    function moveCalendarMonth(delta) {
+      const focusDate = getCalendarFocusDate(getFilteredTasks().filter(isLeafTask), state.ui);
+
+      state.ui.calendarDate = formatDateAsISO(addMonths(focusDate, delta));
+      renderCurrentView();
+    }
+
+    function formatCalendarMonthLabel(date) {
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+      return `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
     }
 
     function scrollGanttToToday() {
@@ -5983,6 +6717,7 @@
             g: "gantt",
             t: "table",
             b: "board",
+            c: "calendar",
             l: "timeline",
             d: "dashboard"
           };
@@ -6047,6 +6782,7 @@
         gantt: "Gantt",
         table: "Table",
         board: "Board",
+        calendar: "Calendar",
         timeline: "Timeline",
         dashboard: "Dashboard"
       };
@@ -6110,6 +6846,7 @@
       renderGantt,
       renderBoard,
       renderTimeline,
+      renderCalendar,
       renderDashboard,
       switchView,
       addBlankTask,
