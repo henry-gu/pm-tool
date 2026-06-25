@@ -1,27 +1,21 @@
-﻿Task #,Site,Product,Item,Start,End,Status,"Person
-Responsible",Comment/Notes,Dependencies
-,,,PRE-PROD PREPARATION,,,,,,
-1,US DC BAYER,All,Communication to end users,5-May-26,16-Jun-26,In Progress,,"Employees needs to know when to complete last report, approve last reports, Credit Card transactions etc.","some training already completed in the week of 27 April.
-Processor/Admin traning - Concur to offer a BOT session end of May."
-2,EU DC BAYER,AppZen,Client ensures all requirements and timelines have been shared with AppZen,1-Apr-26,,Completed,,,"Concur US will be connected to AppZen US, and simultaneously, Concur EU will be connected to AppZen EU. 
-
-This arrangement ensures both instances can operate in parallel.
-"
-,,,EXPENSE PRODUCTION BUILD,,,,,,
-13,EU DC BAYER,Expense,Copy configuration from Test to Production,26-May-26,3-Jun-26,Not Started,Concur Expense FC,Expense testing to be completed by 22 May,
-14,EU DC BAYER,Travel,Concur verifies Employee Extract to Travel job success,,,Not Started,Concur TC,,
+﻿Task #,Site,Product,Item,Start,End,Duration,Status,"Person
+Responsible",Predecessors,Successors,Comment/Notes,
+,,,PRE-PROD PREPARATION,,,,,,,,,
+1,US DC BAYER,All,Communication to end users,5-May-26,16-Jun-26,,In Progress,,,,"Employees needs to know when to complete last report, approve last reports, Credit Card transactions etc.",
+2,EU DC BAYER,AppZen,Client ensures all requirements and timelines have been shared with AppZen,1-Apr-26,,,Completed,,,,,
+,,,EXPENSE PRODUCTION BUILD,,,,,,,,,
+13,EU DC BAYER,Expense,Copy configuration from Test to Production,26-May-26,3-Jun-26,,Not Started,Concur Expense FC,,,Expense testing to be completed by 22 May,
+14,EU DC BAYER,Travel,Concur verifies Employee Extract to Travel job success,,,,Not Started,Concur TC,,,,
 15,EU DC BAYER,Integration,"BAYER connects productive interfaces to the new Concur EU DC entity
-",3-Jun-26,,Not Started,,all interfaces to be considered,
-,,,LOADING PRODUCTION IMPORT FILES,,,,,,
-21,EU DC BAYER,Integration,"Replicate cost object hierarchy, Load Lists and EE import files ",,,Not Started,,,Company hierarchy is needed before Employee Load
-22,EU DC BAYER,Integration,Review load error report,,,Not Started,,,
-,,,SYSTEM INTEGRATION,,,,,,
+",3-Jun-26,,,Not Started,,,,all interfaces to be considered,
+,,,LOADING PRODUCTION IMPORT FILES,,,,,,,,,
+21,EU DC BAYER,Integration,"Replicate cost object hierarchy, Load Lists and EE import files ",,,,Not Started,,,,,
+22,EU DC BAYER,Integration,Review load error report,,,,Not Started,,,,,
+,,,SYSTEM INTEGRATION,,,,,,,,,
 26,EU DC BAYER,Travel,"Concur verifies HMC Settings / Travel Integration
-- Employee Import Updates Name Fields
-- Synchronize Name Fields between Travel and Expense
-- Allow Pre-expense Airfare",,,Not Started,Concur Travel FC,,
+",,,,Not Started,Concur Travel FC,,,,
 27,EU DC BAYER,Travel,"Concur verifies Module Management settings
-- Allow Empty Travel Approval Hide
+",,,,Not Started,Concur Travel FC,,,"···- Allow Empty Travel Approval Hide
 - User-editable Name Fields
 - User-Editable Name Prefix
 - User-Editable Name Suffix
@@ -29,18 +23,18 @@ This arrangement ensures both instances can operate in parallel.
 - Profile Displays Org Unit
 - Job Title Required
 - Purge inactive profiles from GDS
-- Purge inactive profiles (days)",,,Not Started,Concur Travel FC,,
-,,,CONCUR PRODUCTION VALIDATION,,,,,,
-29,EU DC BAYER,Expense,Concur assigns the ASC permissions to applicable client project team members,,,Not Started,Concur Expense FC,,Employee Upload needs to be completed first
-,,,Client VALIDATION,,,,,,
-32,EU DC BAYER,Travel,Client confirms Travel Info section has correct Travel related information,,,Not Started,,,Travel Policy Administrator permission
+- Purge inactive profiles (days)",
+,,,CONCUR PRODUCTION VALIDATION,,,,,,,,,
+29,EU DC BAYER,Expense,Concur assigns the ASC permissions to applicable client project team members,,,,Not Started,Concur Expense FC,,,,
+,,,Client VALIDATION,,,,,,,,,
+32,EU DC BAYER,Travel,Client confirms Travel Info section has correct Travel related information,,,,Not Started,,,,,
 33,EU DC BAYER,Expense,"Cursory review of user interface.
 Review & validate employee forms & fields
 Review & validate report forms & fields
 Review & validate expense types, forms & fields 
-Review & validate allocation forms",5-Jun-26,10-Jun-26,Not Started,,,
-,,,END USER ROLLOUT,,,,,,
+Review & validate allocation forms",5-Jun-26,10-Jun-26,,Not Started,,,,,
+,,,END USER ROLLOUT,,,,,,,,,
 39,EU DC BAYER,All,"Go Live: send end user communications for new site
-note users will need to register for mobile app",,,Not Started,,,
-40,EU DC BAYER,All,Go Live on Integrated Prod system,16-Jun-26,30-Jun-26,Not Started,,,
-41,EU DC BAYER,All,Monitor system activity,16-Jun-26,30-Jun-26,Not Started,Concur TC,,
+note users will need to register for mobile app",,,,Not Started,,,,,
+40,EU DC BAYER,All,Go Live on Integrated Prod system,16-Jun-26,30-Jun-26,,Not Started,,,,,
+41,EU DC BAYER,All,Monitor system activity,16-Jun-26,30-Jun-26,,Not Started,Concur TC,,,,
