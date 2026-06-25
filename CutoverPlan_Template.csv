@@ -1,40 +1,28 @@
-﻿Task #,Site,Product,Item,Start,End,Duration,Status,"Person
-Responsible",Predecessors,Successors,Comment/Notes,
-,,,PRE-PROD PREPARATION,,,,,,,,,
-1,US DC BAYER,All,Communication to end users,5-May-26,16-Jun-26,,In Progress,,,,"Employees needs to know when to complete last report, approve last reports, Credit Card transactions etc.",
-2,EU DC BAYER,AppZen,Client ensures all requirements and timelines have been shared with AppZen,1-Apr-26,,,Completed,,,,,
-,,,EXPENSE PRODUCTION BUILD,,,,,,,,,
-13,EU DC BAYER,Expense,Copy configuration from Test to Production,26-May-26,3-Jun-26,,Not Started,Concur Expense FC,,,Expense testing to be completed by 22 May,
-14,EU DC BAYER,Travel,Concur verifies Employee Extract to Travel job success,,,,Not Started,Concur TC,,,,
-15,EU DC BAYER,Integration,"BAYER connects productive interfaces to the new Concur EU DC entity
-",3-Jun-26,,,Not Started,,,,all interfaces to be considered,
-,,,LOADING PRODUCTION IMPORT FILES,,,,,,,,,
-21,EU DC BAYER,Integration,"Replicate cost object hierarchy, Load Lists and EE import files ",,,,Not Started,,,,,
-22,EU DC BAYER,Integration,Review load error report,,,,Not Started,,,,,
-,,,SYSTEM INTEGRATION,,,,,,,,,
-26,EU DC BAYER,Travel,"Concur verifies HMC Settings / Travel Integration
-",,,,Not Started,Concur Travel FC,,,,
-27,EU DC BAYER,Travel,"Concur verifies Module Management settings
-",,,,Not Started,Concur Travel FC,,,"···- Allow Empty Travel Approval Hide
-- User-editable Name Fields
-- User-Editable Name Prefix
-- User-Editable Name Suffix
-- Travel Discounts By Org Unit
-- Profile Displays Org Unit
-- Job Title Required
-- Purge inactive profiles from GDS
-- Purge inactive profiles (days)",
-,,,CONCUR PRODUCTION VALIDATION,,,,,,,,,
-29,EU DC BAYER,Expense,Concur assigns the ASC permissions to applicable client project team members,,,,Not Started,Concur Expense FC,,,,
-,,,Client VALIDATION,,,,,,,,,
-32,EU DC BAYER,Travel,Client confirms Travel Info section has correct Travel related information,,,,Not Started,,,,,
-33,EU DC BAYER,Expense,"Cursory review of user interface.
+Task#,Complete%,Task Level,Task Name,Status,Duration,Start,Finish,Predecessors,Successors,Constrain Type,Resources,Comment/Notes,Site,Product
+,0%,1,PRE-PROD PREPARATION,,0,,,,,,,,,
+1,50%,,Communication to end users,in_progress,15,2026-06-04,2026-06-18,,,,,"Employees needs to know when to complete last report, approve last reports, Credit Card transactions etc.",US DC BAYER,All
+2,100%,,Client ensures all requirements and timelines have been shared with AppZen,completed,1,2026-04-09,2026-04-09,,,,,,EU DC BAYER,AppZen
+,0%,1,EXPENSE PRODUCTION BUILD,,0,,,,,,,,,
+13,0%,,Copy configuration from Test to Production,blocked,9,2026-05-26,2026-06-03,,,,Concur Expense FC,Expense testing to be completed by 22 May,EU DC BAYER,Expense
+14,0%,,Concur verifies Employee Extract to Travel job success,not_started,0,,,,,,Concur TC,,EU DC BAYER,Travel
+15,0%,,BAYER connects productive interfaces to the new Concur EU DC entity,not_started,0,2026-06-03,,,,,,all interfaces to be considered,EU DC BAYER,Integration
+,0%,1,LOADING PRODUCTION IMPORT FILES,,0,,,,,,,,,
+21,0%,,"Replicate cost object hierarchy, Load Lists and EE import files",not_started,0,,,,,,,,EU DC BAYER,Integration
+22,0%,,Review load error report,not_started,0,,,,,,,,EU DC BAYER,Integration
+,0%,1,SYSTEM INTEGRATION,,0,,,,,,,,,
+26,0%,,Concur verifies HMC Settings / Travel Integration,not_started,0,,,,,,Concur Travel FC,,EU DC BAYER,Travel
+27,0%,,Concur verifies Module Management settings,not_started,0,,,,,,Concur Travel FC,···- Allow Empty Travel Approval Hide- User-editable Name Fields- User-Editable Name Prefix- User-Editable Name Suffix- Travel Discounts By Org Unit- Profile Displays Org Unit- Job Title Required- Purge inactive profiles from GDS- Purge inactive profiles (days),EU DC BAYER,Travel
+,0%,1,CONCUR PRODUCTION VALIDATION,,0,,,,,,,,,
+29,0%,,Concur assigns the ASC permissions to applicable client project team members,not_started,0,,,,,,Concur Expense FC,,EU DC BAYER,Expense
+,0%,1,Client VALIDATION,,0,,,,,,,,,
+32,0%,,Client confirms Travel Info section has correct Travel related information,not_started,0,,,,,,,,EU DC BAYER,Travel
+33,0%,,"Cursory review of user interface.
 Review & validate employee forms & fields
 Review & validate report forms & fields
 Review & validate expense types, forms & fields 
-Review & validate allocation forms",5-Jun-26,10-Jun-26,,Not Started,,,,,
-,,,END USER ROLLOUT,,,,,,,,,
-39,EU DC BAYER,All,"Go Live: send end user communications for new site
-note users will need to register for mobile app",,,,Not Started,,,,,
-40,EU DC BAYER,All,Go Live on Integrated Prod system,16-Jun-26,30-Jun-26,,Not Started,,,,,
-41,EU DC BAYER,All,Monitor system activity,16-Jun-26,30-Jun-26,,Not Started,Concur TC,,,,
+Review & validate allocation forms",not_started,6,2026-06-05,2026-06-10,,,,,,EU DC BAYER,Expense
+,0%,1,END USER ROLLOUT,,0,,,,,,,,,
+39,0%,,"Go Live: send end user communications for new site
+note users will need to register for mobile app",not_started,0,,,,,,,,EU DC BAYER,All
+40,0%,,Go Live on Integrated Prod system,not_started,15,2026-06-16,2026-06-30,,,,,,EU DC BAYER,All
+41,0%,,Monitor system activity,cancelled,26,2026-06-16,2026-07-11,,,,Concur TC,,EU DC BAYER,All

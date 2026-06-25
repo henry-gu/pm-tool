@@ -638,6 +638,11 @@
       text-overflow: ellipsis;
     }
 
+    .task-table tbody tr.is-cancelled .task-name-text {
+      color: var(--status-cancelled);
+      text-decoration: line-through;
+    }
+
     .task-toggle,
     .task-toggle-spacer {
       display: inline-grid;
@@ -1401,6 +1406,11 @@
       box-shadow: inset 0 0 0 2px var(--color-primary);
     }
 
+    .calendar-day.is-calendar-drop-target {
+      outline: 2px dashed var(--color-primary);
+      outline-offset: -3px;
+    }
+
     .calendar-day:nth-child(7n) {
       border-right: 0;
     }
@@ -1451,6 +1461,15 @@
       text-align: left;
     }
 
+    .calendar-task-chip.is-date-draggable {
+      cursor: grab;
+    }
+
+    .calendar-task-chip.is-calendar-dragging {
+      cursor: grabbing;
+      opacity: 0.55;
+    }
+
     .calendar-task-chip.not-started {
       border-left-color: var(--status-not-started);
       background: var(--status-not-started-bg);
@@ -1493,10 +1512,30 @@
     }
 
     .calendar-task-marker {
+      display: inline-grid;
+      place-items: center;
+      width: 14px;
+      height: 14px;
       color: var(--color-text-muted);
-      font-size: var(--font-size-2xs);
+      font-size: 11px;
       font-weight: var(--font-weight-bold);
-      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    .calendar-task-marker.is-empty {
+      visibility: hidden;
+    }
+
+    .calendar-task-marker.is-start {
+      color: var(--color-primary);
+    }
+
+    .calendar-task-marker.is-finish {
+      color: var(--color-warning);
+    }
+
+    .calendar-task-marker.is-single-day {
+      color: var(--color-success);
     }
 
     .calendar-overflow {
@@ -1917,6 +1956,11 @@
       font-weight: var(--font-weight-semibold);
     }
 
+    .gantt-task-name.is-cancelled .gantt-task-text {
+      color: var(--status-cancelled);
+      text-decoration: line-through;
+    }
+
     .status-dot {
       display: inline-block;
       width: 8px;
@@ -1982,6 +2026,14 @@
     .gantt-chart-area,
     .timeline-chart-area {
       position: relative;
+      background: var(--color-white);
+    }
+
+    .gantt-chart-area {
+      min-width: 100%;
+    }
+
+    .timeline-chart-area {
       min-height: 100%;
       background:
         linear-gradient(var(--color-border) 1px, transparent 1px),
@@ -1994,9 +2046,18 @@
       left: 0;
       right: 0;
       height: 32px;
-      background: transparent;
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-white);
       pointer-events: none;
       z-index: 0;
+    }
+
+    .gantt-row-highlight.is-odd {
+      background: #F7F8FA;
+    }
+
+    .gantt-row-highlight.is-even {
+      background: #FFFFFF;
     }
 
     .gantt-row-highlight.is-selected {
@@ -2031,6 +2092,14 @@
       box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.08);
     }
 
+    .gantt-bar.is-cancelled {
+      background: var(--status-cancelled-bg) !important;
+    }
+
+    .gantt-bar.is-cancelled .bar-progress {
+      background: var(--status-cancelled);
+    }
+
     .bar-progress {
       height: 100%;
       background: rgba(15, 23, 42, 0.25);
@@ -2054,6 +2123,11 @@
 
     .milestone-diamond.is-selected {
       outline: none;
+    }
+
+    .milestone-diamond.is-cancelled {
+      background: var(--status-cancelled);
+      opacity: 0.7;
     }
 
     .today-line {
@@ -2101,7 +2175,6 @@
 
     .board-columns {
       display: grid;
-      grid-template-columns: repeat(5, minmax(220px, 1fr));
       gap: var(--space-3);
       height: calc(100% - 40px);
       min-height: 0;
@@ -2168,6 +2241,11 @@
       font-size: var(--font-size-md);
       font-weight: var(--font-weight-bold);
       line-height: var(--line-height-tight);
+    }
+
+    .task-card.is-cancelled .task-card-title {
+      color: var(--status-cancelled);
+      text-decoration: line-through;
     }
 
     .progress-track {
@@ -2595,6 +2673,7 @@
     const TASK_LEVEL_OPTIONS = ["", "1", "2", "3", "4", "5"];
     const ZOOM_OPTIONS = ["day", "week", "month", "quarter", "year"];
     const TIMELINE_GROUP_OPTIONS = ["owner", "level"];
+    const CALENDAR_DRAG_TYPE = "application/x-project-plan-calendar-task-date";
     const TABLE_COLUMNS = [
       { field: "task_id", label: "Task#", className: "col-task-id", editable: false },
       { field: "percent_complete", label: "Complete%", editable: true },
@@ -2664,8 +2743,8 @@
         ganttZoom: "week",
         ganttScale: 1,
         calendarDate: "",
-        calendarZoom: 1,
-        calendarEndOnly: false,
+        calendarZoom: 4,
+        calendarEndOnly: true,
         showCriticalPath: true,
         ganttColumnWidths: Object.fromEntries(GANTT_COLUMNS.map((column) => [column.field, column.width])),
         zoom: "week",
@@ -3066,6 +3145,10 @@
       return normalizeStatusValue(task?.task_status) || deriveTaskStatus(task);
     }
 
+    function isTaskCancelled(task) {
+      return getTaskStatus(task) === "cancelled";
+    }
+
     function normalizeStatusValue(value) {
       const normalized = normalizeHeader(value);
       const statusMap = {
@@ -3184,15 +3267,27 @@
     }
 
     function setTaskStatusFromBoard(taskId, status) {
+      const task = findTaskById(taskId);
+      const nextStatus = normalizeStatusValue(status);
+
+      if (!task || !nextStatus) {
+        return;
+      }
+
       const percentByStatus = {
         not_started: 0,
         in_progress: 50,
+        blocked: 50,
         on_hold: 50,
         completed: 100,
-        cancelled: parsePercentValue(findTaskById(taskId)?.percent_complete)
+        cancelled: parsePercentValue(task.percent_complete)
       };
 
-      updateTaskField(taskId, "percent_complete", percentByStatus[status] ?? 0);
+      task.task_status = nextStatus;
+      task.percent_complete = percentByStatus[nextStatus] ?? parsePercentValue(task.percent_complete);
+      state.project.tasks = buildTree(state.project.tasks);
+      markProjectDirty();
+      renderCurrentView();
     }
 
     function parseBooleanValue(value) {
@@ -3332,12 +3427,13 @@
           await writable.close();
           markProjectSaved();
           showToast("Saved ✓", "success");
-          return;
+          return true;
         }
 
-        await saveFileAs();
+        return await saveFileAs();
       } catch (error) {
         handleFileError(error, "Could not save the CSV file.");
+        return false;
       }
     }
 
@@ -3361,14 +3457,13 @@
 
           state.project.fileHandle = fileHandle;
           state.project.filename = normaliseCSVFilename(fileHandle.name || suggestedName);
-          await saveFile();
-          return;
+          return await saveFile();
         }
 
         const filename = window.prompt("Save project as", suggestedName);
 
         if (!filename) {
-          return;
+          return false;
         }
 
         const finalFilename = normaliseCSVFilename(filename);
@@ -3379,8 +3474,10 @@
         state.project.filename = finalFilename;
         markProjectSaved();
         showToast("Saved ✓", "success");
+        return true;
       } catch (error) {
         handleFileError(error, "Could not save the project file.");
+        return false;
       }
     }
 
@@ -3869,6 +3966,7 @@
     }
 
     function switchView(viewName) {
+      closeFilterPanel();
       state.ui.currentView = viewName;
       renderCurrentView();
     }
@@ -4068,6 +4166,8 @@
 
         leftBody.append(leftRow);
         rowHighlight.className = "gantt-row-highlight";
+        rowHighlight.classList.toggle("is-odd", index % 2 === 0);
+        rowHighlight.classList.toggle("is-even", index % 2 !== 0);
         rowHighlight.classList.toggle("is-selected", task.task_id === state.ui.selectedTaskId);
         rowHighlight.dataset.taskId = task.task_id;
         rowHighlight.style.top = `${rowTop}px`;
@@ -4090,6 +4190,7 @@
           const milestone = document.createElement("div");
           milestone.className = "milestone-diamond";
           milestone.classList.toggle("is-critical", ui.showCriticalPath && !task._isGroup && criticalPath.has(task.task_id));
+          milestone.classList.toggle("is-cancelled", isTaskCancelled(task));
           milestone.classList.toggle("is-selected", task.task_id === state.ui.selectedTaskId);
           milestone.dataset.taskId = task.task_id;
           milestone.style.left = `${leftOffset}px`;
@@ -4107,6 +4208,7 @@
         bar.className = "gantt-bar";
         bar.classList.toggle("is-group", task._isGroup);
         bar.classList.toggle("is-critical", ui.showCriticalPath && !task._isGroup && criticalPath.has(task.task_id));
+        bar.classList.toggle("is-cancelled", isTaskCancelled(task));
         bar.classList.toggle("is-selected", task.task_id === state.ui.selectedTaskId);
         bar.dataset.taskId = task.task_id;
         bar.style.left = `${leftOffset}px`;
@@ -4188,6 +4290,7 @@
 
       row.className = "gantt-left-row";
       row.classList.toggle("is-selected", task.task_id === state.ui.selectedTaskId);
+      row.classList.toggle("is-cancelled", isTaskCancelled(task));
       row.dataset.taskId = task.task_id;
       row.addEventListener("click", () => selectTaskOnly(task.task_id));
       row.addEventListener("dblclick", () => selectTask(task.task_id));
@@ -4215,6 +4318,7 @@
 
       wrapper.className = "gantt-task-name";
       wrapper.classList.toggle("is-group", Boolean(task._isGroup));
+      wrapper.classList.toggle("is-cancelled", isTaskCancelled(task));
       wrapper.style.setProperty("--task-depth", String(task._depth || 0));
 
       if (task._isGroup) {
@@ -4232,6 +4336,7 @@
       }
 
       dot.className = `status-dot ${toKebabCase(getTaskStatus(task))}`;
+      text.className = "gantt-task-text";
       text.textContent = task.task_name || "";
       wrapper.append(dot, text);
       return wrapper;
@@ -4427,11 +4532,12 @@
       const columns = document.createElement("div");
       const leafTasks = tasks.filter(isLeafTask);
       const resources = getUniqueResources(state.project.tasks);
-      const statuses = ["not_started", "in_progress", "on_hold", "completed", "cancelled"];
+      const statuses = STATUS_OPTIONS;
 
       section.className = "board-view";
       filters.className = "board-filters";
       columns.className = "board-columns";
+      columns.style.gridTemplateColumns = `repeat(${statuses.length}, minmax(220px, 1fr))`;
 
       filters.append(createOwnerFilterPill("", "All Resources", !ui.boardOwnerFilter));
       resources.forEach((resource) => {
@@ -4505,6 +4611,7 @@
       const percentComplete = Math.min(100, Math.max(0, parsePercentValue(task.percent_complete)));
 
       card.className = "task-card";
+      card.classList.toggle("is-cancelled", isTaskCancelled(task));
       card.draggable = true;
       card.dataset.taskId = task.task_id;
       card.style.borderLeftColor = `var(--priority-${toKebabCase(task.priority || "medium")})`;
@@ -4546,7 +4653,7 @@
       const leftHeader = document.createElement("div");
       const leftBody = document.createElement("div");
       const rightScroll = document.createElement("div");
-      const leafTasks = tasks.filter(isLeafTask);
+      const leafTasks = tasks.filter(isLeafTask).filter((task) => !isTaskCancelled(task));
       const groupedTasks = groupTimelineTasks(leafTasks, ui.timelineGroupBy);
       const range = getProjectDateRange(leafTasks);
       const pxPerDay = getPxPerDay(ui.ganttZoom, ui.ganttScale);
@@ -4635,7 +4742,10 @@
     function renderCalendar(tasks, ui) {
       const section = document.createElement("section");
       const summary = document.createElement("div");
-      const leafTasks = tasks.filter(isLeafTask).filter((task) => getTaskDateRange(task));
+      const leafTasks = tasks
+        .filter(isLeafTask)
+        .filter((task) => !isTaskCancelled(task))
+        .filter((task) => getTaskDateRange(task));
       const focusDate = getCalendarFocusDate(leafTasks, ui);
       const zoomMonths = Math.max(1, Math.min(6, ui.calendarZoom || 1));
 
@@ -4731,10 +4841,14 @@
       const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
       article.className = "calendar-day";
+      article.dataset.date = formatDateAsISO(day);
       article.classList.add(`month-${day.getMonth()}`);
       article.classList.toggle("is-weekend", isWeekend);
       article.classList.toggle("is-outside-month", !isSameMonth(day, monthStart));
       article.classList.toggle("is-today", isSameDate(day, today));
+      article.addEventListener("dragover", handleCalendarDragOver);
+      article.addEventListener("dragleave", handleCalendarDragLeave);
+      article.addEventListener("drop", handleCalendarDrop);
       header.className = "calendar-day-header";
       dayNumber.className = "calendar-day-number";
       dayNumber.textContent = String(day.getDate());
@@ -4797,7 +4911,22 @@
       name.className = "calendar-task-name";
       name.textContent = task.task_name || task.task_id;
       marker.className = "calendar-task-marker";
-      marker.textContent = getCalendarTaskMarker(task, day);
+      const markerMeta = getCalendarTaskMarker(task, day);
+      if (markerMeta.type) {
+        button.draggable = true;
+        button.classList.add("is-date-draggable");
+        button.dataset.calendarMarkerType = markerMeta.type;
+        button.addEventListener("dragstart", (event) => beginCalendarTaskDrag(event, task, markerMeta));
+        button.addEventListener("dragend", finishCalendarTaskDrag);
+      }
+      marker.classList.add(markerMeta.type ? `is-${markerMeta.type}` : "is-empty");
+      marker.textContent = markerMeta.symbol;
+      if (markerMeta.label) {
+        marker.setAttribute("aria-label", markerMeta.label);
+        marker.title = markerMeta.label;
+      } else {
+        marker.setAttribute("aria-hidden", "true");
+      }
       button.append(name, marker);
       return button;
     }
@@ -4840,25 +4969,203 @@
       const range = getTaskDateRange(task);
 
       if (!range) {
-        return "";
+        return { type: "", symbol: "", label: "" };
       }
 
       const starts = isSameDate(range.start, day);
       const finishes = isSameDate(range.end, day);
 
       if (starts && finishes) {
-        return "One-day";
+        return {
+          type: "single-day",
+          symbol: "●",
+          label: "Starts and finishes on this date"
+        };
       }
 
       if (starts) {
-        return "Start";
+        return {
+          type: "start",
+          symbol: "▶",
+          label: "Task starts on this date"
+        };
       }
 
       if (finishes) {
-        return "Due";
+        return {
+          type: "finish",
+          symbol: "◆",
+          label: "Task finishes on this date"
+        };
       }
 
-      return "";
+      return { type: "", symbol: "", label: "" };
+    }
+
+    function beginCalendarTaskDrag(event, task, markerMeta) {
+      if (!markerMeta.type || !event.dataTransfer) {
+        event.preventDefault();
+        return;
+      }
+
+      const payload = JSON.stringify({
+        taskId: task.task_id,
+        markerType: markerMeta.type
+      });
+
+      hideCalendarPopupImmediate();
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData(CALENDAR_DRAG_TYPE, payload);
+      event.dataTransfer.setData("text/plain", payload);
+      event.currentTarget.classList.add("is-calendar-dragging");
+    }
+
+    function finishCalendarTaskDrag(event) {
+      event.currentTarget.classList.remove("is-calendar-dragging");
+      clearCalendarDropTargets();
+    }
+
+    function handleCalendarDragOver(event) {
+      if (!isCalendarTaskDrag(event)) {
+        return;
+      }
+
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "move";
+      event.currentTarget.classList.add("is-calendar-drop-target");
+    }
+
+    function handleCalendarDragLeave(event) {
+      if (event.currentTarget.contains(event.relatedTarget)) {
+        return;
+      }
+
+      event.currentTarget.classList.remove("is-calendar-drop-target");
+    }
+
+    async function handleCalendarDrop(event) {
+      if (!isCalendarTaskDrag(event)) {
+        return;
+      }
+
+      event.preventDefault();
+      const targetDate = event.currentTarget.dataset.date;
+      const payload = getCalendarDragPayload(event.dataTransfer);
+
+      clearCalendarDropTargets();
+
+      if (!payload || !targetDate) {
+        return;
+      }
+
+      await moveCalendarTaskDate(payload.taskId, payload.markerType, targetDate);
+    }
+
+    function isCalendarTaskDrag(event) {
+      return Array.from(event.dataTransfer?.types || []).includes(CALENDAR_DRAG_TYPE);
+    }
+
+    function getCalendarDragPayload(dataTransfer) {
+      const rawPayload = dataTransfer?.getData(CALENDAR_DRAG_TYPE) || dataTransfer?.getData("text/plain");
+
+      if (!rawPayload) {
+        return null;
+      }
+
+      try {
+        const payload = JSON.parse(rawPayload);
+
+        if (!payload.taskId || !["start", "finish", "single-day"].includes(payload.markerType)) {
+          return null;
+        }
+
+        return payload;
+      } catch {
+        return null;
+      }
+    }
+
+    function clearCalendarDropTargets() {
+      document.querySelectorAll(".calendar-day.is-calendar-drop-target").forEach((day) => {
+        day.classList.remove("is-calendar-drop-target");
+      });
+    }
+
+    async function moveCalendarTaskDate(taskId, markerType, targetDateText) {
+      const task = findTaskById(taskId);
+      const targetDate = parseDateValue(targetDateText);
+      const range = task ? getTaskDateRange(task) : null;
+
+      if (!task || !targetDate || !range) {
+        showToast("Could not update the task date.", "error");
+        return;
+      }
+
+      let nextStart = parseDateValue(task.start_date) || range.start;
+      let nextEnd = parseDateValue(task.end_date) || range.end;
+      let changeLabel = "date";
+
+      if (markerType === "start") {
+        if (targetDate > nextEnd) {
+          showToast("Start date cannot be after finish date.", "warning");
+          return;
+        }
+
+        if (isSameDate(targetDate, nextStart)) {
+          showToast("Start date is unchanged.", "info");
+          return;
+        }
+
+        nextStart = targetDate;
+        changeLabel = "start date";
+      } else if (markerType === "finish") {
+        if (targetDate < nextStart) {
+          showToast("Finish date cannot be before start date.", "warning");
+          return;
+        }
+
+        if (isSameDate(targetDate, nextEnd)) {
+          showToast("Finish date is unchanged.", "info");
+          return;
+        }
+
+        nextEnd = targetDate;
+        changeLabel = "finish date";
+      } else if (markerType === "single-day") {
+        if (isSameDate(targetDate, nextStart) && isSameDate(targetDate, nextEnd)) {
+          showToast("Task date is unchanged.", "info");
+          return;
+        }
+
+        nextStart = targetDate;
+        nextEnd = targetDate;
+        changeLabel = "start and finish dates";
+      }
+
+      const nextDuration = Math.max(1, daysBetween(nextStart, nextEnd) + 1);
+      const taskLabel = `${task._generatedTaskId ? "" : `${task.task_id} `}${task.task_name || "Untitled task"}`.trim();
+      const confirmed = window.confirm(
+        `Move ${taskLabel} ${changeLabel} to ${formatDateAsISO(targetDate)}?\n\n`
+        + `New range: ${formatDateAsISO(nextStart)} to ${formatDateAsISO(nextEnd)} (${nextDuration} day${nextDuration === 1 ? "" : "s"}).\n`
+        + "The CSV file will be saved after you confirm."
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      task.start_date = formatDateAsISO(nextStart);
+      task.end_date = formatDateAsISO(nextEnd);
+      task.duration_days = nextDuration;
+      state.project.tasks = buildTree(state.project.tasks);
+      state.ui.selectedTaskId = task.task_id;
+      markProjectDirty();
+      renderCurrentView();
+      const saved = await saveFile();
+
+      if (!saved) {
+        showToast("Task date updated, but the CSV file was not saved.", "warning");
+      }
     }
 
     function getCalendarStats(tasks, monthStart, monthEnd) {
@@ -5361,6 +5668,7 @@
       row.dataset.taskId = task.task_id;
       row.classList.toggle("is-selected", task.task_id === state.ui.selectedTaskId);
       row.classList.toggle("is-critical", state.ui.criticalPathTaskIds.has(task.task_id));
+      row.classList.toggle("is-cancelled", isTaskCancelled(task));
 
       /* Single click: highlight row only (light yellow) */
       row.addEventListener("click", () => selectTaskOnly(task.task_id));
@@ -7193,6 +7501,15 @@
       renderFilterPanel();
     }
 
+    function closeFilterPanel() {
+      if (!state.ui.filterPanelOpen) {
+        return;
+      }
+
+      state.ui.filterPanelOpen = false;
+      renderFilterPanel();
+    }
+
     function renderFilterPanel() {
       let panel = document.getElementById("filter-panel");
 
@@ -7412,8 +7729,7 @@
 
         if (event.key === "Escape") {
           closeTaskEditor();
-          state.ui.filterPanelOpen = false;
-          renderFilterPanel();
+          closeFilterPanel();
           return;
         }
 
