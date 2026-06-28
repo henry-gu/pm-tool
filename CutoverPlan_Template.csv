@@ -1,28 +1,24 @@
 Task#,Complete%,Task Level,Task Name,Status,Duration,Start,Finish,Predecessors,Successors,Constrain Type,Resources,Comment/Notes,Site,Product
-,0%,1,PRE-PROD PREPARATION,,0,,,,,,,,,
-1,50%,,Communication to end users,in_progress,15,2026-06-04,2026-06-18,,,,,"Employees needs to know when to complete last report, approve last reports, Credit Card transactions etc.",US DC BAYER,All
-2,100%,,Client ensures all requirements and timelines have been shared with AppZen,completed,1,2026-04-09,2026-04-09,,,,,,EU DC BAYER,AppZen
-,0%,1,EXPENSE PRODUCTION BUILD,,0,,,,,,,,,
-13,0%,,Copy configuration from Test to Production,blocked,9,2026-05-26,2026-06-03,,,,Concur Expense FC,Expense testing to be completed by 22 May,EU DC BAYER,Expense
-14,0%,,Concur verifies Employee Extract to Travel job success,not_started,0,,,,,,Concur TC,,EU DC BAYER,Travel
-15,0%,,BAYER connects productive interfaces to the new Concur EU DC entity,not_started,0,2026-06-03,,,,,,all interfaces to be considered,EU DC BAYER,Integration
-,0%,1,LOADING PRODUCTION IMPORT FILES,,0,,,,,,,,,
-21,0%,,"Replicate cost object hierarchy, Load Lists and EE import files",not_started,0,,,,,,,,EU DC BAYER,Integration
-22,0%,,Review load error report,not_started,0,,,,,,,,EU DC BAYER,Integration
-,0%,1,SYSTEM INTEGRATION,,0,,,,,,,,,
-26,0%,,Concur verifies HMC Settings / Travel Integration,not_started,0,,,,,,Concur Travel FC,,EU DC BAYER,Travel
-27,0%,,Concur verifies Module Management settings,not_started,0,,,,,,Concur Travel FC,···- Allow Empty Travel Approval Hide- User-editable Name Fields- User-Editable Name Prefix- User-Editable Name Suffix- Travel Discounts By Org Unit- Profile Displays Org Unit- Job Title Required- Purge inactive profiles from GDS- Purge inactive profiles (days),EU DC BAYER,Travel
-,0%,1,CONCUR PRODUCTION VALIDATION,,0,,,,,,,,,
-29,0%,,Concur assigns the ASC permissions to applicable client project team members,not_started,0,,,,,,Concur Expense FC,,EU DC BAYER,Expense
-,0%,1,Client VALIDATION,,0,,,,,,,,,
-32,0%,,Client confirms Travel Info section has correct Travel related information,not_started,0,,,,,,,,EU DC BAYER,Travel
-33,0%,,"Cursory review of user interface.
-Review & validate employee forms & fields
-Review & validate report forms & fields
-Review & validate expense types, forms & fields 
-Review & validate allocation forms",not_started,6,2026-06-05,2026-06-10,,,,,,EU DC BAYER,Expense
-,0%,1,END USER ROLLOUT,,0,,,,,,,,,
-39,0%,,"Go Live: send end user communications for new site
-note users will need to register for mobile app",not_started,0,,,,,,,,EU DC BAYER,All
-40,0%,,Go Live on Integrated Prod system,not_started,15,2026-06-16,2026-06-30,,,,,,EU DC BAYER,All
-41,0%,,Monitor system activity,cancelled,26,2026-06-16,2026-07-11,,,,Concur TC,,EU DC BAYER,All
+1,0%,1,Project Phase 1,,0,,,,,,,,,
+2,50%,,Project Task 2,in_progress,15,2026-06-04,2026-06-18,,,,,Sanitized note for task 2.,Site 1,Product 1
+3,100%,,Project Task 3,completed,1,2026-04-10,2026-04-10,,,,,,Site 2,Product 2
+4,0%,1,Project Phase 2,,0,,,,,,,,,
+5,0%,,Project Task 5,blocked,9,2026-05-26,2026-06-03,,,,Resource 1,Sanitized note for task 5.,Site 2,Product 3
+6,0%,,Project Task 6,not_started,0,,,,,,Resource 2,,Site 2,Product 4
+7,0%,,Project Task 7,not_started,0,2026-06-03,,,,,,Sanitized note for task 7.,Site 2,Product 5
+8,0%,1,Project Phase 3,,0,,,,,,,,,
+9,0%,,Project Task 9,not_started,0,,,,,,,,Site 2,Product 5
+10,0%,,Project Task 10,not_started,0,,,,,,,,Site 2,Product 5
+11,0%,1,Project Phase 4,,0,,,,,,,,,
+12,0%,,Project Task 12,not_started,0,,,,,,Resource 3,,Site 2,Product 4
+13,0%,,Project Task 13,not_started,0,,,,,,Resource 3,Sanitized note for task 13.,Site 2,Product 4
+14,0%,1,Project Phase 5,,0,,,,,,,,,
+15,0%,,Project Task 15,not_started,0,,,,,,Resource 1,,Site 2,Product 3
+16,0%,1,Project Phase 6,,0,,,,,,,,,
+17,0%,,Project Task 17,not_started,0,,,,,,,,Site 2,Product 4
+18,0%,,Project Task 18,not_started,6,2026-06-05,2026-06-10,,,,,,Site 2,Product 3
+19,0%,1,Project Phase 7,,0,,,,,,,,,
+20,7%,,Project Task 20,in_progress,36,2026-06-17,2026-07-22,,,As Soon As Possible,,,,
+21,0%,,Project Task 21,not_started,0,,,,,,,,Site 2,Product 1
+22,0%,,Project Task 22,not_started,15,2026-06-16,2026-06-30,,,,,,Site 2,Product 1
+23,0%,,Project Task 23,cancelled,26,2026-06-16,2026-07-11,,,,Resource 2,,Site 2,Product 1

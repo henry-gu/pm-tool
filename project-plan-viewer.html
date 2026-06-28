@@ -11,26 +11,28 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --color-navy-950: #1A1F2E;
-      --color-navy-900: #22293A;
-      --color-navy-800: #2E374D;
+      --color-navy-950: #101827;
+      --color-navy-900: #172033;
+      --color-navy-800: #22304A;
       --color-white: #FFFFFF;
-      --color-surface: #F7F8FA;
-      --color-surface-muted: #F0F2F5;
-      --color-border: #E2E5EB;
-      --color-border-strong: #CBD1DC;
-      --color-text: #1F2937;
-      --color-text-muted: #6B7280;
-      --color-text-subtle: #9CA3AF;
-      --color-primary: #2563EB;
-      --color-primary-hover: #1D4ED8;
-      --color-primary-soft: #EAF1FF;
+      --color-surface: #F4F6F9;
+      --color-surface-muted: #EEF2F6;
+      --color-header: #F8FAFC;
+      --color-border: #D8DEE8;
+      --color-border-strong: #B9C3D3;
+      --color-text: #182235;
+      --color-text-muted: #5B6678;
+      --color-text-subtle: #8A94A6;
+      --color-primary: #1F5FBF;
+      --color-primary-hover: #174EA6;
+      --color-primary-soft: #EFF6FF;
       --color-success: #16A34A;
       --color-warning: #D97706;
       --color-danger: #DC2626;
       --color-focus: #60A5FA;
-      --color-selected-row: #FEF3C7;
+      --color-selected-row: #FFF5CC;
       --color-critical-path: #F59E0B;
+      --color-baseline: #94A3B8;
 
       --status-not-started: #6B7280;
       --status-not-started-bg: #F3F4F6;
@@ -82,10 +84,10 @@
       --statusbar-height: 28px;
       --control-height: 28px;
       --radius-sm: 4px;
-      --radius-md: 6px;
-      --radius-lg: 8px;
-      --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.08);
-      --shadow-md: 0 8px 20px rgba(16, 24, 40, 0.12);
+      --radius-md: 4px;
+      --radius-lg: 6px;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 10px 24px rgba(15, 23, 42, 0.14);
       --z-toast: 50;
     }
 
@@ -144,11 +146,12 @@
     .top-bar {
       display: flex;
       align-items: center;
-      gap: var(--space-4);
+      gap: var(--space-3);
       height: var(--topbar-height);
       padding: 0 var(--space-4);
       color: var(--color-white);
       background: var(--color-navy-950);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .brand {
@@ -167,8 +170,8 @@
       height: 24px;
       place-items: center;
       border-radius: var(--radius-sm);
-      color: var(--color-navy-950);
-      background: var(--color-white);
+      color: var(--color-primary);
+      background: #EAF1FF;
       font-size: var(--font-size-sm);
       font-weight: var(--font-weight-bold);
     }
@@ -194,10 +197,10 @@
     .top-button {
       height: var(--control-height);
       padding: 0 var(--space-3);
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.16);
       border-radius: var(--radius-md);
       color: var(--color-white);
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.06);
       font-size: var(--font-size-sm);
       font-weight: var(--font-weight-medium);
     }
@@ -209,29 +212,42 @@
     .toolbar {
       display: flex;
       align-items: center;
-      gap: var(--space-3);
+      gap: var(--space-2);
+      min-width: 0;
       height: var(--toolbar-height);
-      padding: 0 var(--space-4);
+      padding: 0 var(--space-3);
+      overflow: hidden;
       border-bottom: 1px solid var(--color-border);
-      background: var(--color-white);
-      box-shadow: var(--shadow-sm);
+      background: #FBFCFE;
+      box-shadow: none;
     }
 
     .view-toggle {
       display: inline-flex;
       align-items: center;
+      flex: 0 1 auto;
+      max-width: min(460px, 42vw);
+      min-width: 0;
       height: 30px;
       padding: 2px;
+      overflow-x: auto;
+      overflow-y: hidden;
       border: 1px solid var(--color-border);
-      border-radius: 999px;
-      background: var(--color-surface-muted);
+      border-radius: var(--radius-lg);
+      background: #F3F6FA;
+      scrollbar-width: none;
       white-space: nowrap;
     }
 
+    .view-toggle::-webkit-scrollbar {
+      display: none;
+    }
+
     .view-button {
+      flex: 0 0 auto;
       height: 24px;
       padding: 0 var(--space-3);
-      border-radius: 999px;
+      border-radius: var(--radius-md);
       color: var(--color-text-muted);
       background: transparent;
       font-size: var(--font-size-sm);
@@ -246,14 +262,16 @@
     .view-button[aria-pressed="true"] {
       color: var(--color-white);
       background: var(--color-primary);
-      box-shadow: var(--shadow-sm);
+      box-shadow: none;
     }
 
     .toolbar-spacer {
-      flex: 1;
+      flex: 1 1 12px;
+      min-width: 0;
     }
 
     .search {
+      flex: 0 1 220px;
       width: min(280px, 28vw);
       min-width: 180px;
       height: var(--control-height);
@@ -280,6 +298,7 @@
       border-radius: var(--radius-md);
       font-size: var(--font-size-sm);
       font-weight: var(--font-weight-semibold);
+      flex: 0 0 auto;
       white-space: nowrap;
     }
 
@@ -320,11 +339,7 @@
     #main-content {
       min-height: 0;
       overflow: auto;
-      background:
-        linear-gradient(var(--color-border) 1px, transparent 1px),
-        linear-gradient(90deg, var(--color-border) 1px, transparent 1px),
-        var(--color-surface);
-      background-size: 32px 32px;
+      background: var(--color-surface);
     }
 
     .empty-view {
@@ -340,8 +355,8 @@
       padding: var(--space-6);
       border: 1px solid var(--color-border);
       border-radius: var(--radius-lg);
-      background: rgba(255, 255, 255, 0.92);
-      box-shadow: var(--shadow-sm);
+      background: var(--color-white);
+      box-shadow: none;
       text-align: center;
     }
 
@@ -456,7 +471,7 @@
     .table-view {
       height: 100%;
       min-height: 0;
-      padding: var(--space-4);
+      padding: var(--space-3);
       background: var(--color-surface);
     }
 
@@ -467,7 +482,7 @@
       border: 1px solid var(--color-border);
       border-radius: var(--radius-lg);
       background: var(--color-white);
-      box-shadow: var(--shadow-sm);
+      box-shadow: none;
     }
 
     .task-table {
@@ -481,8 +496,8 @@
 
     .task-table th,
     .task-table td {
-      height: 36px;
-      padding: 0 var(--space-3);
+      height: 32px;
+      padding: 0 var(--space-2);
       border-right: 1px solid var(--color-border);
       border-bottom: 1px solid var(--color-border);
       vertical-align: middle;
@@ -499,12 +514,14 @@
       top: 0;
       z-index: 2;
       color: var(--color-text-muted);
-      background: var(--color-white);
+      background: var(--color-header);
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-semibold);
       text-align: left;
       box-shadow: 0 1px 0 var(--color-border);
       overflow: visible;
+      text-transform: uppercase;
+      letter-spacing: 0;
     }
 
     /* ── Table Column Resize Handle ── */
@@ -544,7 +561,7 @@
     }
 
     .task-table tbody tr:nth-child(odd) {
-      background: #F7F8FA;
+      background: #F8FAFC;
     }
 
     .task-table tbody tr:nth-child(even) {
@@ -552,12 +569,12 @@
     }
 
     .task-table tbody tr:hover {
-      background: var(--color-primary-soft);
+      background: #F1F6FF;
     }
 
     .task-table tbody tr.is-selected {
       background: var(--color-selected-row);
-      box-shadow: inset 3px 0 0 var(--color-warning);
+      box-shadow: inset 3px 0 0 var(--color-critical-path);
     }
 
     .task-table tbody tr.is-critical {
@@ -568,6 +585,38 @@
       box-shadow:
         inset 3px 0 0 var(--color-danger),
         inset 6px 0 0 var(--color-primary);
+    }
+
+    .task-table tbody tr[draggable="true"],
+    .gantt-left-row[draggable="true"],
+    .gantt-row-highlight[draggable="true"],
+    .gantt-bar[draggable="true"],
+    .milestone-diamond[draggable="true"] {
+      cursor: grab;
+    }
+
+    .task-table tbody tr.is-task-dragging,
+    .gantt-left-row.is-task-dragging,
+    .gantt-row-highlight.is-task-dragging,
+    .gantt-bar.is-task-dragging,
+    .milestone-diamond.is-task-dragging {
+      opacity: 0.45;
+    }
+
+    .task-table tbody tr.is-drop-before,
+    .gantt-left-row.is-drop-before {
+      box-shadow: inset 0 2px 0 var(--color-primary);
+    }
+
+    .task-table tbody tr.is-drop-after,
+    .gantt-left-row.is-drop-after {
+      box-shadow: inset 0 -2px 0 var(--color-primary);
+    }
+
+    .task-table tbody tr.is-drop-inside,
+    .gantt-left-row.is-drop-inside {
+      background: #EAF1FF;
+      box-shadow: inset 3px 0 0 var(--color-primary);
     }
 
     .task-table td {
@@ -675,7 +724,7 @@
 
     .table-edit-input {
       width: 100%;
-      height: 28px;
+      height: 26px;
       padding: 0 var(--space-2);
       border: 1px solid var(--color-primary);
       border-radius: var(--radius-sm);
@@ -705,7 +754,7 @@
       padding: 0 var(--space-4);
       border-top: 1px solid var(--color-border);
       color: var(--color-text-muted);
-      background: var(--color-surface-muted);
+      background: #F8FAFC;
       font-size: var(--font-size-xs);
       white-space: nowrap;
     }
@@ -738,8 +787,9 @@
       display: inline-flex;
       align-items: center;
       gap: var(--space-1);
-      padding: 2px var(--space-2);
-      border-radius: 999px;
+      padding: 1px var(--space-2);
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-semibold);
       line-height: 1.2;
@@ -748,31 +798,37 @@
     .status-pill.not-started {
       color: var(--status-not-started);
       background: var(--status-not-started-bg);
+      border-color: #D1D5DB;
     }
 
     .status-pill.in-progress {
       color: var(--status-in-progress);
       background: var(--status-in-progress-bg);
+      border-color: #BFD7FF;
     }
 
     .status-pill.completed {
       color: var(--status-completed);
       background: var(--status-completed-bg);
+      border-color: #B8E7C8;
     }
 
     .status-pill.blocked {
       color: var(--status-blocked);
       background: var(--status-blocked-bg);
+      border-color: #FECACA;
     }
 
     .status-pill.on-hold {
       color: var(--status-on-hold);
       background: var(--status-on-hold-bg);
+      border-color: #FDE68A;
     }
 
     .status-pill.cancelled {
       color: var(--status-cancelled);
       background: var(--status-cancelled-bg);
+      border-color: #CBD5E1;
     }
 
     .priority-dot {
@@ -804,7 +860,7 @@
       align-items: center;
       gap: var(--space-1);
       padding: 2px var(--space-2);
-      border-radius: 999px;
+      border-radius: var(--radius-md);
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-semibold);
       line-height: 1.2;
@@ -875,6 +931,7 @@
       gap: var(--space-3);
       padding: var(--space-4);
       border-bottom: 1px solid var(--color-border);
+      background: var(--color-header);
     }
 
     .task-editor-title {
@@ -945,23 +1002,33 @@
     .view-controls {
       display: inline-flex;
       align-items: center;
-      gap: var(--space-2);
-      flex-wrap: wrap;
+      flex: 0 1 auto;
+      gap: var(--space-1);
+      min-width: 0;
+      max-width: 100%;
+      padding: 1px 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      overscroll-behavior-inline: contain;
+      scrollbar-width: thin;
+      flex-wrap: nowrap;
     }
 
     .segmented-control {
       display: inline-flex;
+      flex: 0 0 auto;
       height: 28px;
       padding: 2px;
       border: 1px solid var(--color-border);
-      border-radius: 999px;
-      background: var(--color-surface-muted);
+      border-radius: var(--radius-lg);
+      background: #F3F6FA;
     }
 
     .segmented-control button {
+      flex: 0 0 auto;
       height: 22px;
       padding: 0 var(--space-2);
-      border-radius: 999px;
+      border-radius: var(--radius-md);
       color: var(--color-text-muted);
       background: transparent;
       font-size: var(--font-size-xs);
@@ -976,11 +1043,13 @@
     .zoom-scale-control {
       display: inline-flex;
       align-items: center;
+      flex: 0 0 auto;
       gap: var(--space-2);
+      min-width: 0;
       height: 28px;
       padding: 0 var(--space-2);
       border: 1px solid var(--color-border);
-      border-radius: 999px;
+      border-radius: var(--radius-lg);
       background: var(--color-white);
       color: var(--color-text-muted);
       font-size: var(--font-size-xs);
@@ -988,7 +1057,7 @@
     }
 
     .zoom-scale-control input {
-      width: 96px;
+      width: clamp(64px, 7vw, 96px);
       accent-color: var(--color-primary);
     }
 
@@ -1001,11 +1070,12 @@
     .toolbar-checkbox-control {
       display: inline-flex;
       align-items: center;
+      flex: 0 0 auto;
       gap: var(--space-2);
       height: 28px;
       padding: 0 var(--space-2);
       border: 1px solid var(--color-border);
-      border-radius: 999px;
+      border-radius: var(--radius-lg);
       background: var(--color-white);
       color: var(--color-text-muted);
       font-size: var(--font-size-xs);
@@ -1040,7 +1110,7 @@
       border: 1px solid var(--color-border);
       border-radius: var(--radius-lg);
       background: var(--color-white);
-      box-shadow: var(--shadow-md);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
     }
 
     .filter-panel[hidden] {
@@ -1205,7 +1275,7 @@
     .dashboard-view {
       height: 100%;
       min-height: 0;
-      padding: var(--space-4);
+      padding: var(--space-3);
       background: var(--color-surface);
     }
 
@@ -1224,7 +1294,7 @@
       border-radius: var(--radius-lg);
       overflow: hidden;
       background: var(--color-white);
-      box-shadow: var(--shadow-sm);
+      box-shadow: none;
     }
 
     .gantt-notes-panel {
@@ -1236,7 +1306,7 @@
       border: 1px solid var(--color-border);
       border-radius: var(--radius-lg);
       background: var(--color-white);
-      box-shadow: var(--shadow-sm);
+      box-shadow: none;
       overflow: auto;
     }
 
@@ -1278,7 +1348,7 @@
       border: 1px solid var(--color-border);
       border-radius: var(--radius-lg);
       background: var(--color-white);
-      box-shadow: var(--shadow-sm);
+      box-shadow: none;
     }
 
     .calendar-summary-label {
@@ -1303,7 +1373,7 @@
       border-radius: var(--radius-lg);
       overflow: hidden;
       background: var(--color-white);
-      box-shadow: var(--shadow-sm);
+      box-shadow: none;
     }
 
     .calendar-weekdays,
@@ -1318,7 +1388,7 @@
       border-right: 1px solid var(--color-border);
       border-bottom: 1px solid var(--color-border);
       color: var(--color-text-muted);
-      background: var(--color-surface);
+      background: var(--color-header);
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-bold);
       text-transform: uppercase;
@@ -1342,45 +1412,35 @@
     }
 
     .calendar-day.is-outside-month {
-      background: #FAFBFC;
+      background: #F8FAFC;
       color: var(--color-text-subtle);
     }
 
-    /* Weekend styling */
-    .calendar-day.is-weekend {
-      background: #FDF8F0;
-    }
-    .calendar-day.is-weekend.is-outside-month {
-      background: #F8F3EB;
-    }
+    .calendar-day.month-0  { background: #F4F8FF; }
+    .calendar-day.month-1  { background: #FFF6FA; }
+    .calendar-day.month-2  { background: #F4FBF7; }
+    .calendar-day.month-3  { background: #FFFAEE; }
+    .calendar-day.month-4  { background: #F8F5FF; }
+    .calendar-day.month-5  { background: #F2FBFA; }
+    .calendar-day.month-6  { background: #FFF6F0; }
+    .calendar-day.month-7  { background: #F3F6FF; }
+    .calendar-day.month-8  { background: #FBFDEB; }
+    .calendar-day.month-9  { background: #FFF3F3; }
+    .calendar-day.month-10 { background: #F2FBFD; }
+    .calendar-day.month-11 { background: #FFF8ED; }
 
-    /* Month color bands — subtle tinted backgrounds */
-    .calendar-day.month-0  { background: #F0F7FF; } /* Jan - blue */
-    .calendar-day.month-1  { background: #FFF0F6; } /* Feb - pink */
-    .calendar-day.month-2  { background: #F0FFF4; } /* Mar - green */
-    .calendar-day.month-3  { background: #FFFBF0; } /* Apr - amber */
-    .calendar-day.month-4  { background: #F5F0FF; } /* May - purple */
-    .calendar-day.month-5  { background: #F0FFFC; } /* Jun - teal */
-    .calendar-day.month-6  { background: #FFF5F0; } /* Jul - orange */
-    .calendar-day.month-7  { background: #F0F5FF; } /* Aug - indigo */
-    .calendar-day.month-8  { background: #FEFFF0; } /* Sep - lime */
-    .calendar-day.month-9  { background: #FFF0F0; } /* Oct - red */
-    .calendar-day.month-10 { background: #F0FFFE; } /* Nov - cyan */
-    .calendar-day.month-11 { background: #FFF8F0; } /* Dec - warm */
-
-    /* Weekend + month color combined */
-    .calendar-day.is-weekend.month-0  { background: #E6EFFA; }
-    .calendar-day.is-weekend.month-1  { background: #FAE6F0; }
-    .calendar-day.is-weekend.month-2  { background: #E6FAEe; }
-    .calendar-day.is-weekend.month-3  { background: #FAF5E6; }
-    .calendar-day.is-weekend.month-4  { background: #EFE6FA; }
-    .calendar-day.is-weekend.month-5  { background: #E6FAF7; }
-    .calendar-day.is-weekend.month-6  { background: #FAEFE6; }
-    .calendar-day.is-weekend.month-7  { background: #E6EFFA; }
-    .calendar-day.is-weekend.month-8  { background: #F8FAE6; }
-    .calendar-day.is-weekend.month-9  { background: #FAE6E6; }
-    .calendar-day.is-weekend.month-10 { background: #E6FAF9; }
-    .calendar-day.is-weekend.month-11 { background: #FAF2E6; }
+    .calendar-day.is-weekend.month-0  { background: #E8F1FF; }
+    .calendar-day.is-weekend.month-1  { background: #FCEAF2; }
+    .calendar-day.is-weekend.month-2  { background: #E6F5EC; }
+    .calendar-day.is-weekend.month-3  { background: #F7EFD8; }
+    .calendar-day.is-weekend.month-4  { background: #EEE8FA; }
+    .calendar-day.is-weekend.month-5  { background: #E2F3F1; }
+    .calendar-day.is-weekend.month-6  { background: #F8EBDD; }
+    .calendar-day.is-weekend.month-7  { background: #E7ECFA; }
+    .calendar-day.is-weekend.month-8  { background: #F0F4D7; }
+    .calendar-day.is-weekend.month-9  { background: #F9E3E3; }
+    .calendar-day.is-weekend.month-10 { background: #E2F2F5; }
+    .calendar-day.is-weekend.month-11 { background: #F8EDDB; }
 
     /* Outside month cells stay muted */
     .calendar-day.is-outside-month.month-0,
@@ -1395,11 +1455,11 @@
     .calendar-day.is-outside-month.month-9,
     .calendar-day.is-outside-month.month-10,
     .calendar-day.is-outside-month.month-11 {
-      background: #FAFBFC;
+      background: #F8FAFC;
     }
 
     .calendar-day.is-outside-month.is-weekend {
-      background: #F5F0E8;
+      background: #F4F6F9;
     }
 
     .calendar-day.is-today {
@@ -1548,11 +1608,13 @@
     .calendar-nav-control {
       display: inline-flex;
       align-items: center;
+      flex: 0 0 auto;
       gap: var(--space-1);
+      min-width: 0;
     }
 
     .calendar-nav-label {
-      min-width: 160px;
+      min-width: clamp(112px, 14vw, 160px);
       color: var(--color-text);
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-bold);
@@ -1596,7 +1658,7 @@
       color: var(--color-text);
       font-size: var(--font-size-sm);
       font-weight: var(--font-weight-bold);
-      background: var(--color-surface);
+      background: var(--color-header);
       border-bottom: 1px solid var(--color-border);
       text-align: center;
     }
@@ -1652,11 +1714,12 @@
     .calendar-zoom-control {
       display: inline-flex;
       align-items: center;
+      flex: 0 0 auto;
       gap: var(--space-2);
       height: 28px;
       padding: 0 var(--space-2);
       border: 1px solid var(--color-border);
-      border-radius: 999px;
+      border-radius: var(--radius-lg);
       background: var(--color-white);
       color: var(--color-text-muted);
       font-size: var(--font-size-xs);
@@ -1685,7 +1748,7 @@
       background: var(--color-white);
       border: 1px solid var(--color-border);
       border-radius: var(--radius-lg);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.08);
+      box-shadow: var(--shadow-md);
       padding: 0;
       overflow: hidden;
       pointer-events: auto;
@@ -1707,7 +1770,7 @@
       gap: var(--space-2);
       padding: var(--space-3) var(--space-4);
       border-bottom: 1px solid var(--color-border);
-      background: var(--color-surface);
+      background: var(--color-header);
     }
 
     .calendar-popup-status-dot {
@@ -1812,7 +1875,7 @@
     .calendar-popup-footer {
       padding: var(--space-2) var(--space-4);
       border-top: 1px solid var(--color-border);
-      background: var(--color-surface);
+      background: var(--color-header);
       font-size: var(--font-size-2xs);
       color: var(--color-text-muted);
       text-align: center;
@@ -1820,12 +1883,15 @@
 
     .gantt-left,
     .gantt-right {
+      min-width: 0;
       min-height: 0;
       overflow: hidden;
     }
 
     .gantt-left {
-      border-right: 1px solid var(--color-border);
+      display: grid;
+      grid-template-rows: 48px minmax(0, 1fr);
+      border-right: 1px solid var(--color-border-strong);
     }
 
     .gantt-left-header,
@@ -1841,11 +1907,12 @@
       top: 0;
       z-index: 3;
       height: 48px;
-      border-bottom: 1px solid var(--color-border);
-      background: var(--color-white);
-      color: var(--color-text-muted);
+      border-bottom: 1px solid var(--color-border-strong);
+      background: var(--color-header);
+      color: #4B5568;
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-semibold);
+      text-transform: uppercase;
     }
 
     .gantt-left-header span,
@@ -1904,9 +1971,8 @@
       user-select: none;
     }
 
-    .gantt-left-body,
-    .gantt-right-scroll {
-      height: calc(100% - 48px);
+    .gantt-left-body {
+      min-height: 0;
       overflow: auto;
     }
 
@@ -1919,7 +1985,7 @@
 
     .gantt-left-row:nth-child(odd),
     .timeline-lane:nth-child(odd) {
-      background: #F7F8FA;
+      background: #F8FAFC;
     }
 
     .gantt-left-row:nth-child(even),
@@ -1932,6 +1998,25 @@
     .gantt-left-row.is-selected:nth-child(even) {
       background: var(--color-selected-row);
       box-shadow: none;
+    }
+
+    .gantt-left-row.is-drop-before,
+    .gantt-left-row.is-drop-before:nth-child(odd),
+    .gantt-left-row.is-drop-before:nth-child(even) {
+      box-shadow: inset 0 2px 0 var(--color-primary) !important;
+    }
+
+    .gantt-left-row.is-drop-after,
+    .gantt-left-row.is-drop-after:nth-child(odd),
+    .gantt-left-row.is-drop-after:nth-child(even) {
+      box-shadow: inset 0 -2px 0 var(--color-primary) !important;
+    }
+
+    .gantt-left-row.is-drop-inside,
+    .gantt-left-row.is-drop-inside:nth-child(odd),
+    .gantt-left-row.is-drop-inside:nth-child(even) {
+      background: #EAF1FF;
+      box-shadow: inset 3px 0 0 var(--color-primary) !important;
     }
 
     .gantt-task-name {
@@ -1994,8 +2079,13 @@
     }
 
     .gantt-right {
-      overflow-x: auto;
-      overflow-y: hidden;
+      overflow: hidden;
+    }
+
+    .gantt-right-scroll {
+      height: 100%;
+      min-height: 0;
+      overflow: auto;
     }
 
     .time-axis {
@@ -2004,8 +2094,8 @@
       z-index: 2;
       display: flex;
       height: 48px;
-      border-bottom: 1px solid var(--color-border);
-      background: var(--color-white);
+      border-bottom: 1px solid var(--color-border-strong);
+      background: var(--color-header);
     }
 
     .time-cell {
@@ -2013,7 +2103,7 @@
       flex: 0 0 auto;
       place-items: center;
       border-right: 1px solid var(--color-border);
-      color: var(--color-text-muted);
+      color: #4B5568;
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-semibold);
       overflow: hidden;
@@ -2031,6 +2121,10 @@
 
     .gantt-chart-area {
       min-width: 100%;
+      background:
+        linear-gradient(var(--color-border) 1px, transparent 1px),
+        var(--color-white);
+      background-size: 100% 32px;
     }
 
     .timeline-chart-area {
@@ -2046,14 +2140,14 @@
       left: 0;
       right: 0;
       height: 32px;
-      border-bottom: 1px solid var(--color-border);
+      border-bottom: 1px solid rgba(216, 222, 232, 0.78);
       background: var(--color-white);
-      pointer-events: none;
+      pointer-events: auto;
       z-index: 0;
     }
 
     .gantt-row-highlight.is-odd {
-      background: #F7F8FA;
+      background: #F8FAFC;
     }
 
     .gantt-row-highlight.is-even {
@@ -2062,6 +2156,19 @@
 
     .gantt-row-highlight.is-selected {
       background: var(--color-selected-row);
+    }
+
+    .gantt-row-highlight.is-drop-before {
+      box-shadow: inset 0 2px 0 var(--color-primary);
+    }
+
+    .gantt-row-highlight.is-drop-after {
+      box-shadow: inset 0 -2px 0 var(--color-primary);
+    }
+
+    .gantt-row-highlight.is-drop-inside {
+      background: #EAF1FF;
+      box-shadow: inset 3px 0 0 var(--color-primary);
     }
 
     .gantt-bar,
@@ -2073,19 +2180,44 @@
       overflow: hidden;
       color: var(--color-white);
       background: var(--status-not-started);
-      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.08);
+      box-shadow:
+        inset 0 0 0 1px rgba(15, 23, 42, 0.12),
+        0 1px 1px rgba(15, 23, 42, 0.08);
       cursor: pointer;
+      z-index: 2;
+    }
+
+    .gantt-baseline-bar {
+      position: absolute;
+      height: 4px;
+      min-width: 4px;
+      border-radius: 999px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--color-baseline) 0,
+        var(--color-baseline) 8px,
+        transparent 8px,
+        transparent 12px
+      );
+      opacity: 0.88;
+      pointer-events: none;
       z-index: 1;
     }
 
+    .gantt-baseline-bar.is-group {
+      height: 5px;
+      background: var(--color-baseline);
+      opacity: 0.75;
+    }
+
     .gantt-bar.is-group {
-      opacity: 0.78;
-      filter: saturate(0.9);
+      opacity: 0.88;
+      filter: saturate(0.92);
     }
 
     .gantt-bar.is-critical {
       outline: 2px dashed var(--color-critical-path);
-      outline-offset: 3px;
+      outline-offset: 2px;
     }
 
     .gantt-bar.is-selected {
@@ -2102,7 +2234,7 @@
 
     .bar-progress {
       height: 100%;
-      background: rgba(15, 23, 42, 0.25);
+      background: rgba(15, 23, 42, 0.22);
     }
 
     .milestone-diamond {
@@ -2113,7 +2245,7 @@
       border-radius: 2px;
       background: var(--priority-critical);
       cursor: pointer;
-      z-index: 1;
+      z-index: 2;
     }
 
     .milestone-diamond.is-critical {
@@ -2160,7 +2292,7 @@
       height: 26px;
       padding: 0 var(--space-3);
       border: 1px solid var(--color-border);
-      border-radius: 999px;
+      border-radius: var(--radius-lg);
       color: var(--color-text-muted);
       background: var(--color-white);
       font-size: var(--font-size-xs);
@@ -2201,8 +2333,9 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: var(--space-3);
+      padding: var(--space-2) var(--space-3);
       border-bottom: 1px solid var(--color-border);
+      background: var(--color-header);
       font-weight: var(--font-weight-semibold);
     }
 
@@ -2210,19 +2343,19 @@
       display: grid;
       align-content: start;
       gap: var(--space-2);
-      padding: var(--space-3);
+      padding: var(--space-2);
       overflow: auto;
     }
 
     .task-card {
       display: grid;
-      gap: var(--space-2);
-      padding: var(--space-3);
+      gap: var(--space-1);
+      padding: var(--space-2);
       border: 1px solid var(--color-border);
-      border-left-width: 4px;
+      border-left-width: 3px;
       border-radius: var(--radius-lg);
       background: var(--color-white);
-      box-shadow: var(--shadow-sm);
+      box-shadow: none;
       cursor: grab;
     }
 
@@ -2238,8 +2371,8 @@
 
     .task-card-title {
       color: var(--color-text);
-      font-size: var(--font-size-md);
-      font-weight: var(--font-weight-bold);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
       line-height: var(--line-height-tight);
     }
 
@@ -2277,7 +2410,7 @@
       border: 1px solid var(--color-border);
       border-radius: var(--radius-lg);
       background: var(--color-white);
-      box-shadow: var(--shadow-sm);
+      box-shadow: none;
     }
 
     .timeline-left-header,
@@ -2294,7 +2427,7 @@
     .timeline-left-header {
       height: 48px;
       color: var(--color-text-muted);
-      background: var(--color-white);
+      background: var(--color-header);
     }
 
     .timeline-left-body,
@@ -2318,8 +2451,8 @@
 
     .dashboard-section {
       display: grid;
-      gap: var(--space-4);
-      margin-bottom: var(--space-4);
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
     }
 
     .summary-grid {
@@ -2341,19 +2474,19 @@
       border: 1px solid var(--color-border);
       border-radius: var(--radius-lg);
       background: var(--color-white);
-      box-shadow: var(--shadow-sm);
+      box-shadow: none;
     }
 
     .metric-card {
       display: grid;
       gap: var(--space-1);
-      padding: var(--space-4);
-      border-left: 4px solid var(--color-primary);
+      padding: var(--space-3);
+      border-left: 3px solid var(--color-primary);
     }
 
     .metric-value {
       color: var(--color-text);
-      font-size: 28px;
+      font-size: 24px;
       font-weight: var(--font-weight-bold);
       line-height: 1;
     }
@@ -2365,12 +2498,14 @@
     }
 
     .dashboard-panel {
-      padding: var(--space-4);
+      padding: var(--space-3);
     }
 
     .dashboard-panel h2 {
       margin: 0 0 var(--space-3);
-      font-size: var(--font-size-lg);
+      color: var(--color-text);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
     }
 
     .chart-canvas {
@@ -2399,6 +2534,7 @@
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-bold);
       text-transform: uppercase;
+      background: var(--color-header);
     }
 
     .inline-progress {
@@ -2441,7 +2577,7 @@
       border-left: 4px solid var(--color-danger);
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 1440px) {
       .top-bar {
         gap: var(--space-3);
       }
@@ -2459,6 +2595,7 @@
         min-height: var(--toolbar-height);
         flex-wrap: wrap;
         padding: var(--space-2) var(--space-3);
+        overflow: visible;
       }
 
       .app-shell {
@@ -2469,12 +2606,24 @@
         display: none;
       }
 
+      .view-toggle {
+        max-width: calc(100vw - 24px);
+      }
+
       .search {
         flex: 1 1 220px;
         width: auto;
-        min-width: 0;
+        min-width: 120px;
       }
 
+      .view-controls {
+        order: 10;
+        flex: 1 1 100%;
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 900px) {
       .gantt-shell {
         grid-template-columns: 280px minmax(0, 1fr);
       }
@@ -2532,6 +2681,14 @@
 
       .view-button {
         flex: 1 0 auto;
+      }
+
+      .zoom-scale-control input {
+        width: 56px;
+      }
+
+      .calendar-nav-label {
+        min-width: 96px;
       }
 
       .status-bar {
@@ -2656,24 +2813,33 @@
       { field: "duration_days", label: "Duration", aliases: ["duration_days", "Duration", "duration"] },
       { field: "start_date", label: "Start", aliases: ["start_date", "Start", "Start Date"] },
       { field: "end_date", label: "Finish", aliases: ["end_date", "Finish", "End", "End Date", "Finish Date"] },
+      { field: "baseline_start_date", label: "Baseline Start", aliases: ["baseline_start_date", "Baseline Start", "Baseline Start Date", "BaselineStart"] },
+      { field: "baseline_end_date", label: "Baseline Finish", aliases: ["baseline_end_date", "Baseline Finish", "Baseline End", "Baseline End Date", "Baseline Finish Date", "BaselineFinish"] },
+      { field: "baseline_duration_days", label: "Baseline Duration", aliases: ["baseline_duration_days", "Baseline Duration", "Baseline Dur", "BaselineDuration"] },
       { field: "dependencies", label: "Predecessors", aliases: ["dependencies", "Predecessors", "predecessors"] },
       { field: "successors", label: "Successors", aliases: ["successors", "Successors"] },
       { field: "constraint_type", label: "Constrain Type", aliases: ["constraint_type", "Constrain Type", "Constraint Type"] },
       { field: "resources", label: "Resources", aliases: ["resources", "Resources", "Resource", "Owner", "owner", "Task Owner", "Responsible", "Person Responsible", "Person\nResponsible", "Assignee", "Assigned To"] },
       { field: "notes", label: "Comment/Notes", aliases: ["notes", "Notes", "Comment", "Comments", "Comment/Notes", "Comment Notes", "comment_notes"] }
     ];
-    const CSV_COLUMNS = PROJECT_COLUMNS.map((column) => column.field);
+    const BASELINE_COLUMNS = ["baseline_start_date", "baseline_end_date", "baseline_duration_days"];
+    const BASELINE_COLUMN_SET = new Set(BASELINE_COLUMNS);
+    const CSV_COLUMNS = PROJECT_COLUMNS
+      .map((column) => column.field)
+      .filter((field) => !BASELINE_COLUMN_SET.has(field));
     const LEGACY_COLUMNS = ["owner", "priority", "milestone"];
 
     const COMPUTED_COLUMNS = new Set(["_depth", "_isGroup", "_children", "_parent", "_generatedTaskId"]);
     const LIST_COLUMNS = new Set(["dependencies", "successors", "resources"]);
     const INTEGER_COLUMNS = new Set(["duration_days", "percent_complete"]);
+    const DATE_COLUMNS = new Set(["start_date", "end_date", "baseline_start_date", "baseline_end_date"]);
     const STATUS_OPTIONS = ["not_started", "in_progress", "blocked", "completed", "on_hold", "cancelled"];
     const PRIORITY_OPTIONS = ["low", "medium", "high", "critical"];
     const TASK_LEVEL_OPTIONS = ["", "1", "2", "3", "4", "5"];
     const ZOOM_OPTIONS = ["day", "week", "month", "quarter", "year"];
     const TIMELINE_GROUP_OPTIONS = ["owner", "level"];
     const CALENDAR_DRAG_TYPE = "application/x-project-plan-calendar-task-date";
+    const TASK_REORDER_DRAG_TYPE = "application/x-project-plan-task-reorder";
     const TABLE_COLUMNS = [
       { field: "task_id", label: "Task#", className: "col-task-id", editable: false },
       { field: "percent_complete", label: "Complete%", editable: true },
@@ -2683,6 +2849,9 @@
       { field: "duration_days", label: "Duration", editable: true },
       { field: "start_date", label: "Start", editable: true },
       { field: "end_date", label: "Finish", editable: true },
+      { field: "baseline_start_date", label: "Baseline Start", editable: true },
+      { field: "baseline_end_date", label: "Baseline Finish", editable: true },
+      { field: "baseline_duration_days", label: "Baseline Duration", editable: true },
       { field: "dependencies", label: "Predecessors", editable: true },
       { field: "successors", label: "Successors", editable: true },
       { field: "constraint_type", label: "Constrain Type", className: "col-notes", editable: true },
@@ -2746,6 +2915,7 @@
         calendarZoom: 4,
         calendarEndOnly: true,
         showCriticalPath: true,
+        showBaseline: false,
         ganttColumnWidths: Object.fromEntries(GANTT_COLUMNS.map((column) => [column.field, column.width])),
         zoom: "week",
         criticalPathTaskIds: new Set(),
@@ -2756,6 +2926,7 @@
 
     const SAMPLE_CSV = document.getElementById("sample-csv-source").textContent.trim();
     let dashboardResizeObservers = [];
+    let taskDragState = null;
 
     function parseCSV(text) {
       const rows = parseCSVRows(text);
@@ -2935,6 +3106,11 @@
       task.duration_days = parseIntegerValue(getAliasedValue(rawTask, "duration_days"));
       task.start_date = formatDateCell(getAliasedValue(rawTask, "start_date"));
       task.end_date = formatDateCell(getAliasedValue(rawTask, "end_date"));
+      if (hasAnyKnownColumn(headers, BASELINE_COLUMNS)) {
+        task.baseline_start_date = formatDateCell(getAliasedValue(rawTask, "baseline_start_date"));
+        task.baseline_end_date = formatDateCell(getAliasedValue(rawTask, "baseline_end_date"));
+        task.baseline_duration_days = parseOptionalIntegerValue(getAliasedValue(rawTask, "baseline_duration_days"));
+      }
       task.dependencies = parseListValue(getAliasedValue(rawTask, "dependencies"));
       task.successors = parseListValue(getAliasedValue(rawTask, "successors"));
       task.constraint_type = String(getAliasedValue(rawTask, "constraint_type") ?? "").trim();
@@ -3028,6 +3204,23 @@
       }) || LEGACY_COLUMNS.some((column) => normalizeHeader(column) === normalized);
     }
 
+    function hasKnownColumn(headers, field) {
+      const schema = PROJECT_COLUMNS.find((column) => column.field === field);
+
+      if (!schema) {
+        return false;
+      }
+
+      return headers.some((header) => {
+        const normalizedHeader = normalizeHeader(header);
+        return schema.aliases.some((alias) => normalizeHeader(alias) === normalizedHeader);
+      });
+    }
+
+    function hasAnyKnownColumn(headers, fields) {
+      return fields.some((field) => hasKnownColumn(headers, field));
+    }
+
     function normalizeHeader(header) {
       return String(header || "").toLowerCase().replace(/[^a-z0-9]/g, "");
     }
@@ -3061,6 +3254,15 @@
 
       const parsed = Number.parseInt(String(value).trim(), 10);
       return Number.isNaN(parsed) ? 0 : parsed;
+    }
+
+    function parseOptionalIntegerValue(value) {
+      if (value === "" || value === null || value === undefined) {
+        return "";
+      }
+
+      const parsed = Number.parseInt(String(value).trim(), 10);
+      return Number.isNaN(parsed) ? "" : Math.max(0, parsed);
     }
 
     function parsePercentValue(value) {
@@ -3324,6 +3526,9 @@
         });
 
         if (knownColumn) {
+          if (BASELINE_COLUMN_SET.has(knownColumn.field) && !columns.includes(knownColumn.field)) {
+            columns.push(knownColumn.field);
+          }
           return;
         }
 
@@ -3332,21 +3537,61 @@
         }
       });
 
-      return columns;
+      return normalizeBaselineColumnOrder(columns);
     }
 
     function getExportColumns(tasks) {
-      const columns = mergeColumns(state.project.columns);
+      let columns = mergeColumns(state.project.columns);
+      const shouldExportBaseline = BASELINE_COLUMNS.some((field) => columns.includes(field))
+        || tasks.some((task) => hasTaskBaselineData(task));
+
+      if (shouldExportBaseline) {
+        columns = ensureBaselineColumns(columns);
+      }
 
       tasks.forEach((task) => {
         Object.keys(task).forEach((column) => {
+          if (BASELINE_COLUMN_SET.has(column) && !shouldExportBaseline) {
+            return;
+          }
+
           if (!columns.includes(column) && !COMPUTED_COLUMNS.has(column) && !LEGACY_COLUMNS.includes(column)) {
             columns.push(column);
           }
         });
       });
 
-      return columns;
+      return normalizeBaselineColumnOrder(columns);
+    }
+
+    function ensureBaselineColumns(columns = state.project.columns) {
+      const nextColumns = [...columns];
+
+      BASELINE_COLUMNS.forEach((column) => {
+        if (!nextColumns.includes(column)) {
+          nextColumns.push(column);
+        }
+      });
+
+      return normalizeBaselineColumnOrder(nextColumns);
+    }
+
+    function normalizeBaselineColumnOrder(columns) {
+      const presentBaselineColumns = BASELINE_COLUMNS.filter((column) => columns.includes(column));
+      const nonBaselineColumns = columns.filter((column) => !BASELINE_COLUMN_SET.has(column));
+      const endDateIndex = nonBaselineColumns.indexOf("end_date");
+      const insertAt = endDateIndex === -1 ? nonBaselineColumns.length : endDateIndex + 1;
+
+      nonBaselineColumns.splice(insertAt, 0, ...presentBaselineColumns);
+      return nonBaselineColumns;
+    }
+
+    function hasTaskBaselineData(task) {
+      return Boolean(
+        hasCellValue(task?.baseline_start_date)
+        || hasCellValue(task?.baseline_end_date)
+        || hasCellValue(task?.baseline_duration_days)
+      );
     }
 
     function getColumnLabel(column) {
@@ -3360,6 +3605,10 @@
 
       if (column === "percent_complete") {
         return `${parsePercentValue(value)}%`;
+      }
+
+      if (column === "baseline_duration_days") {
+        return hasCellValue(value) ? String(parseOptionalIntegerValue(value)) : "";
       }
 
       if (column === "milestone") {
@@ -4133,7 +4382,7 @@
       const leftBody = document.createElement("div");
       const rightScroll = document.createElement("div");
       const displayTasks = getDisplayTasks(tasks, ui);
-      const range = getProjectDateRange(displayTasks);
+      const range = getProjectDateRange(displayTasks, ui.showBaseline);
       const pxPerDay = getPxPerDay(ui.ganttZoom, ui.ganttScale);
       const totalDays = Math.max(1, daysBetween(range.start, range.end) + 1);
       const chartWidth = totalDays * pxPerDay;
@@ -4161,6 +4410,7 @@
         const leftRow = renderGanttLeftRow(task);
         const rowHighlight = document.createElement("div");
         const taskRange = getTaskDateRange(task);
+        const baselineRange = ui.showBaseline ? getTaskBaselineRange(task) : null;
         const rowTop = index * 32;
         const top = rowTop + 7;
 
@@ -4171,7 +4421,24 @@
         rowHighlight.classList.toggle("is-selected", task.task_id === state.ui.selectedTaskId);
         rowHighlight.dataset.taskId = task.task_id;
         rowHighlight.style.top = `${rowTop}px`;
+        wireTaskReorderDrag(rowHighlight, task);
+        rowHighlight.addEventListener("click", () => selectTaskOnly(task.task_id));
+        rowHighlight.addEventListener("dblclick", () => selectTask(task.task_id));
         chartArea.append(rowHighlight);
+
+        if (baselineRange) {
+          const baselineLeft = Math.max(0, daysBetween(range.start, baselineRange.start) * pxPerDay);
+          const baselineWidth = Math.max(pxPerDay, (daysBetween(baselineRange.start, baselineRange.end) + 1) * pxPerDay);
+          const baseline = document.createElement("div");
+
+          baseline.className = "gantt-baseline-bar";
+          baseline.classList.toggle("is-group", task._isGroup);
+          baseline.style.left = `${baselineLeft}px`;
+          baseline.style.top = `${top + 21}px`;
+          baseline.style.width = `${baselineWidth}px`;
+          baseline.title = `${task.task_name || task.task_id} baseline: ${formatDateAsISO(baselineRange.start)} to ${formatDateAsISO(baselineRange.end)}`;
+          chartArea.append(baseline);
+        }
 
         if (!taskRange) {
           return;
@@ -4196,6 +4463,7 @@
           milestone.style.left = `${leftOffset}px`;
           milestone.style.top = `${top + 2}px`;
           milestone.title = getTaskTooltip(task);
+          wireTaskReorderDrag(milestone, task);
           milestone.addEventListener("click", () => selectTaskOnly(task.task_id));
           milestone.addEventListener("dblclick", () => selectTask(task.task_id));
           chartArea.append(milestone);
@@ -4216,6 +4484,7 @@
         bar.style.width = `${width}px`;
         bar.style.background = `var(--status-${toKebabCase(getTaskStatus(task))})`;
         bar.title = getTaskTooltip(task);
+        wireTaskReorderDrag(bar, task);
         bar.addEventListener("click", () => selectTaskOnly(task.task_id));
         bar.addEventListener("dblclick", () => selectTask(task.task_id));
 
@@ -4292,6 +4561,7 @@
       row.classList.toggle("is-selected", task.task_id === state.ui.selectedTaskId);
       row.classList.toggle("is-cancelled", isTaskCancelled(task));
       row.dataset.taskId = task.task_id;
+      wireTaskReorderDrag(row, task);
       row.addEventListener("click", () => selectTaskOnly(task.task_id));
       row.addEventListener("dblclick", () => selectTask(task.task_id));
 
@@ -5669,6 +5939,7 @@
       row.classList.toggle("is-selected", task.task_id === state.ui.selectedTaskId);
       row.classList.toggle("is-critical", state.ui.criticalPathTaskIds.has(task.task_id));
       row.classList.toggle("is-cancelled", isTaskCancelled(task));
+      wireTaskReorderDrag(row, task);
 
       /* Single click: highlight row only (light yellow) */
       row.addEventListener("click", () => selectTaskOnly(task.task_id));
@@ -5880,17 +6151,17 @@
         return input;
       }
 
-      if (field === "duration_days" || field === "percent_complete") {
+      if (field === "duration_days" || field === "percent_complete" || field === "baseline_duration_days") {
         input.type = "number";
         input.min = "0";
         if (field === "percent_complete") {
           input.max = "100";
         }
-        input.value = String(value ?? 0);
+        input.value = String(value ?? "");
         return input;
       }
 
-      if (field === "start_date" || field === "end_date") {
+      if (DATE_COLUMNS.has(field)) {
         input.type = "date";
         input.value = String(value || "");
         return input;
@@ -5922,6 +6193,247 @@
       renderCurrentView();
     }
 
+    function canReorderTasks() {
+      return !state.ui.sort.column && !hasActiveFilters();
+    }
+
+    function wireTaskReorderDrag(row, task) {
+      row.draggable = true;
+      if (!row.title) {
+        row.title = "Drag to reorder. Drop on a group row to move inside it.";
+      }
+      row.addEventListener("dragstart", (event) => beginTaskReorderDrag(event, task));
+      row.addEventListener("dragend", endTaskReorderDrag);
+      row.addEventListener("dragover", (event) => updateTaskReorderDropTarget(event, row, task));
+      row.addEventListener("dragleave", () => clearTaskDropClasses(row));
+      row.addEventListener("drop", (event) => dropTaskReorder(event, row, task));
+    }
+
+    function beginTaskReorderDrag(event, task) {
+      if (!canReorderTasks()) {
+        event.preventDefault();
+        showToast("Clear sorting and filters before dragging tasks.", "warning");
+        return;
+      }
+
+      if (event.target.closest("button, input, textarea, select") || document.body.classList.contains("is-resizing-gantt-column")) {
+        event.preventDefault();
+        return;
+      }
+
+      taskDragState = {
+        taskId: task.task_id,
+        sourceView: state.ui.currentView
+      };
+      event.currentTarget.classList.add("is-task-dragging");
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData(TASK_REORDER_DRAG_TYPE, task.task_id);
+      event.dataTransfer.setData("text/plain", task.task_id);
+    }
+
+    function endTaskReorderDrag(event) {
+      event.currentTarget?.classList.remove("is-task-dragging");
+      taskDragState = null;
+      clearAllTaskDropClasses();
+    }
+
+    function updateTaskReorderDropTarget(event, row, targetTask) {
+      if (!taskDragState || taskDragState.taskId === targetTask.task_id) {
+        return;
+      }
+
+      if (isTaskDescendantOf(targetTask.task_id, taskDragState.taskId)) {
+        return;
+      }
+
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "move";
+      setTaskDropClass(row, getTaskDropIntent(event, targetTask));
+    }
+
+    function dropTaskReorder(event, row, targetTask) {
+      if (!taskDragState) {
+        return;
+      }
+
+      event.preventDefault();
+      const draggedTaskId = event.dataTransfer.getData(TASK_REORDER_DRAG_TYPE) || taskDragState.taskId;
+      const intent = getTaskDropIntent(event, targetTask);
+
+      clearTaskDropClasses(row);
+      moveTaskBlock(draggedTaskId, targetTask.task_id, intent);
+    }
+
+    function getTaskDropIntent(event, targetTask) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      const offset = rect.height > 0 ? (event.clientY - rect.top) / rect.height : 0.5;
+      const draggedTask = taskDragState ? findTaskById(taskDragState.taskId) : null;
+
+      if (targetTask._isGroup && offset > 0.25 && offset < 0.75) {
+        return "inside";
+      }
+
+      if (targetTask._isGroup && !draggedTask?._isGroup && offset >= 0.75) {
+        return "inside";
+      }
+
+      return offset < 0.5 ? "before" : "after";
+    }
+
+    function setTaskDropClass(row, intent) {
+      clearTaskDropClasses(row);
+      row.classList.add(`is-drop-${intent}`);
+    }
+
+    function clearTaskDropClasses(row) {
+      row.classList.remove("is-drop-before", "is-drop-after", "is-drop-inside");
+    }
+
+    function clearAllTaskDropClasses() {
+      document.querySelectorAll(".is-drop-before, .is-drop-after, .is-drop-inside").forEach(clearTaskDropClasses);
+    }
+
+    function moveTaskBlock(draggedTaskId, targetTaskId, intent) {
+      if (!draggedTaskId || !targetTaskId || draggedTaskId === targetTaskId) {
+        return;
+      }
+
+      const draggedTask = findTaskById(draggedTaskId);
+      const targetTask = findTaskById(targetTaskId);
+
+      if (!draggedTask || !targetTask || isTaskDescendantOf(targetTaskId, draggedTaskId)) {
+        return;
+      }
+
+      const blockIds = getTaskSubtreeIdSet(draggedTask);
+      const block = state.project.tasks.filter((task) => blockIds.has(task.task_id));
+      const remainingTasks = state.project.tasks.filter((task) => !blockIds.has(task.task_id));
+      const targetIndex = remainingTasks.findIndex((task) => task.task_id === targetTaskId);
+
+      if (targetIndex === -1 || block.length === 0) {
+        return;
+      }
+
+      adjustMovedBlockHierarchy(block, targetTask, intent);
+
+      const insertIndex = getTaskInsertIndex(remainingTasks, targetTask, intent, draggedTask);
+      const nextTasks = [
+        ...remainingTasks.slice(0, insertIndex),
+        ...block,
+        ...remainingTasks.slice(insertIndex)
+      ];
+
+      state.project.tasks = buildTree(nextTasks);
+      renumberTasksAndReferences();
+      state.project.tasks = buildTree(state.project.tasks);
+      state.ui.selectedTaskId = findTaskById(state.ui.selectedTaskId)?.task_id || block[0]?.task_id || null;
+      if (intent === "inside") {
+        state.ui.collapsedTaskIds.delete(targetTask.task_id);
+      }
+      markProjectDirty();
+      renderCurrentView();
+      showToast("Task order updated and Task# renumbered.", "success");
+    }
+
+    function getTaskInsertIndex(tasks, targetTask, intent, draggedTask = null) {
+      const targetIndex = tasks.findIndex((task) => task.task_id === targetTask.task_id);
+
+      if (intent === "before") {
+        return targetIndex;
+      }
+
+      if (intent === "inside") {
+        if (draggedTask?._isGroup) {
+          return getTaskSubtreeEndIndex(tasks, targetTask) + 1;
+        }
+
+        return targetIndex + 1;
+      }
+
+      return getTaskSubtreeEndIndex(tasks, targetTask) + 1;
+    }
+
+    function getTaskSubtreeEndIndex(tasks, targetTask) {
+      const subtreeIds = getTaskSubtreeIdSet(targetTask);
+      let endIndex = tasks.findIndex((task) => task.task_id === targetTask.task_id);
+
+      tasks.forEach((task, index) => {
+        if (subtreeIds.has(task.task_id)) {
+          endIndex = Math.max(endIndex, index);
+        }
+      });
+
+      return endIndex;
+    }
+
+    function adjustMovedBlockHierarchy(block, targetTask, intent) {
+      const movedRoot = block[0];
+
+      if (!movedRoot?._isGroup) {
+        return;
+      }
+
+      const parentTask = intent === "inside"
+        ? targetTask
+        : findTaskById(targetTask._parent);
+      const desiredDepth = parentTask ? parentTask._depth + 1 : targetTask._depth;
+      const depthDelta = desiredDepth - movedRoot._depth;
+
+      block.forEach((task) => {
+        const level = parseTaskOutlineLevel(task.task_level);
+
+        if (level !== null) {
+          task.task_level = String(Math.max(1, level + depthDelta));
+        }
+      });
+    }
+
+    function getTaskSubtreeIdSet(task) {
+      const ids = new Set();
+
+      collectTaskAndDescendantIds(task, ids);
+      return ids;
+    }
+
+    function isTaskDescendantOf(taskId, possibleAncestorId) {
+      const task = findTaskById(taskId);
+      let parentId = task?._parent || null;
+      let guard = 0;
+
+      while (parentId && guard < 1000) {
+        if (parentId === possibleAncestorId) {
+          return true;
+        }
+
+        parentId = findTaskById(parentId)?._parent || null;
+        guard += 1;
+      }
+
+      return false;
+    }
+
+    function renumberTasksAndReferences() {
+      const idMap = new Map();
+      const previousSelectedTaskId = state.ui.selectedTaskId;
+      const previousCollapsedIds = new Set(state.ui.collapsedTaskIds);
+
+      state.project.tasks.forEach((task, index) => {
+        idMap.set(task.task_id, String(index + 1));
+      });
+
+      state.project.tasks.forEach((task, index) => {
+        task.task_id = String(index + 1);
+        task._generatedTaskId = false;
+        task.dependencies = parseListValue(task.dependencies).map((dependencyId) => idMap.get(dependencyId) || dependencyId);
+        task.successors = parseListValue(task.successors).map((successorId) => idMap.get(successorId) || successorId);
+      });
+
+      state.ui.selectedTaskId = idMap.get(previousSelectedTaskId) || previousSelectedTaskId;
+      state.ui.collapsedTaskIds = new Set(
+        [...previousCollapsedIds].map((taskId) => idMap.get(taskId) || taskId)
+      );
+    }
+
     function normaliseTaskValue(field, value) {
       if (LIST_COLUMNS.has(field)) {
         return parseListValue(value);
@@ -5933,6 +6445,14 @@
 
       if (field === "task_status") {
         return normalizeStatusValue(value) || "not_started";
+      }
+
+      if (field === "baseline_duration_days") {
+        return parseOptionalIntegerValue(value);
+      }
+
+      if (DATE_COLUMNS.has(field)) {
+        return formatDateCell(value);
       }
 
       if (INTEGER_COLUMNS.has(field)) {
@@ -6172,9 +6692,13 @@
         return value ? 1 : 0;
       }
 
-      if (field === "start_date" || field === "end_date") {
+      if (DATE_COLUMNS.has(field)) {
         const time = Date.parse(value);
         return Number.isNaN(time) ? 0 : time;
+      }
+
+      if (field === "baseline_duration_days") {
+        return parseOptionalIntegerValue(value) || 0;
       }
 
       if (LIST_COLUMNS.has(field)) {
@@ -6222,16 +6746,22 @@
         .sort((left, right) => left.localeCompare(right));
     }
 
-    function getProjectDateRange(tasks) {
+    function getProjectDateRange(tasks, includeBaseline = false) {
       const starts = [];
       const ends = [];
 
       tasks.forEach((task) => {
         const range = getTaskDateRange(task);
+        const baselineRange = includeBaseline ? getTaskBaselineRange(task) : null;
 
         if (range) {
           starts.push(range.start);
           ends.push(range.end);
+        }
+
+        if (baselineRange) {
+          starts.push(baselineRange.start);
+          ends.push(baselineRange.end);
         }
       });
 
@@ -6265,6 +6795,40 @@
         start: directStart || directEnd,
         end: directEnd || directStart
       };
+    }
+
+    function getTaskBaselineRange(task) {
+      let directStart = parseDateValue(task?.baseline_start_date);
+      let directEnd = parseDateValue(task?.baseline_end_date);
+      const baselineDuration = parseOptionalIntegerValue(task?.baseline_duration_days);
+
+      if (directStart && !directEnd && baselineDuration) {
+        directEnd = addDays(directStart, baselineDuration - 1);
+      }
+
+      if (directEnd && !directStart && baselineDuration) {
+        directStart = addDays(directEnd, 1 - baselineDuration);
+      }
+
+      if (directStart || directEnd) {
+        return {
+          start: directStart || directEnd,
+          end: directEnd || directStart
+        };
+      }
+
+      if (task?._isGroup && task._children?.length) {
+        const childRanges = task._children.map(getTaskBaselineRange).filter(Boolean);
+
+        if (childRanges.length > 0) {
+          return {
+            start: getMinDate(childRanges.map((range) => range.start)),
+            end: getMaxDate(childRanges.map((range) => range.end))
+          };
+        }
+      }
+
+      return null;
     }
 
     function parseDateValue(value) {
@@ -6851,6 +7415,37 @@
       return String(nextId);
     }
 
+    function setProjectBaseline() {
+      if (state.project.tasks.length === 0) {
+        showToast("Open or create tasks before setting a baseline.", "warning");
+        return;
+      }
+
+      if (state.project.tasks.some(hasTaskBaselineData)) {
+        const shouldOverwrite = window.confirm("Overwrite existing baseline dates and duration for all tasks?");
+
+        if (!shouldOverwrite) {
+          return;
+        }
+      }
+
+      state.project.tasks.forEach((task) => {
+        const range = getTaskDateRange(task);
+        const duration = parseIntegerValue(task.duration_days)
+          || (range ? daysBetween(range.start, range.end) + 1 : 0);
+
+        task.baseline_start_date = range ? formatDateAsISO(range.start) : "";
+        task.baseline_end_date = range ? formatDateAsISO(range.end) : "";
+        task.baseline_duration_days = duration ? duration : "";
+      });
+
+      state.project.columns = ensureBaselineColumns(state.project.columns);
+      state.project.tasks = buildTree(state.project.tasks);
+      markProjectDirty();
+      renderCurrentView();
+      showToast("Baseline set for all tasks. Save the CSV to keep it.", "success");
+    }
+
     function openTaskEditor(taskId) {
       const task = findTaskById(taskId);
 
@@ -6937,7 +7532,10 @@
         createPercentCompleteField(task.percent_complete),
         createTaskEditorField("Duration", "duration_days", "number", task.duration_days),
         createTaskEditorField("Start", "start_date", "date", task.start_date),
-        createTaskEditorField("Finish", "end_date", "date", task.end_date)
+        createTaskEditorField("Finish", "end_date", "date", task.end_date),
+        createTaskEditorField("Baseline Start", "baseline_start_date", "date", task.baseline_start_date || ""),
+        createTaskEditorField("Baseline Finish", "baseline_end_date", "date", task.baseline_end_date || ""),
+        createTaskEditorField("Baseline Duration", "baseline_duration_days", "number", task.baseline_duration_days ?? "")
       ];
 
       if (!task._isGroup) {
@@ -7266,6 +7864,8 @@
       if (state.ui.currentView === "gantt") {
         container.append(createTodayButton());
         container.append(createCriticalPathToggle());
+        container.append(createBaselineToggle());
+        container.append(createSetBaselineButton());
       }
 
       if (state.ui.currentView === "timeline") {
@@ -7449,7 +8049,7 @@
       }
 
       const displayTasks = getDisplayTasks(getFilteredTasks(), state.ui);
-      const range = getProjectDateRange(displayTasks);
+      const range = getProjectDateRange(displayTasks, state.ui.showBaseline);
       const today = startOfToday();
 
       if (today < range.start || today > range.end) {
@@ -7483,6 +8083,34 @@
       });
       label.append(input, text);
       return label;
+    }
+
+    function createBaselineToggle() {
+      const label = document.createElement("label");
+      const input = document.createElement("input");
+      const text = document.createElement("span");
+
+      label.className = "toolbar-checkbox-control";
+      input.type = "checkbox";
+      input.checked = Boolean(state.ui.showBaseline);
+      text.textContent = "Show Baseline";
+      input.addEventListener("change", () => {
+        state.ui.showBaseline = input.checked;
+        renderCurrentView();
+      });
+      label.append(input, text);
+      return label;
+    }
+
+    function createSetBaselineButton() {
+      const button = document.createElement("button");
+
+      button.type = "button";
+      button.className = "toolbar-button view-control-button";
+      button.textContent = "Set Baseline";
+      button.disabled = state.project.tasks.length === 0;
+      button.addEventListener("click", setProjectBaseline);
+      return button;
     }
 
     function updateFilterButton() {
@@ -7875,6 +8503,9 @@
       renderDashboard,
       switchView,
       addBlankTask,
+      setProjectBaseline,
+      moveTaskBlock,
+      renumberTasksAndReferences,
       openTaskEditor,
       closeTaskEditor,
       getFilteredTasks,
