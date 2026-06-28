@@ -772,6 +772,11 @@
       text-overflow: ellipsis;
     }
 
+    .status-version {
+      color: var(--color-text-subtle);
+      font-variant-numeric: tabular-nums;
+    }
+
     .dirty-indicator {
       color: var(--color-warning);
       font-weight: var(--font-weight-semibold);
@@ -2798,6 +2803,8 @@
       </div>
       <div class="status-right">
         <span class="status-item" id="filename-status">Filename: Untitled project.csv</span>
+        <span class="status-separator" aria-hidden="true"></span>
+        <span class="status-item status-version">Version: 20260628</span>
       </div>
     </footer>
   </div>
