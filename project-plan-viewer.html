@@ -2402,17 +2402,53 @@
     }
 
     .gantt-bar.is-critical {
-      outline: 2px dashed var(--color-critical-path);
-      outline-offset: 2px;
+      box-shadow:
+        inset 3px 0 0 var(--color-critical-path),
+        inset 0 1px 0 var(--color-critical-path),
+        inset 0 2px 0 rgba(255, 255, 255, 0.72),
+        0 1px 1px rgba(15, 23, 42, 0.08);
+    }
+
+    .gantt-bar.is-critical::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 2px;
+      background-image: repeating-linear-gradient(
+        90deg,
+        var(--color-critical-path) 0,
+        var(--color-critical-path) 7px,
+        transparent 7px,
+        transparent 11px
+      );
+      pointer-events: none;
+      z-index: 2;
     }
 
     .gantt-bar.is-selected {
       box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.08);
     }
 
+    .gantt-bar.is-incomplete {
+      box-shadow:
+        inset 0 0 0 1px rgba(15, 23, 42, 0.08),
+        0 1px 1px rgba(15, 23, 42, 0.06);
+    }
+
     .gantt-bar.is-hovered {
       box-shadow:
         inset 0 0 0 1px rgba(15, 23, 42, 0.12),
+        0 0 0 2px rgba(31, 95, 191, 0.22),
+        0 1px 1px rgba(15, 23, 42, 0.08);
+    }
+
+    .gantt-bar.is-critical.is-hovered {
+      box-shadow:
+        inset 3px 0 0 var(--color-critical-path),
+        inset 0 1px 0 var(--color-critical-path),
+        inset 0 2px 0 rgba(255, 255, 255, 0.72),
         0 0 0 2px rgba(31, 95, 191, 0.22),
         0 1px 1px rgba(15, 23, 42, 0.08);
     }
@@ -2430,6 +2466,10 @@
       background: rgba(15, 23, 42, 0.22);
     }
 
+    .gantt-bar.is-incomplete .bar-progress {
+      background: var(--gantt-progress-color, var(--status-in-progress));
+    }
+
     .milestone-diamond {
       position: absolute;
       width: 14px;
@@ -2442,8 +2482,9 @@
     }
 
     .milestone-diamond.is-critical {
-      outline: 2px dashed var(--color-critical-path);
-      outline-offset: 4px;
+      box-shadow:
+        -3px 3px 0 var(--color-critical-path),
+        0 -2px 0 var(--color-critical-path);
     }
 
     .milestone-diamond.is-selected {
@@ -4768,17 +4809,24 @@
 
         const bar = document.createElement("div");
         const progress = document.createElement("div");
+        const status = getTaskStatus(task);
+        const statusName = toKebabCase(status);
+        const isIncomplete = !["completed", "cancelled"].includes(status);
 
         bar.className = "gantt-bar";
         bar.classList.toggle("is-group", task._isGroup);
         bar.classList.toggle("is-critical", ui.showCriticalPath && !task._isGroup && criticalPath.has(task.task_id));
         bar.classList.toggle("is-cancelled", isTaskCancelled(task));
+        bar.classList.toggle("is-incomplete", isIncomplete);
         bar.classList.toggle("is-selected", task.task_id === state.ui.selectedTaskId);
         bar.dataset.taskId = task.task_id;
         bar.style.left = `${leftOffset}px`;
         bar.style.top = `${top}px`;
         bar.style.width = `${width}px`;
-        bar.style.background = `var(--status-${toKebabCase(getTaskStatus(task))})`;
+        bar.style.background = isIncomplete
+          ? `color-mix(in srgb, var(--status-${statusName}) 14%, white)`
+          : `var(--status-${statusName})`;
+        bar.style.setProperty("--gantt-progress-color", `color-mix(in srgb, var(--status-${statusName}) 68%, white)`);
         bar.title = getTaskTooltip(task);
         wireTaskHover(bar, task);
         wireTaskReorderDrag(bar, task);
