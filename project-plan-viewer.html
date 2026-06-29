@@ -572,6 +572,10 @@
       background: #F1F6FF;
     }
 
+    .task-table tbody tr.is-hovered:not(.is-selected) {
+      background: #F1F6FF;
+    }
+
     .task-table tbody tr.is-selected {
       background: var(--color-selected-row);
       box-shadow: inset 3px 0 0 var(--color-critical-path);
@@ -631,6 +635,12 @@
 
     .task-table td[data-editable="true"]:hover {
       box-shadow: inset 0 0 0 1px var(--color-primary-soft);
+    }
+
+    .task-table td.task-name-field,
+    .gantt-task-name-field,
+    .task-card-title {
+      cursor: pointer;
     }
 
     .task-table td.is-editing {
@@ -1099,6 +1109,43 @@
       height: 28px;
       padding: 0 var(--space-2);
       font-size: var(--font-size-xs);
+    }
+
+    .settings-menu {
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .settings-summary {
+      display: inline-flex;
+      align-items: center;
+      list-style: none;
+      user-select: none;
+    }
+
+    .settings-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .settings-panel {
+      position: fixed;
+      top: calc(var(--topbar-height) + var(--toolbar-height) + 8px);
+      right: var(--space-4);
+      z-index: 36;
+      display: grid;
+      min-width: 220px;
+      gap: var(--space-2);
+      padding: var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-white);
+      box-shadow: var(--shadow-md);
+    }
+
+    .settings-panel .toolbar-checkbox-control,
+    .settings-panel .view-control-button {
+      width: 100%;
+      justify-content: flex-start;
     }
 
     .filter-panel {
@@ -1886,6 +1933,130 @@
       text-align: center;
     }
 
+    .task-notes-popup {
+      position: fixed;
+      z-index: 49;
+      width: min(360px, calc(100vw - 24px));
+      max-height: min(320px, calc(100vh - 24px));
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-white);
+      box-shadow: var(--shadow-md);
+      animation: calendarPopupFadeIn 0.15s ease-out;
+    }
+
+    .task-notes-popup[hidden] {
+      display: none;
+    }
+
+    .task-notes-header {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-header);
+    }
+
+    .task-notes-title-wrap {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .task-notes-title {
+      color: var(--color-text);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-bold);
+      line-height: 1.3;
+      word-break: break-word;
+    }
+
+    .task-notes-id {
+      color: var(--color-text-muted);
+      font-size: var(--font-size-2xs);
+    }
+
+    .task-notes-close {
+      flex: 0 0 auto;
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-sm);
+      color: var(--color-text-muted);
+      background: transparent;
+      font-size: var(--font-size-md);
+      line-height: 1;
+    }
+
+    .task-notes-close:hover {
+      color: var(--color-text);
+      background: var(--color-surface-muted);
+    }
+
+    .task-notes-body {
+      max-height: 196px;
+      overflow: auto;
+      padding: var(--space-3) var(--space-4);
+      color: var(--color-text);
+      font-size: var(--font-size-sm);
+      line-height: var(--line-height-base);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .task-notes-row {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-2);
+      font-size: var(--font-size-xs);
+    }
+
+    .task-notes-label {
+      flex: 0 0 88px;
+      color: var(--color-text-muted);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .task-notes-value {
+      min-width: 0;
+      color: var(--color-text);
+      word-break: break-word;
+    }
+
+    .task-notes-section-title {
+      margin-top: var(--space-1);
+      padding-top: var(--space-2);
+      border-top: 1px solid var(--color-border);
+      color: var(--color-text-muted);
+      font-size: var(--font-size-2xs);
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+    }
+
+    .task-notes-comment {
+      max-height: 96px;
+      overflow: auto;
+      color: var(--color-text);
+      font-size: var(--font-size-sm);
+      line-height: var(--line-height-base);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .task-notes-comment.is-empty {
+      color: var(--color-text-muted);
+      font-style: italic;
+    }
+
+    .task-notes-footer {
+      padding: var(--space-2) var(--space-4);
+      border-top: 1px solid var(--color-border);
+      background: var(--color-header);
+      color: var(--color-text-muted);
+      font-size: var(--font-size-2xs);
+    }
+
     .gantt-left,
     .gantt-right {
       min-width: 0;
@@ -1996,6 +2167,12 @@
     .gantt-left-row:nth-child(even),
     .timeline-lane:nth-child(even) {
       background: #FFFFFF;
+    }
+
+    .gantt-left-row.is-hovered:not(.is-selected),
+    .gantt-left-row.is-hovered:nth-child(odd):not(.is-selected),
+    .gantt-left-row.is-hovered:nth-child(even):not(.is-selected) {
+      background: #F1F6FF;
     }
 
     .gantt-left-row.is-selected,
@@ -2163,6 +2340,10 @@
       background: var(--color-selected-row);
     }
 
+    .gantt-row-highlight.is-hovered:not(.is-selected) {
+      background: #F1F6FF;
+    }
+
     .gantt-row-highlight.is-drop-before {
       box-shadow: inset 0 2px 0 var(--color-primary);
     }
@@ -2229,6 +2410,13 @@
       box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.08);
     }
 
+    .gantt-bar.is-hovered {
+      box-shadow:
+        inset 0 0 0 1px rgba(15, 23, 42, 0.12),
+        0 0 0 2px rgba(31, 95, 191, 0.22),
+        0 1px 1px rgba(15, 23, 42, 0.08);
+    }
+
     .gantt-bar.is-cancelled {
       background: var(--status-cancelled-bg) !important;
     }
@@ -2260,6 +2448,11 @@
 
     .milestone-diamond.is-selected {
       outline: none;
+    }
+
+    .milestone-diamond.is-hovered {
+      outline: 2px solid rgba(31, 95, 191, 0.28);
+      outline-offset: 4px;
     }
 
     .milestone-diamond.is-cancelled {
@@ -2384,6 +2577,17 @@
     .task-card.is-cancelled .task-card-title {
       color: var(--status-cancelled);
       text-decoration: line-through;
+    }
+
+    .task-card.is-hovered:not(.is-selected) {
+      border-color: #BBD2F6;
+      background: #F1F6FF;
+    }
+
+    .task-card.is-selected {
+      border-color: var(--color-critical-path);
+      background: var(--color-selected-row);
+      box-shadow: inset 3px 0 0 var(--color-critical-path);
     }
 
     .progress-track {
@@ -2804,7 +3008,7 @@
       <div class="status-right">
         <span class="status-item" id="filename-status">Filename: Untitled project.csv</span>
         <span class="status-separator" aria-hidden="true"></span>
-        <span class="status-item status-version">Version: 20260628</span>
+        <span class="status-item status-version">Version: 20260629</span>
       </div>
     </footer>
   </div>
@@ -2827,17 +3031,21 @@
       { field: "successors", label: "Successors", aliases: ["successors", "Successors"] },
       { field: "constraint_type", label: "Constrain Type", aliases: ["constraint_type", "Constrain Type", "Constraint Type"] },
       { field: "resources", label: "Resources", aliases: ["resources", "Resources", "Resource", "Owner", "owner", "Task Owner", "Responsible", "Person Responsible", "Person\nResponsible", "Assignee", "Assigned To"] },
+      { field: "product", label: "Product", aliases: ["product", "Product", "Products", "Product Name"] },
+      { field: "site_tag", label: "Site/Tag", aliases: ["site_tag", "site", "Site", "Tag", "Tags", "Site Tag", "Site/Tag", "Site Tags"] },
       { field: "notes", label: "Comment/Notes", aliases: ["notes", "Notes", "Comment", "Comments", "Comment/Notes", "Comment Notes", "comment_notes"] }
     ];
     const BASELINE_COLUMNS = ["baseline_start_date", "baseline_end_date", "baseline_duration_days"];
     const BASELINE_COLUMN_SET = new Set(BASELINE_COLUMNS);
+    const OPTIONAL_COLUMNS = ["product", "site_tag"];
+    const OPTIONAL_COLUMN_SET = new Set(OPTIONAL_COLUMNS);
     const CSV_COLUMNS = PROJECT_COLUMNS
       .map((column) => column.field)
-      .filter((field) => !BASELINE_COLUMN_SET.has(field));
+      .filter((field) => !BASELINE_COLUMN_SET.has(field) && !OPTIONAL_COLUMN_SET.has(field));
     const LEGACY_COLUMNS = ["owner", "priority", "milestone"];
 
     const COMPUTED_COLUMNS = new Set(["_depth", "_isGroup", "_children", "_parent", "_generatedTaskId"]);
-    const LIST_COLUMNS = new Set(["dependencies", "successors", "resources"]);
+    const LIST_COLUMNS = new Set(["dependencies", "successors", "resources", "product", "site_tag"]);
     const INTEGER_COLUMNS = new Set(["duration_days", "percent_complete"]);
     const DATE_COLUMNS = new Set(["start_date", "end_date", "baseline_start_date", "baseline_end_date"]);
     const STATUS_OPTIONS = ["not_started", "in_progress", "blocked", "completed", "on_hold", "cancelled"];
@@ -2875,8 +3083,8 @@
       { field: "resources", label: "Resources", width: 140, minWidth: 90, maxWidth: 280 },
       { field: "percent_complete", label: "%", width: 64, minWidth: 44, maxWidth: 100 }
     ];
-    const GANTT_SCALE_MIN = 0.1;
-    const GANTT_SCALE_MAX = 2.5;
+    const GANTT_SCALE_MIN = 0.05;
+    const GANTT_SCALE_MAX = 1;
     const GANTT_SCALE_STEP = 0.05;
 
     const state = {
@@ -2907,6 +3115,8 @@
           search: "",
           status: new Set(),
           owner: new Set(),
+          product: new Set(),
+          siteTag: new Set(),
           priority: new Set(),
           milestone: false,
           dateFrom: "",
@@ -2933,6 +3143,7 @@
 
     const SAMPLE_CSV = document.getElementById("sample-csv-source").textContent.trim();
     let dashboardResizeObservers = [];
+    let hoveredTaskId = null;
     let taskDragState = null;
 
     function parseCSV(text) {
@@ -3122,6 +3333,8 @@
       task.successors = parseListValue(getAliasedValue(rawTask, "successors"));
       task.constraint_type = String(getAliasedValue(rawTask, "constraint_type") ?? "").trim();
       task.resources = parseListValue(getAliasedValue(rawTask, "resources"));
+      task.product = parseListValue(getAliasedValue(rawTask, "product"));
+      task.site_tag = parseListValue(getAliasedValue(rawTask, "site_tag"));
       task.notes = String(getAliasedValue(rawTask, "notes") ?? "").trim();
 
       LEGACY_COLUMNS.forEach((column) => {
@@ -3467,6 +3680,35 @@
       return getTaskResourceGroups(task).join(", ");
     }
 
+    function getTaskProducts(task) {
+      return parseListValue(task?.product || task?.Product || []);
+    }
+
+    function getTaskProductGroups(task) {
+      return getTaskProducts(task);
+    }
+
+    function getTaskProductLabel(task) {
+      return getTaskProductGroups(task).join(", ");
+    }
+
+    function getTaskSiteTags(task) {
+      return parseListValue(task?.site_tag || task?.Site || task?.site || task?.Tag || task?.tag || []);
+    }
+
+    function getTaskSiteTagGroups(task) {
+      return getTaskSiteTags(task);
+    }
+
+    function getTaskSiteTagLabel(task) {
+      return getTaskSiteTagGroups(task).join(", ");
+    }
+
+    function shouldShowOptionalTaskField(field) {
+      return state.project.columns.includes(field)
+        || state.project.tasks.some((task) => hasTaskOptionalColumnData(task, field));
+    }
+
     function getTaskNotes(task) {
       return String(task?.notes || task?.["Comment/Notes"] || task?.comment || "").trim();
     }
@@ -3533,7 +3775,7 @@
         });
 
         if (knownColumn) {
-          if (BASELINE_COLUMN_SET.has(knownColumn.field) && !columns.includes(knownColumn.field)) {
+          if ((BASELINE_COLUMN_SET.has(knownColumn.field) || OPTIONAL_COLUMN_SET.has(knownColumn.field)) && !columns.includes(knownColumn.field)) {
             columns.push(knownColumn.field);
           }
           return;
@@ -3559,6 +3801,10 @@
       tasks.forEach((task) => {
         Object.keys(task).forEach((column) => {
           if (BASELINE_COLUMN_SET.has(column) && !shouldExportBaseline) {
+            return;
+          }
+
+          if (OPTIONAL_COLUMN_SET.has(column) && !columns.includes(column) && !tasks.some((item) => hasTaskOptionalColumnData(item, column))) {
             return;
           }
 
@@ -3599,6 +3845,14 @@
         || hasCellValue(task?.baseline_end_date)
         || hasCellValue(task?.baseline_duration_days)
       );
+    }
+
+    function hasTaskOptionalColumnData(task, column) {
+      if (!OPTIONAL_COLUMN_SET.has(column)) {
+        return false;
+      }
+
+      return parseListValue(task?.[column]).length > 0;
     }
 
     function getColumnLabel(column) {
@@ -4091,6 +4345,8 @@
         return;
       }
 
+      hoveredTaskId = null;
+      hideTaskNotesPopup();
       cleanupDashboardResizeObservers();
 
       const view = state.ui.currentView;
@@ -4231,6 +4487,7 @@
       const section = document.createElement("section");
       const frame = document.createElement("div");
       const displayTasks = getDisplayTasks(tasks, ui);
+      const tableColumns = getTableColumns();
 
       section.className = "table-view";
       section.setAttribute("aria-label", "Task table view");
@@ -4244,21 +4501,21 @@
       table.className = "task-table";
       table.setAttribute("aria-label", "Tasks");
 
-      TABLE_COLUMNS.forEach((column) => {
+      tableColumns.forEach((column) => {
         headerRow.append(renderTableHeaderCell(column, ui));
       });
 
       thead.append(headerRow);
 
       displayTasks.forEach((task) => {
-        tbody.append(renderTaskRow(task));
+        tbody.append(renderTaskRow(task, tableColumns));
       });
 
       if (displayTasks.length === 0) {
         const row = document.createElement("tr");
         const cell = document.createElement("td");
 
-        cell.colSpan = TABLE_COLUMNS.length;
+        cell.colSpan = tableColumns.length;
         cell.className = "table-empty";
         cell.textContent = state.project.tasks.length === 0
           ? "No tasks yet. Use Add Task to create the first row."
@@ -4271,6 +4528,36 @@
       frame.append(table);
       section.append(frame);
       return section;
+    }
+
+    function getTableColumns() {
+      const baseColumns = [...TABLE_COLUMNS];
+      const baseFields = new Set(baseColumns.map((column) => column.field));
+      const sourceColumns = getExportColumns(state.project.tasks);
+
+      sourceColumns.forEach((field) => {
+        if (
+          baseFields.has(field)
+          || COMPUTED_COLUMNS.has(field)
+          || LEGACY_COLUMNS.includes(field)
+        ) {
+          return;
+        }
+
+        baseFields.add(field);
+        baseColumns.push({
+          field,
+          label: getColumnLabel(field),
+          className: shouldUseWideTableColumn(field) ? "col-notes" : "",
+          editable: true
+        });
+      });
+
+      return baseColumns;
+    }
+
+    function shouldUseWideTableColumn(field) {
+      return field === "notes" || /note|comment|description|constraint/i.test(field);
     }
 
     function clampNumber(value, min, max) {
@@ -4428,8 +4715,9 @@
         rowHighlight.classList.toggle("is-selected", task.task_id === state.ui.selectedTaskId);
         rowHighlight.dataset.taskId = task.task_id;
         rowHighlight.style.top = `${rowTop}px`;
+        wireTaskHover(rowHighlight, task);
         wireTaskReorderDrag(rowHighlight, task);
-        rowHighlight.addEventListener("click", () => selectTaskOnly(task.task_id));
+        rowHighlight.addEventListener("click", () => handleTaskFieldClick(task));
         rowHighlight.addEventListener("dblclick", () => selectTask(task.task_id));
         chartArea.append(rowHighlight);
 
@@ -4470,8 +4758,9 @@
           milestone.style.left = `${leftOffset}px`;
           milestone.style.top = `${top + 2}px`;
           milestone.title = getTaskTooltip(task);
+          wireTaskHover(milestone, task);
           wireTaskReorderDrag(milestone, task);
-          milestone.addEventListener("click", () => selectTaskOnly(task.task_id));
+          milestone.addEventListener("click", () => handleTaskFieldClick(task));
           milestone.addEventListener("dblclick", () => selectTask(task.task_id));
           chartArea.append(milestone);
           return;
@@ -4491,8 +4780,9 @@
         bar.style.width = `${width}px`;
         bar.style.background = `var(--status-${toKebabCase(getTaskStatus(task))})`;
         bar.title = getTaskTooltip(task);
+        wireTaskHover(bar, task);
         wireTaskReorderDrag(bar, task);
-        bar.addEventListener("click", () => selectTaskOnly(task.task_id));
+        bar.addEventListener("click", () => handleTaskFieldClick(task));
         bar.addEventListener("dblclick", () => selectTask(task.task_id));
 
         progress.className = "bar-progress";
@@ -4568,14 +4858,17 @@
       row.classList.toggle("is-selected", task.task_id === state.ui.selectedTaskId);
       row.classList.toggle("is-cancelled", isTaskCancelled(task));
       row.dataset.taskId = task.task_id;
+      wireTaskHover(row, task);
       wireTaskReorderDrag(row, task);
-      row.addEventListener("click", () => selectTaskOnly(task.task_id));
+      row.addEventListener("click", () => handleTaskFieldClick(task));
       row.addEventListener("dblclick", () => selectTask(task.task_id));
 
       GANTT_COLUMNS.forEach((column) => {
         const span = document.createElement("span");
 
         if (column.field === "task_name") {
+          span.classList.add("gantt-task-name-field");
+          span.addEventListener("click", (event) => handleTaskNameClick(event, task));
           span.append(renderGanttTaskName(task));
         } else {
           span.textContent = getGanttColumnValue(task, column.field);
@@ -4889,18 +5182,22 @@
 
       card.className = "task-card";
       card.classList.toggle("is-cancelled", isTaskCancelled(task));
+      card.classList.toggle("is-selected", task.task_id === state.ui.selectedTaskId);
       card.draggable = true;
       card.dataset.taskId = task.task_id;
       card.style.borderLeftColor = `var(--priority-${toKebabCase(task.priority || "medium")})`;
+      wireTaskHover(card, task);
       card.addEventListener("dragstart", (event) => {
         event.dataTransfer.setData("text/plain", task.task_id);
       });
-      card.addEventListener("click", () => selectTask(task.task_id));
+      card.addEventListener("click", () => handleTaskFieldClick(task));
+      card.addEventListener("dblclick", () => selectTask(task.task_id));
 
       id.className = "task-card-id";
       id.textContent = task.task_id;
       title.className = "task-card-title";
       title.textContent = task.task_name || "Untitled task";
+      title.addEventListener("click", (event) => handleTaskNameClick(event, task));
       owner.className = "task-card-owner";
       owner.textContent = getTaskResourceLabel(task);
 
@@ -5939,22 +6236,23 @@
       window.addEventListener("pointercancel", onPointerUp);
     }
 
-    function renderTaskRow(task) {
+    function renderTaskRow(task, tableColumns = getTableColumns()) {
       const row = document.createElement("tr");
 
       row.dataset.taskId = task.task_id;
       row.classList.toggle("is-selected", task.task_id === state.ui.selectedTaskId);
       row.classList.toggle("is-critical", state.ui.criticalPathTaskIds.has(task.task_id));
       row.classList.toggle("is-cancelled", isTaskCancelled(task));
+      wireTaskHover(row, task);
       wireTaskReorderDrag(row, task);
 
-      /* Single click: highlight row only (light yellow) */
-      row.addEventListener("click", () => selectTaskOnly(task.task_id));
+      /* Single click outside task name: highlight row only */
+      row.addEventListener("click", () => handleTaskFieldClick(task));
 
       /* Double click on row: open task editor panel */
       row.addEventListener("dblclick", () => selectTask(task.task_id));
 
-      TABLE_COLUMNS.forEach((column) => {
+      tableColumns.forEach((column) => {
         const cell = document.createElement("td");
 
         cell.dataset.field = column.field;
@@ -5965,6 +6263,11 @@
         }
 
         setTableCellContent(cell, task, column);
+
+        if (column.field === "task_name") {
+          cell.classList.add("task-name-field");
+          cell.addEventListener("click", (event) => handleTaskNameClick(event, task));
+        }
 
         if (column.editable) {
           cell.addEventListener("dblclick", (event) => {
@@ -6543,6 +6846,14 @@
         return false;
       }
 
+      if (filters.product.size > 0 && !getTaskProductGroups(task).some((product) => filters.product.has(product))) {
+        return false;
+      }
+
+      if (filters.siteTag.size > 0 && !getTaskSiteTagGroups(task).some((siteTag) => filters.siteTag.has(siteTag))) {
+        return false;
+      }
+
       if (filters.priority.size > 0 && !filters.priority.has(task.priority || "medium")) {
         return false;
       }
@@ -6608,6 +6919,8 @@
         (filters.search || "").trim()
         || filters.status.size
         || filters.owner.size
+        || filters.product.size
+        || filters.siteTag.size
         || filters.priority.size
         || filters.milestone
         || filters.dateFrom
@@ -6625,6 +6938,8 @@
 
       count += filters.status.size;
       count += filters.owner.size;
+      count += filters.product.size;
+      count += filters.siteTag.size;
       count += filters.priority.size;
 
       if (filters.milestone) {
@@ -6666,6 +6981,8 @@
         task.task_id,
         task.task_name,
         getTaskResourceLabel(task),
+        getTaskProductLabel(task),
+        getTaskSiteTagLabel(task),
         task.constraint_type
       ].join(" ").toLowerCase().includes(normalizedSearch);
     }
@@ -6749,6 +7066,18 @@
 
     function getUniqueResources(tasks) {
       return [...new Set(tasks.filter((task) => !task._isGroup).flatMap((task) => getTaskResourceGroups(task)))]
+        .filter(Boolean)
+        .sort((left, right) => left.localeCompare(right));
+    }
+
+    function getUniqueProducts(tasks) {
+      return [...new Set(tasks.flatMap((task) => getTaskProductGroups(task)))]
+        .filter(Boolean)
+        .sort((left, right) => left.localeCompare(right));
+    }
+
+    function getUniqueSiteTags(tasks) {
+      return [...new Set(tasks.flatMap((task) => getTaskSiteTagGroups(task)))]
         .filter(Boolean)
         .sort((left, right) => left.localeCompare(right));
     }
@@ -7034,6 +7363,14 @@
         lines.push(`Resources: ${getTaskResourceLabel(task)}`);
       }
 
+      if (shouldShowOptionalTaskField("product")) {
+        lines.push(`Product: ${getTaskProductLabel(task) || "None"}`);
+      }
+
+      if (shouldShowOptionalTaskField("site_tag")) {
+        lines.push(`Site/Tag: ${getTaskSiteTagLabel(task) || "None"}`);
+      }
+
       lines.push(
         `Status: ${formatOptionLabel(getTaskStatus(task))}`,
         `Predecessors: ${formatTableValue(task.dependencies, "dependencies") || "None"}`,
@@ -7043,6 +7380,178 @@
         lines.push(`Notes: ${notes}`);
       }
       return lines.join("\n");
+    }
+
+    let _taskNotesPopupElement = null;
+
+    function getTaskNotesPopupElement() {
+      if (!_taskNotesPopupElement) {
+        _taskNotesPopupElement = document.createElement("div");
+        _taskNotesPopupElement.className = "task-notes-popup";
+        _taskNotesPopupElement.hidden = true;
+        _taskNotesPopupElement.setAttribute("role", "dialog");
+        _taskNotesPopupElement.setAttribute("aria-label", "Task details");
+        document.body.append(_taskNotesPopupElement);
+      }
+
+      return _taskNotesPopupElement;
+    }
+
+    function showTaskNotesPopup(task, anchorElement) {
+      if (!task || !anchorElement) {
+        return;
+      }
+
+      const popup = getTaskNotesPopupElement();
+      const header = document.createElement("div");
+      const titleWrap = document.createElement("div");
+      const title = document.createElement("div");
+      const id = document.createElement("div");
+      const closeButton = document.createElement("button");
+      const body = document.createElement("div");
+      const footer = document.createElement("div");
+      const notes = getTaskNotes(task);
+      const detailRows = [
+        ["Status", formatOptionLabel(getTaskStatus(task))],
+        ["Task Type", task._isGroup ? "Group" : "Task"],
+        ["Task Level", task.task_level || "Task"],
+        ["Dates", `${task.start_date || "No start"} to ${task.end_date || "No finish"}`],
+        ["Duration", `${parseIntegerValue(task.duration_days)} days`],
+        ["Complete", `${getTaskPercentComplete(task)}%`],
+        ["Resources", task._isGroup ? "N/A" : (getTaskResourceLabel(task) || "Unassigned")],
+        ["Predecessors", formatTableValue(task.dependencies, "dependencies") || "None"],
+        ["Successors", formatTableValue(task.successors, "successors") || "None"],
+        ["Priority", formatOptionLabel(task.priority || "medium")],
+        ["Milestone", task.milestone ? "Yes" : "No"]
+      ];
+
+      if (shouldShowOptionalTaskField("product")) {
+        detailRows.splice(7, 0, ["Product", getTaskProductLabel(task) || "None"]);
+      }
+
+      if (shouldShowOptionalTaskField("site_tag")) {
+        detailRows.splice(8, 0, ["Site/Tag", getTaskSiteTagLabel(task) || "None"]);
+      }
+
+      header.className = "task-notes-header";
+      titleWrap.className = "task-notes-title-wrap";
+      title.className = "task-notes-title";
+      title.textContent = task.task_name || "Untitled task";
+      id.className = "task-notes-id";
+      id.textContent = task._generatedTaskId ? "" : `#${task.task_id}`;
+      titleWrap.append(title, id);
+
+      closeButton.type = "button";
+      closeButton.className = "task-notes-close";
+      closeButton.setAttribute("aria-label", "Close notes popup");
+      closeButton.textContent = "×";
+      closeButton.addEventListener("click", hideTaskNotesPopup);
+      header.append(titleWrap, closeButton);
+
+      body.className = "task-notes-body";
+      detailRows.forEach(([label, value]) => {
+        appendTaskDetailRow(body, label, value);
+      });
+
+      const notesTitle = document.createElement("div");
+      const notesBody = document.createElement("div");
+
+      notesTitle.className = "task-notes-section-title";
+      notesTitle.textContent = "Comment/Notes";
+      notesBody.className = "task-notes-comment";
+      notesBody.classList.toggle("is-empty", !notes);
+      notesBody.textContent = notes || "No comment/notes for this task.";
+      body.append(notesTitle, notesBody);
+
+      footer.className = "task-notes-footer";
+      footer.textContent = "Double-click to edit task details.";
+
+      popup.replaceChildren(header, body, footer);
+      popup.hidden = false;
+      positionTaskNotesPopup(popup, anchorElement);
+    }
+
+    function appendTaskDetailRow(container, label, value) {
+      const row = document.createElement("div");
+      const labelElement = document.createElement("span");
+      const valueElement = document.createElement("span");
+
+      row.className = "task-notes-row";
+      labelElement.className = "task-notes-label";
+      labelElement.textContent = label;
+      valueElement.className = "task-notes-value";
+      valueElement.textContent = value;
+      row.append(labelElement, valueElement);
+      container.append(row);
+    }
+
+    function positionTaskNotesPopup(popup, anchorElement) {
+      const anchorRect = anchorElement.getBoundingClientRect();
+      const popupRect = popup.getBoundingClientRect();
+      const gap = 8;
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      let left = anchorRect.left;
+      let top = anchorRect.bottom + gap;
+
+      if (left + popupRect.width > viewportWidth - gap) {
+        left = viewportWidth - popupRect.width - gap;
+      }
+
+      if (top + popupRect.height > viewportHeight - gap) {
+        top = anchorRect.top - popupRect.height - gap;
+      }
+
+      popup.style.left = `${Math.max(gap, left)}px`;
+      popup.style.top = `${Math.max(gap, top)}px`;
+    }
+
+    function hideTaskNotesPopup() {
+      if (_taskNotesPopupElement) {
+        _taskNotesPopupElement.hidden = true;
+      }
+    }
+
+    function handleTaskNameClick(event, task) {
+      event.stopPropagation();
+      selectTaskOnly(task.task_id);
+      showTaskNotesPopup(task, event.currentTarget);
+    }
+
+    function handleTaskFieldClick(task) {
+      selectTaskOnly(task.task_id);
+      hideTaskNotesPopup();
+    }
+
+    function wireTaskHover(element, task) {
+      element.addEventListener("mouseenter", () => setHoveredTask(task.task_id));
+      element.addEventListener("mouseleave", () => clearHoveredTask(task.task_id));
+    }
+
+    function setHoveredTask(taskId) {
+      if (hoveredTaskId === taskId) {
+        return;
+      }
+
+      hoveredTaskId = taskId;
+      updateTaskHover();
+    }
+
+    function clearHoveredTask(taskId) {
+      if (hoveredTaskId !== taskId) {
+        return;
+      }
+
+      hoveredTaskId = null;
+      updateTaskHover();
+    }
+
+    function updateTaskHover() {
+      document
+        .querySelectorAll(".task-table tbody tr[data-task-id], .gantt-left-row[data-task-id], .gantt-row-highlight[data-task-id], .gantt-bar[data-task-id], .milestone-diamond[data-task-id], .task-card[data-task-id]")
+        .forEach((element) => {
+          element.classList.toggle("is-hovered", Boolean(hoveredTaskId) && element.dataset.taskId === hoveredTaskId);
+        });
     }
 
     /* ── Calendar Task Popup ── */
@@ -7103,6 +7612,12 @@
       ];
       if (!task._isGroup) {
         rows.push(["Resources", resources || "Unassigned"]);
+      }
+      if (shouldShowOptionalTaskField("product")) {
+        rows.push(["Product", getTaskProductLabel(task) || "None"]);
+      }
+      if (shouldShowOptionalTaskField("site_tag")) {
+        rows.push(["Site/Tag", getTaskSiteTagLabel(task) || "None"]);
       }
       rows.push(["Predecessors", deps]);
 
@@ -7326,6 +7841,7 @@
     }
 
     function selectTask(taskId) {
+      hideTaskNotesPopup();
       selectTaskOnly(taskId);
       openTaskEditor(taskId);
     }
@@ -7334,6 +7850,7 @@
       state.ui.selectedTaskId = taskId;
       updateTableSelection();
       updateGanttSelection();
+      updateBoardSelection();
       updateCalendarSelection();
     }
 
@@ -7354,6 +7871,12 @@
         item.classList.toggle("is-selected", item.dataset.taskId === state.ui.selectedTaskId);
       });
       updateGanttNotesPanel();
+    }
+
+    function updateBoardSelection() {
+      document.querySelectorAll(".task-card[data-task-id]").forEach((card) => {
+        card.classList.toggle("is-selected", card.dataset.taskId === state.ui.selectedTaskId);
+      });
     }
 
     function updateCalendarSelection() {
@@ -7549,6 +8072,14 @@
         fields.push(
         createTaskEditorField("Resources", "resources", "text", formatTableValue(getTaskResources(task), "resources"), null, renderResourceTags(getTaskResources(task)))
         );
+      }
+
+      if (shouldShowOptionalTaskField("product")) {
+        fields.push(createTaskEditorField("Product", "product", "text", formatTableValue(getTaskProducts(task), "product")));
+      }
+
+      if (shouldShowOptionalTaskField("site_tag")) {
+        fields.push(createTaskEditorField("Site/Tag", "site_tag", "text", formatTableValue(getTaskSiteTags(task), "site_tag")));
       }
 
       fields.push(
@@ -7870,9 +8401,7 @@
 
       if (state.ui.currentView === "gantt") {
         container.append(createTodayButton());
-        container.append(createCriticalPathToggle());
-        container.append(createBaselineToggle());
-        container.append(createSetBaselineButton());
+        container.append(createGanttSettingsMenu());
       }
 
       if (state.ui.currentView === "timeline") {
@@ -7939,6 +8468,24 @@
       button.textContent = "Today";
       button.addEventListener("click", scrollGanttToToday);
       return button;
+    }
+
+    function createGanttSettingsMenu() {
+      const menu = document.createElement("details");
+      const summary = document.createElement("summary");
+      const panel = document.createElement("div");
+
+      menu.className = "settings-menu";
+      summary.className = "toolbar-button view-control-button settings-summary";
+      summary.textContent = "Settings ▾";
+      panel.className = "settings-panel";
+      panel.append(
+        createCriticalPathToggle(),
+        createBaselineToggle(),
+        createSetBaselineButton()
+      );
+      menu.append(summary, panel);
+      return menu;
     }
 
     function createCalendarZoomControl() {
@@ -8161,14 +8708,20 @@
         return;
       }
 
-      panel.replaceChildren(
+      const productValues = getUniqueProducts(state.project.tasks);
+      const siteTagValues = getUniqueSiteTags(state.project.tasks);
+      const sections = [
         renderCheckboxFilterSection("Status", STATUS_OPTIONS, state.ui.filters.status, formatOptionLabel),
         renderCheckboxFilterSection("Resources", getUniqueResources(state.project.tasks), state.ui.filters.owner, (value) => value),
+        ...(productValues.length ? [renderCheckboxFilterSection("Product", productValues, state.ui.filters.product, (value) => value)] : []),
+        ...(siteTagValues.length ? [renderCheckboxFilterSection("Site/Tag", siteTagValues, state.ui.filters.siteTag, (value) => value)] : []),
         renderCheckboxFilterSection("Priority", PRIORITY_OPTIONS, state.ui.filters.priority, formatOptionLabel),
         renderDateFilterSection(),
         renderMilestoneFilter(),
         renderClearFiltersButton()
-      );
+      ];
+
+      panel.replaceChildren(...sections);
     }
 
     function renderCheckboxFilterSection(title, values, set, formatter) {
@@ -8275,6 +8828,8 @@
       state.ui.filters.search = "";
       state.ui.filters.status.clear();
       state.ui.filters.owner.clear();
+      state.ui.filters.product.clear();
+      state.ui.filters.siteTag.clear();
       state.ui.filters.priority.clear();
       state.ui.filters.milestone = false;
       state.ui.filters.dateFrom = "";
