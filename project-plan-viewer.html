@@ -191,7 +191,15 @@
     .top-actions {
       display: inline-flex;
       align-items: center;
+      min-width: 0;
       gap: var(--space-2);
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+    }
+
+    .top-actions::-webkit-scrollbar {
+      display: none;
     }
 
     .top-button {
@@ -466,6 +474,186 @@
       color: var(--color-text-muted);
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-medium);
+    }
+
+    .template-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 48;
+      display: grid;
+      place-items: center;
+      padding: var(--space-4);
+      background: rgba(15, 23, 42, 0.34);
+    }
+
+    .template-modal-overlay[hidden] {
+      display: none;
+    }
+
+    .template-modal {
+      display: grid;
+      width: min(620px, 100%);
+      max-height: calc(100vh - 48px);
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-white);
+      box-shadow: var(--shadow-md);
+    }
+
+    .template-modal-header {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-header);
+    }
+
+    .template-modal-title {
+      display: grid;
+      gap: var(--space-1);
+      min-width: 0;
+    }
+
+    .template-modal-title h2 {
+      margin: 0;
+      color: var(--color-text);
+      font-size: var(--font-size-lg);
+      line-height: var(--line-height-tight);
+    }
+
+    .template-modal-title p {
+      margin: 0;
+      color: var(--color-text-muted);
+      font-size: var(--font-size-sm);
+      line-height: var(--line-height-normal);
+    }
+
+    .template-modal-close {
+      display: inline-grid;
+      width: 28px;
+      height: 28px;
+      flex: 0 0 auto;
+      place-items: center;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text-muted);
+      background: var(--color-white);
+      font-size: var(--font-size-lg);
+      line-height: 1;
+    }
+
+    .template-modal-close:hover {
+      color: var(--color-text);
+      background: var(--color-surface);
+    }
+
+    .template-modal-body {
+      display: grid;
+      gap: var(--space-4);
+      padding: var(--space-4);
+      overflow: auto;
+    }
+
+    .template-option-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-3);
+    }
+
+    .template-option {
+      display: grid;
+      gap: var(--space-2);
+      min-height: 116px;
+      padding: var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-white);
+      color: var(--color-text);
+      text-align: left;
+    }
+
+    .template-option:hover {
+      border-color: var(--color-border-strong);
+      background: var(--color-surface);
+    }
+
+    .template-option[aria-pressed="true"] {
+      border-color: var(--color-primary);
+      box-shadow: inset 3px 0 0 var(--color-primary);
+      background: #F5F8FF;
+    }
+
+    .template-option-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .template-option-description {
+      color: var(--color-text-muted);
+      font-size: var(--font-size-xs);
+      line-height: var(--line-height-normal);
+    }
+
+    .template-field-note {
+      display: grid;
+      gap: var(--space-2);
+      padding: var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: #F8FAFC;
+      color: var(--color-text-muted);
+      font-size: var(--font-size-xs);
+      line-height: var(--line-height-normal);
+    }
+
+    .template-field-note strong {
+      color: var(--color-text);
+    }
+
+    .template-field-note ul {
+      margin: 0;
+      padding-left: var(--space-4);
+    }
+
+    .template-preview {
+      display: grid;
+      gap: var(--space-2);
+    }
+
+    .template-preview-title {
+      color: var(--color-text);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      text-transform: uppercase;
+    }
+
+    .template-preview pre {
+      max-height: 180px;
+      margin: 0;
+      padding: var(--space-3);
+      overflow: auto;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      color: var(--color-text);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: var(--font-size-xs);
+      line-height: 1.5;
+      white-space: pre;
+    }
+
+    .template-modal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: end;
+      gap: var(--space-2);
+      padding: var(--space-4);
+      border-top: 1px solid var(--color-border);
+      background: var(--color-white);
     }
 
     .table-view {
@@ -785,6 +973,16 @@
     .status-version {
       color: var(--color-text-subtle);
       font-variant-numeric: tabular-nums;
+    }
+
+    .status-link {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: var(--font-weight-medium);
+    }
+
+    .status-link:hover {
+      text-decoration: underline;
     }
 
     .dirty-indicator {
@@ -2924,6 +3122,14 @@
         display: none;
       }
 
+      .template-option-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .template-modal-actions > button {
+        flex: 1 1 100%;
+      }
+
       .view-toggle {
         width: 100%;
         overflow-x: auto;
@@ -2994,6 +3200,7 @@
       <div class="project-title" aria-live="polite">Untitled Project</div>
       <div class="top-actions" aria-label="File actions">
         <button class="top-button" id="open-file-button" type="button">Open</button>
+        <button class="top-button" id="new-template-button" type="button">New Template</button>
         <button class="top-button" id="refresh-file-button" type="button" disabled>Refresh</button>
         <button class="top-button" id="save-file-button" type="button">Save</button>
         <button class="top-button" id="save-as-file-button" type="button">Save As</button>
@@ -3026,11 +3233,11 @@
           <p class="empty-copy">Open a CSV project file to get started.</p>
           <details class="sample-csv-preview" open>
             <summary>Sample CSV</summary>
-            <pre id="sample-csv-source">Task#,Complete%,Task Level,Task Name,Duration,Start,Finish,Predecessors,Successors,Constrain Type,Resources
-1,64%,1,EMEA Wave 1: EXPENSE ES & PT,264,2026-01-08,2026-09-28,,,As Soon As Possible,
-2,100%,2,Getting Started Phase,15,2026-01-08,2026-01-22,,,As Soon As Possible,
-3,100%,,Project Planning Initiation Assigning Resources,13,2026-01-08,2026-01-20,,4,As Soon As Possible,person1
-4,100%,,Kickoff call,3,2026-01-20,2026-01-22,3,"7,42,11",As Soon As Possible,"person2,person3"</pre>
+            <pre id="sample-csv-source">Task#,Complete%,Task Level,Task Name,Status,Duration,Start,Finish,Predecessors,Successors,Constrain Type,Resources,Milestone,Comment/Notes
+1,64%,1,EMEA Wave 1: EXPENSE ES & PT,in_progress,264,2026-01-08,2026-09-28,,,As Soon As Possible,,false,Group row created by Task Level 1.
+2,100%,2,Getting Started Phase,completed,15,2026-01-08,2026-01-22,,,As Soon As Possible,,false,Subgroup row created by Task Level 2.
+3,100%,,Project Planning Initiation Assigning Resources,completed,13,2026-01-08,2026-01-20,,4,As Soon As Possible,person1,false,Blank Task Level creates a leaf task.
+4,100%,,Kickoff call,completed,3,2026-01-20,2026-01-22,3,"7,42,11",As Soon As Possible,"person2,person3",true,Milestone=true shows a diamond marker.</pre>
           </details>
         </div>
       </section>
@@ -3049,7 +3256,9 @@
       <div class="status-right">
         <span class="status-item" id="filename-status">Filename: Untitled project.csv</span>
         <span class="status-separator" aria-hidden="true"></span>
-        <span class="status-item status-version">Version: 20260629</span>
+        <a class="status-item status-link" href="https://github.com/henry-gu/pm-tool" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <span class="status-separator" aria-hidden="true"></span>
+        <span class="status-item status-version">Version: 20260630</span>
       </div>
     </footer>
   </div>
@@ -3072,6 +3281,7 @@
       { field: "successors", label: "Successors", aliases: ["successors", "Successors"] },
       { field: "constraint_type", label: "Constrain Type", aliases: ["constraint_type", "Constrain Type", "Constraint Type"] },
       { field: "resources", label: "Resources", aliases: ["resources", "Resources", "Resource", "Owner", "owner", "Task Owner", "Responsible", "Person Responsible", "Person\nResponsible", "Assignee", "Assigned To"] },
+      { field: "milestone", label: "Milestone", aliases: ["milestone", "Milestone", "Is Milestone", "Milestone?"] },
       { field: "product", label: "Product", aliases: ["product", "Product", "Products", "Product Name"] },
       { field: "site_tag", label: "Site/Tag", aliases: ["site_tag", "site", "Site", "Tag", "Tags", "Site Tag", "Site/Tag", "Site Tags"] },
       { field: "notes", label: "Comment/Notes", aliases: ["notes", "Notes", "Comment", "Comments", "Comment/Notes", "Comment Notes", "comment_notes"] }
@@ -3083,7 +3293,7 @@
     const CSV_COLUMNS = PROJECT_COLUMNS
       .map((column) => column.field)
       .filter((field) => !BASELINE_COLUMN_SET.has(field) && !OPTIONAL_COLUMN_SET.has(field));
-    const LEGACY_COLUMNS = ["owner", "priority", "milestone"];
+    const LEGACY_COLUMNS = ["owner", "priority"];
 
     const COMPUTED_COLUMNS = new Set(["_depth", "_isGroup", "_children", "_parent", "_generatedTaskId"]);
     const LIST_COLUMNS = new Set(["dependencies", "successors", "resources", "product", "site_tag"]);
@@ -3112,6 +3322,7 @@
       { field: "successors", label: "Successors", editable: true },
       { field: "constraint_type", label: "Constrain Type", className: "col-notes", editable: true },
       { field: "resources", label: "Resources", editable: true },
+      { field: "milestone", label: "Milestone", editable: true },
       { field: "notes", label: "Comment/Notes", className: "col-notes", editable: true }
     ];
     const GANTT_COLUMNS = [
@@ -3183,6 +3394,53 @@
     };
 
     const SAMPLE_CSV = document.getElementById("sample-csv-source").textContent.trim();
+    const TEMPLATE_TYPES = {
+      project_plan: {
+        label: "Project Plan",
+        filename: "Project Plan Template.csv",
+        description: "General project schedule with phases, tasks, owners, milestones, dependencies, and notes.",
+        columns: ["Task#", "Complete%", "Task Level", "Task Name", "Status", "Duration", "Start", "Finish", "Predecessors", "Successors", "Constrain Type", "Resources", "Milestone", "Comment/Notes"],
+        fieldNotes: [
+          "Task Level 1-5 creates group rows; blank Task Level creates leaf tasks under the latest group.",
+          "Start and Finish use YYYY-MM-DD. Duration is calendar days in this viewer.",
+          "Milestone=true shows a diamond in Gantt, Timeline, Table, and task details.",
+          "Resources accepts comma-separated people. Comment/Notes is shown in task detail popups."
+        ],
+        rows: [
+          ["1", "35%", "1", "Initiation", "in_progress", "14", "2026-07-01", "2026-07-14", "", "", "As Soon As Possible", "", "false", "Level 1 rows are groups. Group completion is calculated from leaf task duration and completion."],
+          ["2", "100%", "", "Confirm project scope", "completed", "3", "2026-07-01", "2026-07-03", "", "3", "As Soon As Possible", "PM Lead", "false", "Complete rows are shown in green."],
+          ["3", "50%", "", "Draft delivery plan", "in_progress", "6", "2026-07-04", "2026-07-09", "2", "4", "As Soon As Possible", "Planner, PM Lead", "false", "Resources are comma-separated."],
+          ["4", "0%", "", "Scope sign-off", "not_started", "1", "2026-07-10", "2026-07-10", "3", "6", "Start No Earlier Than", "Sponsor", "true", "Milestone=true creates the diamond marker."],
+          ["5", "0%", "1", "Execution", "not_started", "35", "2026-07-15", "2026-08-18", "", "", "As Soon As Possible", "", "false", "Second phase group."],
+          ["6", "0%", "", "Build workstream A", "not_started", "15", "2026-07-15", "2026-07-29", "4", "7", "As Soon As Possible", "Workstream A", "false", "Blank Task Level makes this a leaf task."],
+          ["7", "0%", "", "Resolve dependency risk", "blocked", "7", "2026-07-30", "2026-08-05", "6", "8", "As Soon As Possible", "Risk Owner", "false", "Blocked status appears in red."],
+          ["8", "0%", "", "Launch readiness review", "not_started", "1", "2026-08-18", "2026-08-18", "7", "", "Start No Earlier Than", "PM Lead, Sponsor", "true", "One-day milestone for final review."]
+        ]
+      },
+      cutover_plan: {
+        label: "Cutover Plan",
+        filename: "Cutover Plan Template.csv",
+        description: "Cutover schedule with site, product, accountable resources, checkpoints, and execution notes.",
+        columns: ["Task#", "Complete%", "Task Level", "Task Name", "Status", "Duration", "Start", "Finish", "Predecessors", "Successors", "Constrain Type", "Resources", "Milestone", "Comment/Notes", "Site", "Product"],
+        fieldNotes: [
+          "Use Site and Product to filter cutover tasks across locations and workstreams.",
+          "Task Level 1-5 creates cutover phases; blank Task Level creates executable cutover steps.",
+          "Milestone=true is useful for readiness checkpoints, go/no-go, and handover gates.",
+          "Comment/Notes should hold runbook guidance, validation notes, or escalation context."
+        ],
+        rows: [
+          ["1", "20%", "1", "Cutover Preparation", "in_progress", "10", "2026-07-01", "2026-07-10", "", "", "As Soon As Possible", "", "false", "Group row for preparation activities.", "Site 1", "Product A"],
+          ["2", "100%", "", "Freeze change window", "completed", "1", "2026-07-01", "2026-07-01", "", "3", "As Soon As Possible", "Release Manager", "true", "Checkpoint milestone before cutover preparation starts.", "Site 1", "Product A"],
+          ["3", "40%", "", "Validate migration checklist", "in_progress", "4", "2026-07-02", "2026-07-05", "2", "4", "As Soon As Possible", "Migration Lead, QA Lead", "false", "Use notes for validation criteria.", "Site 1", "Product A"],
+          ["4", "0%", "", "Resolve access blocker", "blocked", "2", "2026-07-06", "2026-07-07", "3", "5", "As Soon As Possible", "Security Owner", "false", "Blocked rows are visible in board and dashboard.", "Site 2", "Product B"],
+          ["5", "0%", "", "Readiness checkpoint", "not_started", "1", "2026-07-10", "2026-07-10", "4", "7", "Start No Earlier Than", "PM Lead, Business Owner", "true", "Milestone for readiness sign-off.", "Site 1, Site 2", "Product A, Product B"],
+          ["6", "0%", "1", "Cutover Weekend", "not_started", "4", "2026-07-11", "2026-07-14", "", "", "As Soon As Possible", "", "false", "Group row for execution window.", "Site 1", "Product A"],
+          ["7", "0%", "", "Execute production migration", "not_started", "2", "2026-07-11", "2026-07-12", "5", "8", "Start No Earlier Than", "Migration Lead, Operations", "false", "Primary execution task.", "Site 1", "Product A"],
+          ["8", "0%", "", "Business validation", "not_started", "1", "2026-07-13", "2026-07-13", "7", "9", "As Soon As Possible", "Business Owner, QA Lead", "false", "Validation task before go/no-go.", "Site 1", "Product A"],
+          ["9", "0%", "", "Go/No-Go decision", "not_started", "1", "2026-07-14", "2026-07-14", "8", "", "Start No Earlier Than", "Sponsor, PM Lead", "true", "Final cutover decision milestone.", "Site 1", "Product A"]
+        ]
+      }
+    };
     let dashboardResizeObservers = [];
     let hoveredTaskId = null;
     let taskDragState = null;
@@ -3216,6 +3474,40 @@
       });
 
       return [header, ...rows].join("\n");
+    }
+
+    function getTemplateDefinition(templateType) {
+      return TEMPLATE_TYPES[templateType] || TEMPLATE_TYPES.project_plan;
+    }
+
+    function generateTemplateCSV(templateType) {
+      const template = getTemplateDefinition(templateType);
+      const header = template.columns.map(quoteCSVValue).join(",");
+      const rows = template.rows.map((row) => {
+        return template.columns
+          .map((_, index) => quoteCSVValue(row[index] ?? ""))
+          .join(",");
+      });
+
+      return [header, ...rows].join("\n");
+    }
+
+    function getTemplatePreviewText(templateType) {
+      return generateTemplateCSV(templateType).split("\n").slice(0, 5).join("\n");
+    }
+
+    function downloadCSVText(filename, csvText) {
+      const blob = new Blob([csvText], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = normaliseCSVFilename(filename);
+      link.style.display = "none";
+      document.body.append(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
     }
 
     function getTaskExportValue(task, field) {
@@ -3374,6 +3666,7 @@
       task.successors = parseListValue(getAliasedValue(rawTask, "successors"));
       task.constraint_type = String(getAliasedValue(rawTask, "constraint_type") ?? "").trim();
       task.resources = parseListValue(getAliasedValue(rawTask, "resources"));
+      task.milestone = parseBooleanValue(getAliasedValue(rawTask, "milestone"));
       task.product = parseListValue(getAliasedValue(rawTask, "product"));
       task.site_tag = parseListValue(getAliasedValue(rawTask, "site_tag"));
       task.notes = String(getAliasedValue(rawTask, "notes") ?? "").trim();
@@ -4379,6 +4672,165 @@
       URL.revokeObjectURL(url);
     }
 
+    function openTemplateModal() {
+      closeFilterPanel();
+      closeTaskEditor();
+      closeTemplateModal();
+
+      let selectedTemplateType = "project_plan";
+      const overlay = document.createElement("div");
+      const modal = document.createElement("section");
+      const header = document.createElement("div");
+      const title = document.createElement("div");
+      const heading = document.createElement("h2");
+      const subtitle = document.createElement("p");
+      const closeButton = document.createElement("button");
+      const body = document.createElement("div");
+      const actions = document.createElement("div");
+      const createButton = document.createElement("button");
+      const downloadButton = document.createElement("button");
+      const cancelButton = document.createElement("button");
+
+      overlay.id = "template-modal-overlay";
+      overlay.className = "template-modal-overlay";
+      overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) {
+          closeTemplateModal();
+        }
+      });
+
+      modal.className = "template-modal";
+      modal.setAttribute("role", "dialog");
+      modal.setAttribute("aria-modal", "true");
+      modal.setAttribute("aria-labelledby", "template-modal-title");
+
+      header.className = "template-modal-header";
+      title.className = "template-modal-title";
+      heading.id = "template-modal-title";
+      heading.textContent = "New Template";
+      subtitle.textContent = "Generate a project-ready CSV with field guidance and sample rows.";
+      title.append(heading, subtitle);
+
+      closeButton.type = "button";
+      closeButton.className = "template-modal-close";
+      closeButton.setAttribute("aria-label", "Close template generator");
+      closeButton.textContent = "×";
+      closeButton.addEventListener("click", closeTemplateModal);
+      header.append(title, closeButton);
+
+      body.className = "template-modal-body";
+
+      actions.className = "template-modal-actions";
+      cancelButton.type = "button";
+      cancelButton.className = "toolbar-button";
+      cancelButton.textContent = "Cancel";
+      cancelButton.addEventListener("click", closeTemplateModal);
+      downloadButton.type = "button";
+      downloadButton.className = "toolbar-button";
+      downloadButton.textContent = "Download Only";
+      downloadButton.addEventListener("click", () => {
+        downloadTemplateProject(selectedTemplateType);
+        closeTemplateModal();
+      });
+      createButton.type = "button";
+      createButton.className = "primary-button";
+      createButton.textContent = "Create and Open";
+      createButton.addEventListener("click", () => createTemplateProject(selectedTemplateType));
+      actions.append(cancelButton, downloadButton, createButton);
+
+      const renderBody = () => {
+        const optionGrid = document.createElement("div");
+        const fieldNote = document.createElement("div");
+        const fieldNoteTitle = document.createElement("strong");
+        const fieldNoteList = document.createElement("ul");
+        const preview = document.createElement("div");
+        const previewTitle = document.createElement("div");
+        const previewContent = document.createElement("pre");
+        const template = getTemplateDefinition(selectedTemplateType);
+
+        optionGrid.className = "template-option-grid";
+        Object.entries(TEMPLATE_TYPES).forEach(([templateType, definition]) => {
+          const option = document.createElement("button");
+          const optionName = document.createElement("span");
+          const optionDescription = document.createElement("span");
+
+          option.type = "button";
+          option.className = "template-option";
+          option.setAttribute("aria-pressed", String(templateType === selectedTemplateType));
+          option.addEventListener("click", () => {
+            selectedTemplateType = templateType;
+            renderBody();
+          });
+          optionName.className = "template-option-name";
+          optionName.textContent = definition.label;
+          optionDescription.className = "template-option-description";
+          optionDescription.textContent = definition.description;
+          option.append(optionName, optionDescription);
+          optionGrid.append(option);
+        });
+
+        fieldNote.className = "template-field-note";
+        fieldNoteTitle.textContent = "Field guidance included";
+        template.fieldNotes.forEach((note) => {
+          const item = document.createElement("li");
+          item.textContent = note;
+          fieldNoteList.append(item);
+        });
+        fieldNote.append(fieldNoteTitle, fieldNoteList);
+
+        preview.className = "template-preview";
+        previewTitle.className = "template-preview-title";
+        previewTitle.textContent = `${template.label} preview`;
+        previewContent.textContent = getTemplatePreviewText(selectedTemplateType);
+        preview.append(previewTitle, previewContent);
+
+        body.replaceChildren(optionGrid, fieldNote, preview);
+      };
+
+      renderBody();
+      modal.append(header, body, actions);
+      overlay.append(modal);
+      document.body.append(overlay);
+      createButton.focus();
+    }
+
+    function closeTemplateModal() {
+      document.getElementById("template-modal-overlay")?.remove();
+    }
+
+    async function createTemplateProject(templateType) {
+      const template = getTemplateDefinition(templateType);
+      const csvText = generateTemplateCSV(templateType);
+
+      if (state.project.isDirty) {
+        const shouldCreate = window.confirm("Create a new template and discard unsaved changes in the current project?");
+
+        if (!shouldCreate) {
+          return;
+        }
+      }
+
+      closeTemplateModal();
+      state.ui.currentView = "gantt";
+      const loaded = await loadProjectFromText(csvText, template.filename, null, null, "");
+
+      if (loaded) {
+        state.project.fileHandle = null;
+        state.project.sourceFile = null;
+        state.project.sourceUrl = "";
+        markProjectDirty();
+        showToast(`Created ${template.label} template. Save the CSV to keep it.`, "success");
+      }
+    }
+
+    function downloadTemplateProject(templateType) {
+      const template = getTemplateDefinition(templateType);
+      const csvText = generateTemplateCSV(templateType);
+
+      downloadCSVText(template.filename, csvText);
+      showToast(`Downloaded ${template.filename}`, "success");
+    }
+
     function renderCurrentView() {
       const mainContent = document.getElementById("main-content");
 
@@ -4456,6 +4908,7 @@
       const wrapper = document.createElement("div");
       const actions = document.createElement("div");
       const openButton = document.createElement("button");
+      const templateButton = document.createElement("button");
       const message = document.createElement("p");
       const list = document.createElement("ul");
       const entries = state.project.availableCsvFiles || [];
@@ -4466,7 +4919,11 @@
       openButton.className = "primary-button";
       openButton.textContent = "Open CSV";
       openButton.addEventListener("click", openFile);
-      actions.append(openButton);
+      templateButton.type = "button";
+      templateButton.className = "toolbar-button";
+      templateButton.textContent = "New Template";
+      templateButton.addEventListener("click", openTemplateModal);
+      actions.append(openButton, templateButton);
 
       message.className = "csv-picker-message";
       message.textContent = getCsvPickerMessage(entries);
@@ -8108,6 +8565,7 @@
         createTaskEditorField("Task Level", "task_level", "select", task.task_level, TASK_LEVEL_OPTIONS),
         createTaskEditorField("Status", "task_status", "select", getTaskStatus(task), STATUS_OPTIONS),
         createPercentCompleteField(task.percent_complete),
+        createTaskEditorField("Milestone", "milestone", "checkbox", task.milestone),
         createTaskEditorField("Duration", "duration_days", "number", task.duration_days),
         createTaskEditorField("Start", "start_date", "date", task.start_date),
         createTaskEditorField("Finish", "end_date", "date", task.end_date),
@@ -8525,7 +8983,9 @@
 
       menu.className = "settings-menu";
       summary.className = "toolbar-button view-control-button settings-summary";
-      summary.textContent = "Settings ▾";
+      summary.textContent = "Gantt Settings ▾";
+      summary.setAttribute("aria-label", "Gantt settings");
+      summary.title = "Critical path and baseline settings";
       panel.className = "settings-panel";
       panel.append(
         createCriticalPathToggle(),
@@ -8958,6 +9418,7 @@
 
     function wireFileActions() {
       document.getElementById("open-file-button")?.addEventListener("click", openFile);
+      document.getElementById("new-template-button")?.addEventListener("click", openTemplateModal);
       document.getElementById("refresh-file-button")?.addEventListener("click", refreshProjectFile);
       document.getElementById("save-file-button")?.addEventListener("click", saveFile);
       document.getElementById("save-as-file-button")?.addEventListener("click", saveFileAs);
@@ -8968,6 +9429,7 @@
         if (event.key === "Escape") {
           closeTaskEditor();
           closeFilterPanel();
+          closeTemplateModal();
           return;
         }
 
